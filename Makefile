@@ -44,4 +44,4 @@ clean-yaep:
 	rm -rf $(YAEP_DIR) **.so
 
 clean-venv:
-	rm -rf $(VENV_DIR)
+	rm -rf $(VENV_DIR) .pytest_cache **.egg-info .eggs
