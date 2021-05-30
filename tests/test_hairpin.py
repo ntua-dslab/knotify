@@ -3,7 +3,7 @@ import os
 import pytest
 import pandas as pd
 
-from pseudoknot_detector.hairpin import (
+from knotify.hairpin import (
     HairpinDetector,
     get_loop_indices,
     find_hairpins,

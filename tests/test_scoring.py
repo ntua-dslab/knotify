@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 import pytest
 
-from pseudoknot_detector.scoring import (
+from knotify.scoring import (
     Dot2Pair,
     find_matches,
     get_confusion_matrix,

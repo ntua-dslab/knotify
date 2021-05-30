@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from pseudoknot_detector.main import get_results
+from knotify.main import get_results
 
 PSEUDOKNOT = os.getenv("PSEUDOKNOT_SO", "./libpseudoknot.so")
 HAIRPIN = os.getenv("HAIRPIN_SO", "./libhairpin.so")

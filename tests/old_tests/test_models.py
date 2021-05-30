@@ -1,4 +1,4 @@
-from pseudoknot_detector.models import Pknot
+from knotify.models import Pknot
 
 
 class TestPseudoknot:

@@ -1,8 +1,8 @@
 import json
 import yaml
 
-from pseudoknot_detector.main import get_results, argument_parser
-from pseudoknot_detector import scoring
+from knotify.main import get_results, argument_parser
+from knotify import scoring
 
 
 def main():

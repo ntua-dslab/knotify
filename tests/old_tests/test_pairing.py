@@ -1,8 +1,8 @@
 import pytest
 
-from pseudoknot_detector.models import Pknot, INNER, OUTER
+from knotify.models import Pknot, INNER, OUTER
 
-from pseudoknot_detector.pairing import (
+from knotify.pairing import (
     #                             pairalign,
     #                             choose,
     get_left_stem_aligned_indices,
@@ -11,7 +11,7 @@ from pseudoknot_detector.pairing import (
     #                             custom_pairalign
 )
 
-from pseudoknot_detector.pairalign.custom_align import custom_pairalign
+from knotify.pairalign.custom_align import custom_pairalign
 
 pairalign = custom_pairalign
 

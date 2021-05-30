@@ -4,9 +4,9 @@ from typing import Tuple
 
 import pandas as pd
 
-from pseudoknot_detector import rna_analysis
-from pseudoknot_detector import hairpin
-from pseudoknot_detector.energy import apply_free_energy_and_stems_criterion
+from knotify import rna_analysis
+from knotify import hairpin
+from knotify.energy import apply_free_energy_and_stems_criterion
 
 
 def get_results(

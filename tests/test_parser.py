@@ -3,7 +3,7 @@ from typing import List
 
 import pytest
 
-from pseudoknot_detector.rna_parser import PseudoknotDetector
+from knotify.rna_parser import PseudoknotDetector
 
 PSEUDOKNOT = os.getenv("PSEUDOKNOT_SO", "./libpseudoknot.so")
 

@@ -1,5 +1,5 @@
 # import alignment methodologies
-from pseudoknot_detector.pairalign import consecutive_pairalign as cpairalign
+from knotify.pairalign import consecutive_pairalign as cpairalign
 
 
 def get_left_stem_aligned_indices(

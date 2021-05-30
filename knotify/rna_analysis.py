@@ -1,12 +1,12 @@
 from time import time
 import multiprocessing
 
-from pseudoknot_detector.models import Pknot, OUTER, INNER
-from pseudoknot_detector.pairing import (
+from knotify.models import Pknot, OUTER, INNER
+from knotify.pairing import (
     get_left_stem_aligned_indices,
     get_right_stem_aligned_indices,
 )
-from pseudoknot_detector.rna_parser import PseudoknotDetector
+from knotify.rna_parser import PseudoknotDetector
 
 MAX_LOOP_SIZE = 100  # max number of unpaired bases belonging to a loop
 MIN_LOOP_SIZE = 1  # min number of unpaired bases belonging to a loop

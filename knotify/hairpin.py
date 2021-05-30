@@ -4,7 +4,7 @@ import itertools
 import ctypes
 import pandas as pd
 
-from pseudoknot_detector.grammars.hairpin import generate_grammar
+from knotify.grammars.hairpin import generate_grammar
 
 MIN_HAIRPIN_STEMS = 3
 MIN_HAIRPIN_SIZE = 3

@@ -1,4 +1,4 @@
-from pseudoknot_detector.consts import ACCEPTABLE_PAIRS as PAIRS
+from knotify.consts import ACCEPTABLE_PAIRS as PAIRS
 
 # score should be proportional to bubble distance and length somehow ....
 

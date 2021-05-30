@@ -4,7 +4,7 @@ import os
 
 import ctypes
 
-from pseudoknot_detector.grammars.pseudoknot import generate_grammar
+from knotify.grammars.pseudoknot import generate_grammar
 
 
 class PseudoknotDetector:

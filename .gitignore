@@ -12,10 +12,9 @@
 *egg-info
 dist/*
 energy_stem*/
-pseudoknot_detector.egg-info/*
+
 .vscode
 
 **.so
 .yaep
 .venv
-hairpin
