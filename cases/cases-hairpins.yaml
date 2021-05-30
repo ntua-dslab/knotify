@@ -1,0 +1,89 @@
+-
+  case:  CGGUAGAAAAGAUGGUUUAAACCACGCCUUCUACCAAGUUAGUAAAUAAAUAGGCGG
+  truth: .((((((.....((((....))))[[[[[))))))................]]]]].
+  pred:  .(((((((................[[[[))))))).................]]]].
+  with-hairpins:
+    - .(((((((....((((....))))[[[[))))))).................]]]].
+  desc: |
+    Source: https.//rnavlab.utep.edu/static/PKB_files/PKB259
+
+    hairpins in left loop. hairpins in right loop increased energy.
+
+- case:  CAAAGUCCUAUAAACCUCAAUAAUCCCUCGUUAGGAGGGACACGCGAGGACUUUGGCGUGCC
+  truth: .((((((((..............((((((.....))))))[[[[[.)))))))).]]]]]..
+  pred:  ((((((((..................................[[[[.)))))))).]]]]..
+  with-hairpins:
+    - ((((((((...............((((((.....))))))..[[[[.)))))))).]]]]..
+  desc: empty right loop
+
+- case:  uuuaaacggguuugcgguguaagugcagcccgucuuacaccgugcggcacaggcacuaguacugaugucgucuacagggcuu
+  truth: ............(((((((((((...[[[[[[[)))))))))))((((((((.........))).)))))...]].]]]]].
+  old :  ............((((((((((........[[[[))))))))))...................]]]]...............
+
+- case:  aguaaguuucuccuaucgccaucuggaugggauuuaagagacuuaugccaaacucuuugaguuugaugccaauucaguuuucgucugaauugaugcccgaaaggauggc
+  truth: .((((((((((((((((.[[[[[[.)))))).....))))))))))..(((((((...)))))))....((((((((.......))))))))..........]]]]]].
+  pred:  .((((((......................[[[[[[[[[..)))))).........]]]]]]]]].............................................
+
+- desc:  https://rnavlab.utep.edu/static/PKB_files/PKB133
+  case:  CGCUCAACUCAUGGAGCGCACGACGGAUCACCAUCGAUUCGACAUGAG
+  truth: (((((..[[[[[[))))).....((((((......)))))).]]]]]]
+  pred:  (((((..[[[[[[)))))........................]]]]]]
+
+- desc: |
+    Most likely will be baseline case.
+
+    Old prediction has better energy without hairpins. Ground truth is found
+    but discarded because of worse energy. After adding hairpins, our prediction
+    matches the ground truth.
+
+    Source: https.//rnavlab.utep.edu/static/PKB_files/PKB132
+  case:  CGCUCAACCUCAGAGCGCAAGAGUCGAACGAAUACAGUUCGACAUGAGG
+  truth: (((((..[[[[[))))).....(((((((.......))))))).]]]]]
+  pred:  ......................(((((((.....[[))))))).]]...
+  new:   (((((..[[[[[))))).....(((((((.......))))))).]]]]]
+
+- desc: |
+    Baseline. Old prediction finds pseudoknots correctly as well.
+    Source: https.//rnavlab.utep.edu/static/PKB_files/PKB131
+  case:  CGCUCAACUCAUGGAGCGCAAGACGAAUAGCUACAUAUUCGACAUGAG
+  truth: (((((..[[[[[[))))).....((((((......)))))).]]]]]]
+  pred:  (((((..[[[[[[)))))........................]]]]]]
+
+- desc: |
+    Hairpin inside loop is counted as pseudoknot in prediction.
+
+    Old prediction has better energy without hairpins. Pseudoknots of ground
+    truth around found but ultimately not chosen because of worse energy.
+    After adding hairpins, the energy of the chosen pseudoknot becomes worse,
+    and the energy of the correct pseudoknots becomes better.
+
+    Source: https.//rnavlab.utep.edu/static/PKB_files/PKB260
+
+  case:  AGUAGAAAAGUUGGUGCUUAGACCACGCCCUCUACCGUAAUAAUAGAUAAAUAGGCG
+  truth: .(((((.....((((......))))[[[[.)))))..................]]]]
+  pred:  ...........(((([[[[[.))))..........................]]]]].
+
+- desc:  https.//rnavlab.utep.edu/static/PKB_files/PKB261
+  case:  CGGUAGAAAAGAUGGUUUGAAAACCACGCCUUCUACCAAUAUAGUAAAUAAAUAGGCGG
+  truth: .((((((.....(((((....)))))[[[[[))))))................]]]]].
+
+- desc:  https.//rnavlab.utep.edu/static/PKB_files/PKB265
+  case:  CGGUUUUCCUAAAUCGUCGUGAGACGGACCUUGGAAAACCUAGUAUUUAAAUAACUAGGUC
+  truth: .((((((((.....((((....))))[[[[[.))))))))................]]]]]
+
+- desc:  https.//rnavlab.utep.edu/static/PKB_files/PKB267
+  case:  AAUGCAACUUUUAAAUAGUUUAUCUGUUAAGAUAAACCACCUAGGUUGCAUAUAUAAAAAAUAAAAGGUGCC
+  truth: .(((((((((.......((((((((....))))))))[[[[[)))))))))..............]]]]]..
+  pred:  .(((((((((...........................[[[[[)))))))))..............]]]]]..
+
+- desc:  https.//rnavlab.utep.edu/static/PKB_files/PKB269
+  case:  AGUUCUCCUUAGAGUGUGUGUUGUUUACCCAACGCACUGUCCCUAUGGGGGGCCAACAUAGGUCCA
+  truth: .(((((((.......((((((((......))))))))....[[[[[)))))))....]]]]]....
+
+- desc:  https.//rnavlab.utep.edu/static/PKB_files/PKB270
+  case:  CAAAGUCCUAUAAACCUCAAUAAUCCCUCGUUAGGAGGGACACGCGAGGACUUUGGCGUGCC
+  truth: .((((((((..............((((((.....))))))[[[[[.)))))))).]]]]]..
+
+- desc:  https.//rnavlab.utep.edu/static/PKB_files/PKB343
+  case:  GGACGAGGAGCGCUGCAAGCGAGAGCCCAGGCUCGUCCGUUCAAACGGCGCUCA
+  truth: ((((((([[[[[[.....((....)).....))))))).........]]]]]].

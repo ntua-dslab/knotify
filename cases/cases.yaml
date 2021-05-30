@@ -1,0 +1,117 @@
+- case: AUCCUUUUCAGUUGGGCCUUCUGGUGAUGUUUCUGGCCACCCAGGAGGUCCUGAGGAAGAGGUGGACGGCCAGAUUGACU
+  truth: .............(((((((((((.......[[[[[[[..)))))))))))................]]]]]]]......
+  pred:  .............(((((((((((.......[[[[[[[..)))))))))))................]]]]]]]......
+  desc: has dd 2
+
+- case:  AAAAAACUAAUAGAGGGGGGACUUAGCGCCCCCCAAACCGUAACCCC
+  truth: ..............((((((.....[[[))))))....]]]......
+  pred:  ......((((....[[[[[[..))))..]]]]]].............
+  desc: on same stems and energy, pick smaller dd
+
+- case:  UGCCAGCUAUGAGGUAAAGUGUCAUAGC
+  truth: ((((.[[[[[[[)))).....]]]]]]]
+  pred:  ((((.[[[[[[[)))).....]]]]]]]
+  desc: baseline
+
+- case:  GGGAAACGAGCCAAGUGGCGCCGACCACUUAAAAACACCGGAA
+  truth: .............(((((..[[[.))))).........]]]..
+  pred:  ............((((((..[[[.))))))........]]]..
+  desc: dd 1, not two AU consecutively on the end of core stems
+
+- case:  GGGAAACGGGAAGGCGGCGGCGUCCGCCGUAACAAACGC
+  truth: ............(((((..[[[[))))).......]]]]
+  pred:  .............((((((([[[))))))).....]]].
+  desc: worse energy, worse core stems -- try more balanced core stems (?)
+
+- case:  UAGGGGGGUCAGGGUCAGGAGCCCCCCCCUGAACCCAGGAUAACCCUCACUGUCGGGGGGCA
+  truth: ...........((((((((.[[[[[[[)))).))))..................]]]]]]].
+  pred:  ..(((((((.....[[[[[.)))))))]]]]]..............................
+  desc: bulges
+
+- case:  GGGAAACGGACUGAGGGGCCAGCCCCAGGCCCCGAAACAAGCUUAUGGGGCG
+  truth: ..............((((((.[[[[[[))))))............]]]]]].
+  pred:  ..............((((((.[[[[[[))))))............]]]]]].
+  desc: baseline
+
+- case:  UUUAAACUGGUGGGGCAGUGUCUAGGAUUGACGUUAGACACUGCUUUUUGCCCGUUUCAAACAGGUGAAUACAAACCGUCAU
+  truth: ...........((((((((((((((...[[[[[)))))))))))))).............................]]]]].
+  pred:  ...........((((((((((((((...[[[[[)))))))))))))).............................]]]]].
+  desc: baseline
+
+- case:  ACGUGAAGGCUACGAUAGUGCCAG
+  truth: .((((..[[[)))).....]]]..
+  pred:  .((((..[[[)))).....]]]..
+  desc: baseline
+
+- case:  UUUGUUUUUUAGCUGUGCUGGGUGCGAGUGUGGCAGCGGCUCGUGCCUACGAACACACCGCUGUCAUGCC
+  truth: ..................(((((((((((.[[[[[[[[))))))))))).........]]]]]]]]....
+  pred:  ..................(((((((((([[[[[[[[[[[))))))))))........]]]]]]]]]]]..
+  desc: better energy, worse stems criterion gets correct pseudoknot. UG in the end not needed (?)
+
+- case:  AAGUCCAUGGUGAGGGGACUUGAUACCUCACCG
+  truth: .(((((..[[[[[[[))))).....]]]]]]].
+  pred:  ((((((.[[[[[[[[))))))....]]]]]]]]
+  desc: should not have an extra AU after AU. should not have GU (after GC?) (for core stems)
+
+- case:  GGUGCAAAUCCCCCGCCGAUACGGAGCGAUAUCCGUCCCA
+  truth: .............(((....[[[[[)))...]]]]]....
+  pred:  .............(((....[[[[[)))...]]]]]....
+  desc: baseline
+
+- id: knotify/case/2021/paper1/bulges/1
+  description: |
+    Ground truth has few core stems but core stems but still low energy.
+  case:  GUUUGUUAGUGGCGUGUCCGUCCGCAGCUGGCAAGCGAAUGUAAAGACUGAC
+  truth: ((((((((((.(((.[[[.[[[))).)))))))))).........]]].]]]
+  pred:  ((((((((((.............[[[))))))))))...]]]..........
+  desc: bulges
+
+- case:  CGAAUCUCAAGCAAUCAAGCAUUCUACUUCUAUUGCA
+  truth: .((((((...[[[[[..)).)))).......]]]]].
+  pred:  .((((..........[[[..))))........]]]..
+  desc: bulges
+
+- case:  GGGAAACGGAGUGCGCGGCACCGUCCGCGGAACAAACGGAGAAGGCAGCU
+  truth: .............(((((..[[[[)))))......]]]]...........
+  pred:  .............(((((..[[[[)))))......]]]]...........
+  desc: baseline
+
+- case:  GCGUGGAAGCCCUGCCUGGGGUUGAAGCGUUAAAACUUAAUCAGGC
+  truth: ((((...(((((.[[[[[)))))...))))...........]]]]]
+  pred:  .......(((((([[[[))))))...................]]]]
+  desc: three bulges
+
+- case:  UAGGGGUGUCAGGGCUCUGGAGCCCCCCCCGAGCCCCGGCUAACUCUAUCUGUAGGGGGGCA
+  truth: ...........((((((.((.[[[[[[[))))))))..................]]]]]]].
+  pred:  ...........((((((....[[[[[[[..))))))..................]]]]]]].
+  desc: bulges
+
+- case:  GGGAAAUGGACUGAGCGGCGCCGACCGCCAAACAACCGGCA
+  truth: ..............((((.[[[[.))))........]]]].
+  pred:  ..............((((.[[[[.))))........]]]].
+  desc: baseline
+
+- case:  UUUAAACUGUUGAGAGGUGCCUGGAGCGCCUGCAGGCAUCUCUGUUUAUAAUGCAGGCA
+  truth: ............(((((((((((....[[[[[)))))))))))..........]]]]].
+  pred:  ............(((((((((((....[[[[[)))))))))))..........]]]]].
+  desc: baseline
+
+- case:  CCCUUUUCAGCUGGGCCUCUUGGUAGUUUUCCUGGCCACCCAGGAGGUCUUGAGGAAGAGGUGGACGGCCAGAAUGA
+  truth: ............(((((((((((........[[[[[[..)))))))))))................]]]]]].....
+  pred:  ............(((((((((((........[[[[[[..)))))))))))................]]]]]].....
+  desc: baseline, dd 2
+
+- case:  UCCUUUUCAGUUAGGCCUUCUGGUGAUGUUUCUGGCCACCCAGGAGGUCUUGAGGAAGAGGUGGACGGCCAGACUUACUC
+  truth: ............(((((((((((.......[[[[[[[..)))))))))))................]]]]]]].......
+  pred:  ............(((((((((((.......[[[[[[[..)))))))))))................]]]]]]].......
+  desc: baseline, dd 2
+
+- case:  UUCUUUUUUAGUGGCAGUAAGCCUGGGAAUGGGGGCGACCCAGGCGUAUGAACAUAGUGUAACGCUCCCC
+  truth: ................(((.(((((((...[[[[[[[.))))))).))).............]]]]]]].
+  pred:  ....................(((((((...[[[[[[[.))))))).................]]]]]]].
+  desc: bulges
+
+- case:  gggaaacaacaggagggggccacguguggugccguccgcgcccccuauguuguaacagaagcaccacc
+  truth: .............(((((((.....[[[[[[[.......)))))))..............]]]]]]].
+  pred:  ....................................................................
+  desc: truth has dd 7
