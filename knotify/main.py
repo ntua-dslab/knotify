@@ -13,6 +13,7 @@ def get_results(
     sequence: str,
     grammar: str = None,
     max_dd_size: int = 2,
+    min_dd_size: int = 0,
     allow_ug: bool = False,
     max_loop_size: int = rna_analysis.MAX_LOOP_SIZE,
     save_csv: str = None,
@@ -34,6 +35,7 @@ def get_results(
             grammar=grammar,
             max_loop_size=max_loop_size,
             max_dd_size=max_dd_size,
+            min_dd_size=min_dd_size,
             allow_ug=allow_ug,
         )
         .get_window_boundaries()
@@ -87,6 +89,7 @@ def argument_parser() -> argparse.ArgumentParser:
     parser.add_argument("--grammar")
     parser.add_argument("--allow-ug", default=False, action="store_true")
     parser.add_argument("--max-dd-size", default=2, type=int)
+    parser.add_argument("--min-dd-size", default=0, type=int)
     parser.add_argument("--max-loop-size", default=100, type=int)
     parser.add_argument("--max-stem-allow-smaller", default=2, type=int)
     parser.add_argument("--prune-early", default=False, action="store_true")
@@ -123,6 +126,7 @@ def main():
         save_csv=args.csv,
         allow_ug=args.allow_ug,
         max_dd_size=args.max_dd_size,
+        min_dd_size=args.min_dd_size,
         max_loop_size=args.max_loop_size,
         max_stem_allow_smaller=args.max_stem_allow_smaller,
         prune_early=args.prune_early,

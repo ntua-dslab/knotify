@@ -19,6 +19,7 @@ class StringAnalyser(object):
         grammar=None,
         max_loop_size=MAX_LOOP_SIZE,
         max_dd_size=2,
+        min_dd_size=0,
         allow_ug=True,
     ):
         """Basic rna analysis class
@@ -31,7 +32,12 @@ class StringAnalyser(object):
         self._string = input_string
         self._max_window_size = 2 * MAX_LOOP_SIZE + 4
         self._min_window_size = 2 * MIN_LOOP_SIZE + 4
-        self.parser = PseudoknotDetector(grammar, max_dd_size, allow_ug)
+        self.parser = PseudoknotDetector(
+            grammar=grammar,
+            max_dd_size=max_dd_size,
+            allow_ug=allow_ug,
+            min_dd_size=min_dd_size,
+        )
         self.window_boundaries = []
 
     def get_window_boundaries(self):
