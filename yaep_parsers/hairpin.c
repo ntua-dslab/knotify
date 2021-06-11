@@ -82,9 +82,40 @@ struct hairpin {
   struct hairpin *next;
 };
 
+// Complex hairpin structure (possibly containing bulges)
+struct complex_hairpin {
+  char *mask;
+  int lstart, lend, rstart, rend, stems;
+}
+
+struct complex_hairpin *
+to_complex_hairpin(struct hairpin *h) {
+  struct complex_hairpin *complex = malloc(sizeof(struct complex_hairpin));
+  complex->lstart = LSTART(h);
+  complex->lend = LEND(h);
+  complex->rstart = RSTART(h);
+  complex->rend = REND(h);
+  complex->mask = NULL;
+
+  return complex;
+}
+
+struct complex_hairpin *combine_hairpins(struct hairpin *A, struct hairpin *B,
+                                         char *mask) {
+
+  struct complex_hairpin *complex = malloc(sizeof(struct complex_hairpin));
+  complex->lstart = min(LSTART(A), LSTART(B));
+  complex->lend = max(LEND(A), LEND(B));
+  complex->rstart = min(RSTART(A), RSTART(B));
+  complex->rend = max(REND(A), REND(B));
+  complex->mask = strdup(mask);
+  complex->stems = A->stems + B->stems;
+
+  return complex;
+}
+
 struct hairpin *initialize_new_hairpin_node() {
-  struct hairpin *new_hairpin =
-      (struct hairpin *)malloc(sizeof(struct hairpin));
+  struct hairpin *new_hairpin = malloc(sizeof(struct hairpin));
   new_hairpin->start = 0;
   new_hairpin->stems = 0;
   new_hairpin->size = 0;
@@ -422,6 +453,12 @@ void annotate_hairpin(char *buf, struct hairpin *h) {
   memset(buf + h->start + h->stems + h->size, ')', h->stems);
 }
 
+void annotate_complex_hairpin(char *buf, struct complex_hairpin *h) {
+  if (h->mask != NULL) {
+    memcpy(buf, h->mask, strlen(buf));
+  }
+}
+
 // Return TRUE if [x1, x2] & [y1, y2] = empty.
 int empty_subset(int x1, int x2, int y1, int y2) {
   return !(y1 <= x1 && x1 <= y2) && !(y1 <= x2 && x2 <= y2);
@@ -458,48 +495,46 @@ int hairpin_check_no_overlap(struct hairpin *A, struct hairpin *B) {
 }
 
 // TODO(akolaitis): use recursion to support arbitrary max_per_loop size.
-void write_hairpin_trees(struct hairpin *current, struct hairpin *next,
+void write_hairpin_trees(struct complex_hairpin *current, struct hairpin *next,
                          FILE *fp, int loop_length, int max_per_loop,
                          int max_bulge, int min_stems) {
-  struct hairpin *iter = current;
 
-  iter = current;
   char *buf = initialize_bracket(loop_length);
-  while (iter != NULL) {
-    // add to results
-    if (iter->stems >= min_stems) {
+
+  // add to results
+  if (current->stems >= min_stems) {
+    memset(buf, '.', loop_length);
+    annotate_complex_hairpin(buf, iter);
+    fprintf(fp, "%s\n", buf);
+  }
+
+  if (max_per_loop > 1 || max_bulge > 0) {
+    for (struct hairpin *nest = next; nest != NULL; nest = nest->next) {
+      if (iter->stems + nest->stems < min_stems) {
+        continue;
+      }
+
+      int merge = max_per_loop > 1 && (hairpin_check_no_overlap(iter, nest) ||
+                                       hairpin_check_no_overlap(nest, iter));
+
+      if (!merge && max_bulge > 0) {
+        merge = hairpin_check_bulge(iter, nest, max_bulge) ||
+                hairpin_check_bulge(nest, iter, max_bulge);
+      }
+
+      if (!merge) {
+        continue;
+      }
+
       memset(buf, '.', loop_length);
       annotate_hairpin(buf, iter);
+      annotate_hairpin(buf, nest);
       fprintf(fp, "%s\n", buf);
     }
-
-    if (max_per_loop > 1 || max_bulge > 0) {
-      for (struct hairpin *nest = next; nest != NULL; nest = nest->next) {
-        if (iter->stems + nest->stems < min_stems) {
-          continue;
-        }
-
-        int merge = max_per_loop > 1 && (hairpin_check_no_overlap(iter, nest) ||
-                                         hairpin_check_no_overlap(nest, iter));
-
-        if (!merge && max_bulge > 0) {
-          merge = hairpin_check_bulge(iter, nest, max_bulge) ||
-                  hairpin_check_bulge(nest, iter, max_bulge);
-        }
-
-        if (!merge) {
-          continue;
-        }
-
-        memset(buf, '.', loop_length);
-        annotate_hairpin(buf, iter);
-        annotate_hairpin(buf, nest);
-        fprintf(fp, "%s\n", buf);
-      }
-    }
-
-    iter = iter->next;
   }
+
+  iter = iter->next;
+}
 }
 
 char *detect_hairpins(char *grammar, char *sequence, int min_stems,
