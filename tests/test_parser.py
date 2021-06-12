@@ -34,11 +34,23 @@ def test_max_dd_size(dd_size: int, sequence: str, result: List[str]):
     ),
 )
 def test_pseudoknot_pairs(A, B, allow_ug):
-    parser = PseudoknotDetector(grammar=PSEUDOKNOT, max_dd_size=1, allow_ug=allow_ug)
+    parser = PseudoknotDetector(grammar=PSEUDOKNOT, max_dd_size=4, allow_ug=allow_ug)
     combination_has_ug = any(x in ["gu", "ug"] for x in [A, B])
 
-    result = parser.detect_pseudoknots("{}aaa{}a{}aaa{}".format(A[0], B[0], A[1], B[1]))
+    result = parser.detect_pseudoknots(
+        "".join(
+            [
+                A[0],  # left core outer
+                "augcaugc",  # left loop
+                B[0],  # right core inner
+                "augc",  # dd
+                A[1],  # left core inner
+                "augcaugc",  # right loop
+                B[1],  # right core outer
+            ]
+        )
+    )
     if not combination_has_ug or combination_has_ug and allow_ug:
-        assert "3, 1" in result
+        assert "8, 4" in result
     if combination_has_ug and not allow_ug:
-        assert "3, 1" not in result
+        assert "8, 4" not in result
