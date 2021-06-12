@@ -15,6 +15,7 @@ def get_results(
     max_dd_size: int = 2,
     min_dd_size: int = 0,
     allow_ug: bool = False,
+    allow_skip_final_au: bool = False,
     max_loop_size: int = rna_analysis.MAX_LOOP_SIZE,
     save_csv: str = None,
     max_stem_allow_smaller: int = 1,
@@ -29,7 +30,7 @@ def get_results(
     Analyze RNA sequence, and predict structure. Return data frame of results
     """
     sequence = sequence.lower()
-    pseudoknots = (
+    knot_dict_list = (
         rna_analysis.StringAnalyser(
             input_string=sequence,
             grammar=grammar,
@@ -43,12 +44,9 @@ def get_results(
         .get_pseudoknots(
             max_stem_allow_smaller=max_stem_allow_smaller,
             prune_early=prune_early,
+            allow_skip_final_au=allow_skip_final_au,
         )
     )
-
-    # TODO(akolaitis): consider embedding this into get_pseudoknots()
-    # to benefit from multiprocessing library.
-    knot_dict_list = [knot.to_dict() for knot in pseudoknots]
 
     data = pd.DataFrame(knot_dict_list)
     if save_csv is not None:
@@ -88,6 +86,7 @@ def argument_parser() -> argparse.ArgumentParser:
     # pseudoknot arguments
     parser.add_argument("--grammar")
     parser.add_argument("--allow-ug", default=False, action="store_true")
+    parser.add_argument("--allow-skip-final-au", default=False, action="store_true")
     parser.add_argument("--max-dd-size", default=2, type=int)
     parser.add_argument("--min-dd-size", default=0, type=int)
     parser.add_argument("--max-loop-size", default=100, type=int)
@@ -125,6 +124,7 @@ def main():
         grammar=args.grammar,
         save_csv=args.csv,
         allow_ug=args.allow_ug,
+        allow_skip_final_au=args.allow_skip_final_au,
         max_dd_size=args.max_dd_size,
         min_dd_size=args.min_dd_size,
         max_loop_size=args.max_loop_size,

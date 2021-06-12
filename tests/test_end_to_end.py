@@ -95,3 +95,41 @@ def test_end_to_end(name, sequence, result, test_params):
 
     results = get_results(sequence, **config)
     assert results.loc[0].dot_bracket == result
+
+
+@pytest.mark.parametrize(
+    "name, sequence, candidates, test_params",
+    [
+        (
+            "without final au",
+            "GGGAAACGAGCCAAGUGGCGCCGACCACUUAAAAACACCGGAA",
+            [
+                ".............(((((..[[[.))))).........]]]..",
+                "............((((((..[[[.))))))........]]]..",
+            ],
+            {"allow_skip_final_au": True},
+        ),
+        (
+            "without final au (both sides)",
+            "GGGAAACGAGCCAAGUGGCUCCGACCACUUAAAAACACCGGAA",
+            [
+                ".............(((((..[[[.))))).........]]]..",  # drop both
+                ".............(((((.[[[[.))))).........]]]].",  # drop left
+                "............((((((..[[[.))))))........]]]..",  # drop right
+                "............((((((.[[[[.))))))........]]]].",  # include all
+            ],
+            {"allow_skip_final_au": True, "max_stem_allow_smaller": 3},
+        ),
+    ],
+)
+def test_exploration(name, sequence, candidates, test_params):
+    config = {
+        "grammar": PSEUDOKNOT,
+        "prune_early": True,
+    }
+    config.update(test_params)
+
+    assert all(
+        candidate in get_results(sequence, **config).dot_bracket.unique()
+        for candidate in candidates
+    )
