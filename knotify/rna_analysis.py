@@ -12,6 +12,10 @@ MAX_LOOP_SIZE = 100  # max number of unpaired bases belonging to a loop
 MIN_LOOP_SIZE = 1  # min number of unpaired bases belonging to a loop
 
 
+def replace_str_at_index(string, index, char):
+    return string[:index] + char + string[index + 1 :]
+
+
 class StringAnalyser(object):
     def __init__(
         self,
@@ -89,10 +93,72 @@ class StringAnalyser(object):
         self.trees = trees
         return self
 
-    def get_pseudoknots(self, max_stem_allow_smaller=2, prune_early=False):
+    def get_pseudoknots_without_au(self, sequence: str, knot: Pknot):
+        """
+        return list of pseudoknots without AU as last loop stem.
+        """
+        # TODO(akolaitis): this is quite dirty. clean up code
+        # and remove duplication
+        l = []
+        removed = 0
+        if all(knot.right_loop_stems):
+            inner_idx = knot.right_loop_stems[0][0]
+            outer_idx = knot.right_loop_stems[1][-1]
+            if set([sequence[inner_idx], sequence[outer_idx]]) == set("au"):
+                removed += 1
+                knot2 = knot.to_dict()
+                knot2["right_loop_stems"] -= 1
+                knot2["dot_bracket"] = replace_str_at_index(
+                    knot2["dot_bracket"], inner_idx, "."
+                )
+                knot2["dot_bracket"] = replace_str_at_index(
+                    knot2["dot_bracket"], outer_idx, "."
+                )
+                l.append(knot2)
+
+        if all(knot.left_loop_stems):
+            inner_idx = knot.left_loop_stems[0][-1]
+            outer_idx = knot.left_loop_stems[1][0]
+            if set([sequence[inner_idx], sequence[outer_idx]]) == set("au"):
+                removed += 1
+                knot2 = knot.to_dict()
+                knot2["left_loop_stems"] -= 1
+                knot2["dot_bracket"] = replace_str_at_index(
+                    knot2["dot_bracket"], inner_idx, "."
+                )
+                knot2["dot_bracket"] = replace_str_at_index(
+                    knot2["dot_bracket"], outer_idx, "."
+                )
+
+                l.append(knot2)
+
+        if removed == 2:
+            knot2 = knot.to_dict()
+            knot2["left_loop_stems"] -= 1
+            knot2["right_loop_stems"] -= 1
+
+            for idx in [
+                knot.right_loop_stems[0][0],
+                knot.right_loop_stems[1][-1],
+                knot.left_loop_stems[0][-1],
+                knot.left_loop_stems[1][0],
+            ]:
+                knot2["dot_bracket"] = replace_str_at_index(
+                    knot2["dot_bracket"], idx, "."
+                )
+
+            l.append(knot2)
+
+        return l
+
+    def get_pseudoknots(
+        self,
+        max_stem_allow_smaller=2,
+        prune_early=False,
+        allow_skip_final_au=False,
+    ):
         # TODO(akolaitis) 1: move logic out of the for loop in separate function
         # and then run this loop within with detect_pseudoknots
-        #
 
         # TODO(akolaitis) 2: this can be done in pandas as well
         pseudoknots = []
@@ -106,7 +172,16 @@ class StringAnalyser(object):
                         not prune_early or size >= max_size - max_stem_allow_smaller
                     ):
                         max_size = max(max_size, size)
-                        pseudoknots.append(knot)
+                        pseudoknots.append(knot.to_dict())
+
+                        if not allow_skip_final_au:
+                            continue
+
+                        knots_without_au = self.get_pseudoknots_without_au(
+                            self._string, knot
+                        )
+                        if knots_without_au:
+                            pseudoknots.extend(knots_without_au)
 
         return pseudoknots
 
