@@ -7,6 +7,7 @@ from knotify import rna_analysis
 from knotify import hairpin
 from knotify.criteria import apply_free_energy_and_stems_criterion
 from knotify.energy.vienna import ViennaEnergy
+from knotify.energy.pkenergy import PKEnergy
 
 
 def get_results(
@@ -114,10 +115,18 @@ def argument_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--max-hairpin-bulge", type=int, default=hairpin.MAX_HAIRPIN_BULGE
     )
+
+    parser.add_argument("--energy", choices=["vienna", "pkenergy"], default="vienna")
+    parser.add_argument("--pkenergy", default="./libpkenergy.so")
+    parser.add_argument("--pkenergy-config-dir", default=".pkenergy/hotknots/params")
     return parser
 
 
 def config_from_arguments(args: argparse.Namespace) -> dict:
+    if args.energy == "vienna":
+        energy = ViennaEnergy()
+    elif args.energy == "pkenergy":
+        energy = PKEnergy(args.pkenergy, args.pkenergy_config_dir)
 
     return {
         "grammar": args.grammar,
@@ -134,6 +143,7 @@ def config_from_arguments(args: argparse.Namespace) -> dict:
         "min_hairpin_stems": args.min_hairpin_stems,
         "max_hairpin_bulge": args.max_hairpin_bulge,
         "max_hairpins_per_loop": args.max_hairpins_per_loop,
+        "energy_eval": energy.energy_eval,
     }
 
 
