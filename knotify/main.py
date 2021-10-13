@@ -25,6 +25,7 @@ def get_results(
     min_hairpin_stems: int = hairpin.MIN_HAIRPIN_STEMS,
     max_hairpins_per_loop: int = hairpin.MAX_HAIRPINS_PER_LOOP,
     max_hairpin_bulge: int = hairpin.MAX_HAIRPIN_BULGE,
+    energy_eval: callable = ViennaEnergy().energy_eval,
 ) -> pd.DataFrame:
     """
     Analyze RNA sequence, and predict structure. Return data frame of results
@@ -53,7 +54,10 @@ def get_results(
         data.to_csv(save_csv)
 
     data = apply_free_energy_and_stems_criterion(
-        data, sequence, max_stem_allow_smaller=max_stem_allow_smaller
+        data,
+        sequence,
+        max_stem_allow_smaller=max_stem_allow_smaller,
+        energy_eval=energy_eval,
     )
 
     if hairpin_grammar is None:
@@ -70,7 +74,10 @@ def get_results(
         max_per_loop=max_hairpins_per_loop,
     )
     data = apply_free_energy_and_stems_criterion(
-        data, sequence, max_stem_allow_smaller=max_stem_allow_smaller
+        data,
+        sequence,
+        max_stem_allow_smaller=max_stem_allow_smaller,
+        energy_eval=energy_eval,
     )
 
     return data
