@@ -1,6 +1,8 @@
 .PHONY: venv grammars clean clean-yaep clean-venv deps
 
-all: grammars venv
+all: libraries venv
+
+libraries: grammars energies
 
 #####################################################
 # Dependencies
@@ -25,6 +27,18 @@ $(YAEP_DIR)/src/libyaep.a:
 	cd $(YAEP_DIR) && ./configure CFLAGS=-fPIC && make -j
 
 #####################################################
+# PK energy
+
+PKENERGY_DIR = .pkenergy
+
+energies: libpkenergy.so
+
+libpkenergy.so:
+	git clone https://github.com/neoaggelos/hotknots --depth 1 $(PKENERGY_DIR)
+	cd $(PKENERGY_DIR)/hotknots/LE && make -j
+	cp $(PKENERGY_DIR)/hotknots/LE/libpkenergy.so .
+
+#####################################################
 # Python
 
 VENV_DIR = .venv
@@ -38,10 +52,16 @@ $(VENV_DIR)/bin/rna_analysis: setup.py setup.cfg
 #####################################################
 # Clean
 
-clean: clean-yaep clean-venv
+clean: clean-yaep clean-venv clean-libs clean-pkenergy
+
+clean-libs:
+	rm -rf **.so
+
+clean-pkenergy:
+	rm -rf $(PKENERGY_DIR)
 
 clean-yaep:
-	rm -rf $(YAEP_DIR) **.so
+	rm -rf $(YAEP_DIR)
 
 clean-venv:
 	rm -rf $(VENV_DIR) .pytest_cache **.egg-info .eggs

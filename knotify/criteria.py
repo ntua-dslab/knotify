@@ -1,16 +1,13 @@
 import pandas as pd
 
-import RNA
-
-
-def energy_eval(sequence: str, dot_bracket: str) -> float:
-    return RNA.energy_of_struct(sequence, dot_bracket)
+from knotify.energy.vienna import ViennaEnergy
 
 
 def apply_free_energy_and_stems_criterion(
     data: pd.DataFrame,
     sequence: str,
     max_stem_allow_smaller: int = 2,
+    energy_eval: callable = ViennaEnergy().energy_eval,
 ):
     """
     Returns the best result for a Pandas data frame.

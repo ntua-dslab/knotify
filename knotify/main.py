@@ -1,12 +1,13 @@
 import argparse
-from datetime import datetime, timedelta
-from typing import Tuple
+from datetime import datetime
 
 import pandas as pd
 
 from knotify import rna_analysis
 from knotify import hairpin
-from knotify.energy import apply_free_energy_and_stems_criterion
+from knotify.criteria import apply_free_energy_and_stems_criterion
+from knotify.energy.vienna import ViennaEnergy
+from knotify.energy.pkenergy import PKEnergy
 
 
 def get_results(
@@ -17,7 +18,7 @@ def get_results(
     allow_ug: bool = False,
     allow_skip_final_au: bool = False,
     max_loop_size: int = rna_analysis.MAX_LOOP_SIZE,
-    save_csv: str = None,
+    csv: str = None,
     max_stem_allow_smaller: int = 1,
     prune_early: bool = False,
     hairpin_grammar: str = None,
@@ -25,6 +26,7 @@ def get_results(
     min_hairpin_stems: int = hairpin.MIN_HAIRPIN_STEMS,
     max_hairpins_per_loop: int = hairpin.MAX_HAIRPINS_PER_LOOP,
     max_hairpin_bulge: int = hairpin.MAX_HAIRPIN_BULGE,
+    energy_eval: callable = ViennaEnergy().energy_eval,
 ) -> pd.DataFrame:
     """
     Analyze RNA sequence, and predict structure. Return data frame of results
@@ -49,11 +51,14 @@ def get_results(
     )
 
     data = pd.DataFrame(knot_dict_list)
-    if save_csv is not None:
-        data.to_csv(save_csv)
+    if csv is not None:
+        data.to_csv(csv)
 
     data = apply_free_energy_and_stems_criterion(
-        data, sequence, max_stem_allow_smaller=max_stem_allow_smaller
+        data,
+        sequence,
+        max_stem_allow_smaller=max_stem_allow_smaller,
+        energy_eval=energy_eval,
     )
 
     if hairpin_grammar is None:
@@ -70,7 +75,10 @@ def get_results(
         max_per_loop=max_hairpins_per_loop,
     )
     data = apply_free_energy_and_stems_criterion(
-        data, sequence, max_stem_allow_smaller=max_stem_allow_smaller
+        data,
+        sequence,
+        max_stem_allow_smaller=max_stem_allow_smaller,
+        energy_eval=energy_eval,
     )
 
     return data
@@ -107,7 +115,36 @@ def argument_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--max-hairpin-bulge", type=int, default=hairpin.MAX_HAIRPIN_BULGE
     )
+
+    parser.add_argument("--energy", choices=["vienna", "pkenergy"], default="vienna")
+    parser.add_argument("--pkenergy", default="./libpkenergy.so")
+    parser.add_argument("--pkenergy-config-dir", default=".pkenergy/hotknots/params")
     return parser
+
+
+def config_from_arguments(args: argparse.Namespace) -> dict:
+    if args.energy == "vienna":
+        energy = ViennaEnergy()
+    elif args.energy == "pkenergy":
+        energy = PKEnergy(args.pkenergy, args.pkenergy_config_dir)
+
+    return {
+        "grammar": args.grammar,
+        "csv": args.csv,
+        "allow_ug": args.allow_ug,
+        "allow_skip_final_au": args.allow_skip_final_au,
+        "max_dd_size": args.max_dd_size,
+        "min_dd_size": args.min_dd_size,
+        "max_loop_size": args.max_loop_size,
+        "max_stem_allow_smaller": args.max_stem_allow_smaller,
+        "prune_early": args.prune_early,
+        "hairpin_grammar": args.hairpin_grammar,
+        "min_hairpin_size": args.min_hairpin_size,
+        "min_hairpin_stems": args.min_hairpin_stems,
+        "max_hairpin_bulge": args.max_hairpin_bulge,
+        "max_hairpins_per_loop": args.max_hairpins_per_loop,
+        "energy_eval": energy.energy_eval,
+    }
 
 
 def main():
@@ -119,23 +156,7 @@ def main():
     args = parser.parse_args()
 
     start = datetime.now()
-    results = get_results(
-        sequence=args.sequence.lower(),
-        grammar=args.grammar,
-        save_csv=args.csv,
-        allow_ug=args.allow_ug,
-        allow_skip_final_au=args.allow_skip_final_au,
-        max_dd_size=args.max_dd_size,
-        min_dd_size=args.min_dd_size,
-        max_loop_size=args.max_loop_size,
-        max_stem_allow_smaller=args.max_stem_allow_smaller,
-        prune_early=args.prune_early,
-        hairpin_grammar=args.hairpin_grammar,
-        min_hairpin_size=args.min_hairpin_size,
-        min_hairpin_stems=args.min_hairpin_stems,
-        max_hairpin_bulge=args.max_hairpin_bulge,
-        max_hairpins_per_loop=args.max_hairpins_per_loop,
-    )
+    results = get_results(sequence=args.sequence.lower(), **config_from_arguments(args))
     duration = datetime.now() - start
 
     if args.results_csv:

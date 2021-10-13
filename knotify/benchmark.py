@@ -4,7 +4,7 @@ import logging
 
 import yaml
 
-from knotify.main import get_results, argument_parser
+from knotify.main import get_results, argument_parser, config_from_arguments
 from knotify import scoring
 
 
@@ -19,11 +19,12 @@ def main():
     parser.add_argument("--verbose", action="store_true", default=False)
     args = parser.parse_args()
 
+    config = config_from_arguments(args)
     if args.verbose:
         logging.basicConfig(level=logging.DEBUG)
 
         LOG.debug("Command line: %s", sys.argv)
-        LOG.debug("Run configuration: %s", args.__dict__)
+        LOG.debug("Run configuration: %s", config)
 
     with open(args.cases, "r") as fin:
         cases = yaml.safe_load(fin.read())
@@ -44,16 +45,7 @@ def main():
 
     for loop, idx in enumerate(only):
         case = cases[idx]
-        results = get_results(
-            case["case"].lower(),
-            grammar=args.grammar,
-            save_csv=args.csv,
-            allow_ug=args.allow_ug,
-            max_dd_size=args.max_dd_size,
-            max_loop_size=args.max_loop_size,
-            max_stem_allow_smaller=args.max_stem_allow_smaller,
-            prune_early=args.prune_early,
-        )
+        results = get_results(case["case"].lower(), **config)
         predictions = results[["dot_bracket", "energy", "stems"]].to_dict(
             orient="records"
         )
