@@ -1,12 +1,12 @@
 import argparse
-from datetime import datetime, timedelta
-from typing import Tuple
+from datetime import datetime
 
 import pandas as pd
 
 from knotify import rna_analysis
 from knotify import hairpin
-from knotify.energy import apply_free_energy_and_stems_criterion
+from knotify.criteria import apply_free_energy_and_stems_criterion
+from knotify.energy.vienna import ViennaEnergy
 
 
 def get_results(
@@ -17,7 +17,7 @@ def get_results(
     allow_ug: bool = False,
     allow_skip_final_au: bool = False,
     max_loop_size: int = rna_analysis.MAX_LOOP_SIZE,
-    save_csv: str = None,
+    csv: str = None,
     max_stem_allow_smaller: int = 1,
     prune_early: bool = False,
     hairpin_grammar: str = None,
@@ -50,8 +50,8 @@ def get_results(
     )
 
     data = pd.DataFrame(knot_dict_list)
-    if save_csv is not None:
-        data.to_csv(save_csv)
+    if csv is not None:
+        data.to_csv(csv)
 
     data = apply_free_energy_and_stems_criterion(
         data,
@@ -117,6 +117,26 @@ def argument_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def config_from_arguments(args: argparse.Namespace) -> dict:
+
+    return {
+        "grammar": args.grammar,
+        "csv": args.csv,
+        "allow_ug": args.allow_ug,
+        "allow_skip_final_au": args.allow_skip_final_au,
+        "max_dd_size": args.max_dd_size,
+        "min_dd_size": args.min_dd_size,
+        "max_loop_size": args.max_loop_size,
+        "max_stem_allow_smaller": args.max_stem_allow_smaller,
+        "prune_early": args.prune_early,
+        "hairpin_grammar": args.hairpin_grammar,
+        "min_hairpin_size": args.min_hairpin_size,
+        "min_hairpin_stems": args.min_hairpin_stems,
+        "max_hairpin_bulge": args.max_hairpin_bulge,
+        "max_hairpins_per_loop": args.max_hairpins_per_loop,
+    }
+
+
 def main():
 
     # define the argument parser
@@ -126,23 +146,7 @@ def main():
     args = parser.parse_args()
 
     start = datetime.now()
-    results = get_results(
-        sequence=args.sequence.lower(),
-        grammar=args.grammar,
-        save_csv=args.csv,
-        allow_ug=args.allow_ug,
-        allow_skip_final_au=args.allow_skip_final_au,
-        max_dd_size=args.max_dd_size,
-        min_dd_size=args.min_dd_size,
-        max_loop_size=args.max_loop_size,
-        max_stem_allow_smaller=args.max_stem_allow_smaller,
-        prune_early=args.prune_early,
-        hairpin_grammar=args.hairpin_grammar,
-        min_hairpin_size=args.min_hairpin_size,
-        min_hairpin_stems=args.min_hairpin_stems,
-        max_hairpin_bulge=args.max_hairpin_bulge,
-        max_hairpins_per_loop=args.max_hairpins_per_loop,
-    )
+    results = get_results(sequence=args.sequence.lower(), **config_from_arguments(args))
     duration = datetime.now() - start
 
     if args.results_csv:
