@@ -34,7 +34,7 @@ PKENERGY_DIR = .pkenergy
 energies: libpkenergy.so
 
 libpkenergy.so:
-	git clone https://github.com/neoaggelos/hotknots --depth 1 $(PKENERGY_DIR)
+	git clone https://github.com/neoaggelos/hotknots --depth 1 $(PKENERGY_DIR) || true
 	cd $(PKENERGY_DIR)/hotknots/LE && make -j
 	cp $(PKENERGY_DIR)/hotknots/LE/libpkenergy.so .
 
