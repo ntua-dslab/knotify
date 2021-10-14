@@ -118,7 +118,7 @@ def argument_parser() -> argparse.ArgumentParser:
 
     parser.add_argument("--energy", choices=["vienna", "pkenergy"], default="vienna")
     parser.add_argument("--pkenergy", default="./libpkenergy.so")
-    parser.add_argument("--pkenergy-config-dir", default=".pkenergy/hotknots/params")
+    parser.add_argument("--pkenergy-config-dir", default="pkenergy/hotknots/params")
     return parser
 
 
