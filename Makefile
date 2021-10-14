@@ -29,12 +29,11 @@ $(YAEP_DIR)/src/libyaep.a:
 #####################################################
 # PK energy
 
-PKENERGY_DIR = .pkenergy
+PKENERGY_DIR = pkenergy
 
 energies: libpkenergy.so
 
 libpkenergy.so:
-	git clone https://github.com/neoaggelos/hotknots --depth 1 $(PKENERGY_DIR)
 	cd $(PKENERGY_DIR)/hotknots/LE && make -j
 	cp $(PKENERGY_DIR)/hotknots/LE/libpkenergy.so .
 
@@ -58,7 +57,7 @@ clean-libs:
 	rm -rf **.so
 
 clean-pkenergy:
-	rm -rf $(PKENERGY_DIR)
+	cd $(PKENERGY_DIR)/hotknots/LE && make clean
 
 clean-yaep:
 	rm -rf $(YAEP_DIR)

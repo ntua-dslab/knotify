@@ -5,7 +5,7 @@ import pytest
 from knotify.energy.pkenergy import PKEnergy
 
 PKENERGY_SO = os.getenv("PKENERGY_SO", "./libpkenergy.so")
-PKENERGY_PARAMS = os.getenv("PKENERGY_PARAMS", ".pkenergy/hotknots/params")
+PKENERGY_PARAMS = os.getenv("PKENERGY_PARAMS", "pkenergy/hotknots/params")
 
 
 @pytest.mark.parametrize(
