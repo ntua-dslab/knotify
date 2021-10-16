@@ -1,10 +1,7 @@
-import os
-
 import pytest
 
 from knotify.rna_analysis import StringAnalyser
-
-GRAMMAR = os.getenv("GRAMMAR", "./libpseudoknot.so")
+from tests.utils import for_each_parser
 
 
 @pytest.mark.parametrize(
@@ -31,7 +28,12 @@ GRAMMAR = os.getenv("GRAMMAR", "./libpseudoknot.so")
         ),
     ],
 )
-def test_get_pseudoknots(sequence, brackets):
-    s = StringAnalyser(sequence, GRAMMAR, allow_ug=False).get_pseudoknots()
+@for_each_parser("parser, library_path")
+def test_get_pseudoknots(parser, library_path, sequence, brackets):
+    s = StringAnalyser(
+        sequence, parser=parser(library_path=library_path)
+    ).get_pseudoknots()
 
-    assert set(a["dot_bracket"] for a in s) == set(brackets)
+    assert len(s) == len(brackets)
+    for a in s:
+        assert a["dot_bracket"] in brackets
