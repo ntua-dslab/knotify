@@ -34,6 +34,7 @@ class StringAnalyser(object):
         :param str grammar: the analysis grammar
         """
         self._string = input_string
+        # TODO(akolaitis): do not ignore max and min window size
         self._max_window_size = 2 * MAX_LOOP_SIZE + 4
         self._min_window_size = 2 * MIN_LOOP_SIZE + 4
         self.parser = PseudoknotDetector(
@@ -42,56 +43,6 @@ class StringAnalyser(object):
             allow_ug=allow_ug,
             min_dd_size=min_dd_size,
         )
-        self.window_boundaries = []
-
-    def get_window_boundaries(self):
-        """Generates all window boundaries and store them to the class
-
-        :return: the StringAnalyser object (pipeline)
-
-        :rtype: object
-        """
-        # TODO (akolaitis): most of the heavy lifting here could be easily
-        # handed over to the c code. this means that the C code should also
-        # return the left and right loop index (apart from the left loop
-        # boundary and the dd size). currently, these are are implied by the
-        # "i" and "j" indices of the tree.
-        #
-        # A naive solution would be to include the "i" and "j" in each result
-        # but that greatly increases the required memory for the intermediate
-        # results, e.g.
-        # (for i1, j1)
-        # "5, 7" --> "i1, j1, 5, 7"
-        # "5, 8" --> "i1, j1, 5, 8"
-        # (for i2, j2)
-        # "4, 6" --> "i2, j2, 4, 6"
-        # "4, 7" --> "i2, j2, 4, 7"
-        #
-        # Consider an improved version where results are grouped by "i" and "j",
-        # e.g. with the following output structure (different separators):
-        # "i1,j1:5,7|5,8"
-        # "i2,j2:4,7|4,7"
-        window_boundaries = []
-        for i in range(0, len(self._string) - self._min_window_size):
-            window_size = self._max_window_size
-            if (i + self._max_window_size) > len(self._string):
-                window_size = len(self._string) - i
-            for j in range(window_size, self._min_window_size, -1):
-                window_boundaries.append((i, j))
-        self.window_boundaries = window_boundaries
-
-        return self
-
-    def generate_trees_in_parallel(self):
-        start = time()
-        with multiprocessing.Pool(multiprocessing.cpu_count()) as p:
-            trees = p.map(
-                self.parser.detect_pseudoknots,
-                [self._string[s : s + l] for s, l in self.window_boundaries],
-            )
-
-        self.trees = trees
-        return self
 
     def get_pseudoknots_without_au(self, sequence: str, knot: Pknot):
         """
@@ -157,41 +108,26 @@ class StringAnalyser(object):
         prune_early=False,
         allow_skip_final_au=False,
     ):
-        # TODO(akolaitis) 1: move logic out of the for loop in separate function
-        # and then run this loop within with detect_pseudoknots
-
-        # TODO(akolaitis) 2: this can be done in pandas as well
         pseudoknots = []
         max_size = 0
-        for ((i, j), trees) in zip(self.window_boundaries, self.trees):
-            for tree in trees:
-                if tree:
-                    knot = self._get_pseudoknots_for_tree(i, j, tree)
-                    size = len(knot.right_loop_stems[0]) + len(knot.left_loop_stems[0])
-                    if knot and (
-                        not prune_early or size >= max_size - max_stem_allow_smaller
-                    ):
-                        max_size = max(max_size, size)
-                        pseudoknots.append(knot.to_dict())
+        for line in self.parser.detect_pseudoknots(self._string):
+            i, j, left_loop_size, dd_size = map(int, line.split(","))
+            knot = self._get_pseudoknots_for_tree(i, j, left_loop_size, dd_size)
+            size = len(knot.right_loop_stems[0]) + len(knot.left_loop_stems[0])
+            if knot and (not prune_early or size >= max_size - max_stem_allow_smaller):
+                max_size = max(max_size, size)
+                pseudoknots.append(knot.to_dict())
 
-                        if not allow_skip_final_au:
-                            continue
+                if not allow_skip_final_au:
+                    continue
 
-                        knots_without_au = self.get_pseudoknots_without_au(
-                            self._string, knot
-                        )
-                        if knots_without_au:
-                            pseudoknots.extend(knots_without_au)
+                knots_without_au = self.get_pseudoknots_without_au(self._string, knot)
+                if knots_without_au:
+                    pseudoknots.extend(knots_without_au)
 
         return pseudoknots
 
-    def left_loop_boundary(self, tree):
-        return int(tree.split(",")[0])
-
-    def dd(self, tree):
-        return int(tree.split(",")[1])
-
-    def _get_pseudoknots_for_tree(self, i, j, tree):
+    def _get_pseudoknots_for_tree(self, i, j, left_loop_size, dd_size):
         """Returns the pseudoknot for any given substring
 
         :param int i: the start of the sliding window
@@ -203,16 +139,9 @@ class StringAnalyser(object):
         :rtype: Pknot
         """
         pknot = Pknot(len=len(self._string))
-        pknot.left_core_indices = (
-            i,
-            i + self.left_loop_boundary(tree) + self.dd(tree) + 2,
-        )
-        pknot.i_j = (i, j, self.left_loop_boundary(tree))
+        pknot.left_core_indices = (i, i + left_loop_size + dd_size + 2)
 
-        pknot.right_core_indices = (i + self.left_loop_boundary(tree) + 1, i + j - 1)
-
-        pknot.tree = tree
-        pknot.ij = "{i}, {j}".format(i=i, j=j)
+        pknot.right_core_indices = (i + left_loop_size + 1, i + j - 1)
         # ========================================================================
         # get strings to align with pairwise
         _, left_stem_indices = get_left_stem_aligned_indices(
