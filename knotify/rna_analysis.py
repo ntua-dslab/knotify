@@ -6,7 +6,7 @@ from knotify.pairing import (
     get_left_stem_aligned_indices,
     get_right_stem_aligned_indices,
 )
-from knotify.rna_parser import PseudoknotDetector
+from knotify.parsers.yaep import YaepParser
 
 MAX_LOOP_SIZE = 100  # max number of unpaired bases belonging to a loop
 MIN_LOOP_SIZE = 1  # min number of unpaired bases belonging to a loop
@@ -37,8 +37,8 @@ class StringAnalyser(object):
         # TODO(akolaitis): do not ignore max and min window size
         self._max_window_size = 2 * MAX_LOOP_SIZE + 4
         self._min_window_size = 2 * MIN_LOOP_SIZE + 4
-        self.parser = PseudoknotDetector(
-            grammar=grammar,
+        self.parser = YaepParser(
+            library_path=grammar,
             max_dd_size=max_dd_size,
             allow_ug=allow_ug,
             min_dd_size=min_dd_size,

@@ -4,7 +4,7 @@ import itertools
 
 import pytest
 
-from knotify.rna_parser import PseudoknotDetector
+from knotify.parsers.yaep import YaepParser
 
 PSEUDOKNOT = os.getenv("PSEUDOKNOT_SO", "./libpseudoknot.so")
 
@@ -21,7 +21,7 @@ PSEUDOKNOT = os.getenv("PSEUDOKNOT_SO", "./libpseudoknot.so")
     ],
 )
 def test_max_dd_size(dd_size: int, sequence: str, result: List[str]):
-    parser = PseudoknotDetector(grammar=PSEUDOKNOT, max_dd_size=dd_size, allow_ug=False)
+    parser = YaepParser(library_path=PSEUDOKNOT, max_dd_size=dd_size, allow_ug=False)
     assert parser.detect_pseudoknots(sequence) == result
 
 
@@ -34,7 +34,7 @@ def test_max_dd_size(dd_size: int, sequence: str, result: List[str]):
     ),
 )
 def test_pseudoknot_pairs(A, B, allow_ug):
-    parser = PseudoknotDetector(grammar=PSEUDOKNOT, max_dd_size=1, allow_ug=allow_ug)
+    parser = YaepParser(library_path=PSEUDOKNOT, max_dd_size=1, allow_ug=allow_ug)
     combination_has_ug = any(x in ["gu", "ug"] for x in [A, B])
 
     result = parser.detect_pseudoknots("{}aaa{}a{}aaa{}".format(A[0], B[0], A[1], B[1]))
