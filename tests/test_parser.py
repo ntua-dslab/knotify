@@ -12,12 +12,12 @@ PSEUDOKNOT = os.getenv("PSEUDOKNOT_SO", "./libpseudoknot.so")
 @pytest.mark.parametrize(
     "dd_size, sequence, result",
     [
-        (1, "caaaaaggaaaaac", ["5, 0"]),
-        (1, "caaaaagagaaaaac", ["5, 1"]),
+        (1, "caaaaaggaaaaac", ["0,14,5,0"]),
+        (1, "caaaaagagaaaaac", ["0,15,5,1"]),
         (1, "caaaaagaagaaaaac", [""]),
-        (2, "caaaaagaagaaaaac", ["5, 2"]),
+        (2, "caaaaagaagaaaaac", ["0,16,5,2"]),
         (2, "caaaaagaaagaaaaac", [""]),
-        (3, "caaaaagaaagaaaaac", ["5, 3"]),
+        (3, "caaaaagaaagaaaaac", ["0,17,5,3"]),
     ],
 )
 def test_max_dd_size(dd_size: int, sequence: str, result: List[str]):
@@ -39,6 +39,6 @@ def test_pseudoknot_pairs(A, B, allow_ug):
 
     result = parser.detect_pseudoknots("{}aaa{}a{}aaa{}".format(A[0], B[0], A[1], B[1]))
     if not combination_has_ug or combination_has_ug and allow_ug:
-        assert "3, 1" in result
+        assert "0,11,3,1" in result
     if combination_has_ug and not allow_ug:
-        assert "3, 1" not in result
+        assert "0,11,3,1" not in result
