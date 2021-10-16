@@ -22,9 +22,12 @@ class CTypesParser(BaseParser):
 
     // Parse RNA sequence and return positions of possible core stems pseudoknots.
     // Returned as a char *buffer with the following format:
+    //
+    // ```
     // <left1>,<size1>,<leftloopsize1>,<ddsize1>
     // <left2>,<size2>,<leftloopsize2>,<ddsize2>
     // ...
+    // ```
     char *detect_pseudoknots(char *sequence);
     ```
     """

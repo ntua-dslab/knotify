@@ -1,4 +1,12 @@
 class BaseParser:
+    """
+    Base RNA parser class. Defines the interface for using the RNA parser, and
+    common configuration options for all parsers. Parser implementations are expected
+    to read and respect these configurations.
+
+    Implementations should
+    """
+
     def __init__(
         self,
         max_dd_size: int = 2,
@@ -14,4 +22,13 @@ class BaseParser:
         self.min_window_size = min_window_size
 
     def detect_pseudoknots(self, sequence: str) -> list:
+        """
+        Return a list of pseudoknots for the given RNA sequence (and any subsequences).
+        The format should be:
+        [
+            "<left1>,<size1>,<left_loop_size1>,<dd_size1>",
+            "<left2>,<size2>,<left_loop_size2>,<dd_size2>",
+            ...
+        ]
+        """
         raise NotImplementedError
