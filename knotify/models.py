@@ -82,7 +82,7 @@ class Pknot(object):
     # core part
     @property
     def left_core_indices(self):
-        """ The left loop indices """
+        """The left loop indices"""
         return self._repr.get("left_core_indices", None)
 
     @left_core_indices.setter
@@ -219,8 +219,6 @@ class Pknot(object):
             "left_loop_stems": len(self.left_loop_stems[0]),
             "right_loop_stems": len(self.right_loop_stems[0]),
             "dot_bracket": self.visualize_dot_bracket(),
-            "tree": self.tree,
-            "ij": self.ij,
             "dd": str(len(self.get_dd_seg())),
         }
 

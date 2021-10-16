@@ -397,8 +397,8 @@ struct pseudoknot *traverse_parse_tree(struct yaep_tree_node *node) {
 }
 
 char *detect_pseudoknots(char *grammar, char *sequence, int dd_size,
-                         int min_dd_size) {
-  ntok = 0;
+                         int min_dd_size, int max, int min) {
+
   input = sequence;
   max_dd_size = dd_size;
 
@@ -406,16 +406,28 @@ char *detect_pseudoknots(char *grammar, char *sequence, int dd_size,
   size_t size;
   FILE *fp = open_memstream(&buffer, &size);
 
-  struct yaep_tree_node *root = parse(grammar);
-  struct pseudoknot *ps = traverse_parse_tree(root);
+  // The loop variables ensure that in every outer iteration we can discard the
+  // last character of the input string.
 
-  for (struct pseudoknot *i = ps; i != NULL; i = i->next) {
-    if (i->dd_size < min_dd_size) {
-      continue;
+  // output format is
+  // start,length:leftloopsize,ddsize|leftloopsize2,ddsize2
+  for (int right = strlen(sequence) - 1; right >= min - 1; right--) {
+    for (int left = right - min + 1; left > right - max && left >= 0; left--) {
+      ntok = left;
+      struct yaep_tree_node *root = parse(grammar);
+      struct pseudoknot *ps = traverse_parse_tree(root);
+
+      for (struct pseudoknot *i = ps; i != NULL; i = i->next) {
+        if (i->dd_size < min_dd_size) {
+          continue;
+        }
+        fprintf(fp, "%d,%d,%d,%d\n", left, right - left + 1, i->left_loop_size,
+                i->dd_size);
+      }
     }
-    fprintf(fp, "%d, %d", i->left_loop_size, i->dd_size);
-    if (i->next != NULL)
-      fprintf(fp, "\n");
+
+    // we finished all windows where the last character is used, now discard
+    input[right] = '\0';
   }
 
   fclose(fp);

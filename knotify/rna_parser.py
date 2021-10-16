@@ -25,10 +25,14 @@ class PseudoknotDetector:
         max_dd_size: int,
         allow_ug: bool,
         min_dd_size: int = 0,
+        max_window_size: int = 100,
+        min_window_size: int = 6,
     ):
         self.grammar = grammar
         self.max_dd_size = max_dd_size
         self.min_dd_size = min_dd_size
+        self.max_window_size = max_window_size
+        self.min_window_size = min_window_size
         self.definition = generate_grammar(allow_ug=allow_ug, max_dd_size=max_dd_size)
 
     def detect_pseudoknots(self, x):
@@ -50,6 +54,8 @@ class PseudoknotDetector:
                 ctypes.c_char_p(x.lower().encode()),
                 ctypes.c_int(self.max_dd_size),
                 ctypes.c_int(self.min_dd_size),
+                ctypes.c_int(self.max_window_size),
+                ctypes.c_int(self.min_window_size),
             )
             .decode()
             .rstrip("\n")
