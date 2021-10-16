@@ -19,7 +19,7 @@ LIBS += $(YAEP_DIR)/src/libyaep.a
 
 grammars: libpseudoknot.so libhairpin.so libbruteforce.so
 
-lib%.so: yaep_parsers/%.c $(YAEP_DIR)/src/libyaep.a
+lib%.so: parsers/%.c $(YAEP_DIR)/src/libyaep.a
 	$(CC) $< $(CFLAGS) $(LIBS) -fPIC -shared -o $@
 
 $(YAEP_DIR)/src/libyaep.a:

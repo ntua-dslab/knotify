@@ -13,7 +13,7 @@ import jinja2
 # For example above, SHOULD be: start=1, stems=3, size=4
 #
 # The reference implementation of the grammar tree parsing can be found
-# in yaep_parsers/hairpin.c
+# in parsers/hairpin.c
 
 TEMPLATE = """
 
