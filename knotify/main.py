@@ -32,22 +32,17 @@ def get_results(
     Analyze RNA sequence, and predict structure. Return data frame of results
     """
     sequence = sequence.lower()
-    knot_dict_list = (
-        rna_analysis.StringAnalyser(
-            input_string=sequence,
-            grammar=grammar,
-            max_loop_size=max_loop_size,
-            max_dd_size=max_dd_size,
-            min_dd_size=min_dd_size,
-            allow_ug=allow_ug,
-        )
-        .get_window_boundaries()
-        .generate_trees_in_parallel()
-        .get_pseudoknots(
-            max_stem_allow_smaller=max_stem_allow_smaller,
-            prune_early=prune_early,
-            allow_skip_final_au=allow_skip_final_au,
-        )
+    knot_dict_list = rna_analysis.StringAnalyser(
+        input_string=sequence,
+        grammar=grammar,
+        max_loop_size=max_loop_size,
+        max_dd_size=max_dd_size,
+        min_dd_size=min_dd_size,
+        allow_ug=allow_ug,
+    ).get_pseudoknots(
+        max_stem_allow_smaller=max_stem_allow_smaller,
+        prune_early=prune_early,
+        allow_skip_final_au=allow_skip_final_au,
     )
 
     data = pd.DataFrame(knot_dict_list)
