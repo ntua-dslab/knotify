@@ -8,16 +8,16 @@ from knotify import hairpin
 from knotify.criteria import apply_free_energy_and_stems_criterion
 from knotify.energy.vienna import ViennaEnergy
 from knotify.energy.pkenergy import PKEnergy
+from knotify.parsers.base import BaseParser
+from knotify.parsers.yaep import YaepParser
+from knotify.parsers.bruteforce import BruteForceParser
 
 
 def get_results(
     sequence: str,
-    grammar: str = None,
-    max_dd_size: int = 2,
-    min_dd_size: int = 0,
+    parser: BaseParser,
     allow_ug: bool = False,
     allow_skip_final_au: bool = False,
-    max_loop_size: int = rna_analysis.MAX_LOOP_SIZE,
     csv: str = None,
     max_stem_allow_smaller: int = 1,
     prune_early: bool = False,
@@ -34,11 +34,7 @@ def get_results(
     sequence = sequence.lower()
     knot_dict_list = rna_analysis.StringAnalyser(
         input_string=sequence,
-        grammar=grammar,
-        max_loop_size=max_loop_size,
-        max_dd_size=max_dd_size,
-        min_dd_size=min_dd_size,
-        allow_ug=allow_ug,
+        parser=parser,
     ).get_pseudoknots(
         max_stem_allow_smaller=max_stem_allow_smaller,
         prune_early=prune_early,
@@ -87,12 +83,14 @@ def argument_parser() -> argparse.ArgumentParser:
     parser.add_argument("--results-csv")
 
     # pseudoknot arguments
-    parser.add_argument("--grammar")
+    parser.add_argument("--parser", choices=["bruteforce", "yaep"])
+    parser.add_argument("--library-path")
     parser.add_argument("--allow-ug", default=False, action="store_true")
     parser.add_argument("--allow-skip-final-au", default=False, action="store_true")
     parser.add_argument("--max-dd-size", default=2, type=int)
     parser.add_argument("--min-dd-size", default=0, type=int)
     parser.add_argument("--max-loop-size", default=100, type=int)
+    parser.add_argument("--min-loop-size", default=1, type=int)
     parser.add_argument("--max-stem-allow-smaller", default=2, type=int)
     parser.add_argument("--prune-early", default=False, action="store_true")
 
@@ -118,19 +116,28 @@ def argument_parser() -> argparse.ArgumentParser:
 
 
 def config_from_arguments(args: argparse.Namespace) -> dict:
+    rna_parser_args = {
+        "max_dd_size": args.max_dd_size,
+        "min_dd_size": args.min_dd_size,
+        "max_window_size": 2 * args.max_loop_size + 4,
+        "min_window_size": 2 * args.min_loop_size + 4,
+        "allow_ug": args.allow_ug,
+    }
+    if args.parser == "yaep":
+        parser = YaepParser(library_path=args.library_path, **rna_parser_args)
+    elif args.parser == "bruteforce":
+        parser = BruteForceParser(library_path=args.library_path, **rna_parser_args)
+
     if args.energy == "vienna":
         energy = ViennaEnergy()
     elif args.energy == "pkenergy":
         energy = PKEnergy(args.pkenergy, args.pkenergy_config_dir)
 
     return {
-        "grammar": args.grammar,
+        "parser": parser,
         "csv": args.csv,
         "allow_ug": args.allow_ug,
         "allow_skip_final_au": args.allow_skip_final_au,
-        "max_dd_size": args.max_dd_size,
-        "min_dd_size": args.min_dd_size,
-        "max_loop_size": args.max_loop_size,
         "max_stem_allow_smaller": args.max_stem_allow_smaller,
         "prune_early": args.prune_early,
         "hairpin_grammar": args.hairpin_grammar,

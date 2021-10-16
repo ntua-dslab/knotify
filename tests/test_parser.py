@@ -4,11 +4,10 @@ import itertools
 
 import pytest
 
-from knotify.rna_parser import PseudoknotDetector
-
-PSEUDOKNOT = os.getenv("PSEUDOKNOT_SO", "./libpseudoknot.so")
+from tests.utils import for_each_parser
 
 
+@for_each_parser("parser, library_path")
 @pytest.mark.parametrize(
     "dd_size, sequence, result",
     [
@@ -20,9 +19,11 @@ PSEUDOKNOT = os.getenv("PSEUDOKNOT_SO", "./libpseudoknot.so")
         (3, "caaaaagaaagaaaaac", ["0,17,5,3"]),
     ],
 )
-def test_max_dd_size(dd_size: int, sequence: str, result: List[str]):
-    parser = PseudoknotDetector(grammar=PSEUDOKNOT, max_dd_size=dd_size, allow_ug=False)
-    assert parser.detect_pseudoknots(sequence) == result
+def test_max_dd_size(
+    parser, library_path: str, dd_size: int, sequence: str, result: List[str]
+):
+    p = parser(library_path=library_path, max_dd_size=dd_size, allow_ug=False)
+    assert p.detect_pseudoknots(sequence) == result
 
 
 @pytest.mark.parametrize(
@@ -33,11 +34,12 @@ def test_max_dd_size(dd_size: int, sequence: str, result: List[str]):
         [True, False],
     ),
 )
-def test_pseudoknot_pairs(A, B, allow_ug):
-    parser = PseudoknotDetector(grammar=PSEUDOKNOT, max_dd_size=1, allow_ug=allow_ug)
+@for_each_parser("parser, library_path")
+def test_pseudoknot_pairs(parser, library_path, A, B, allow_ug):
+    p = parser(library_path=library_path, max_dd_size=1, allow_ug=allow_ug)
     combination_has_ug = any(x in ["gu", "ug"] for x in [A, B])
 
-    result = parser.detect_pseudoknots("{}aaa{}a{}aaa{}".format(A[0], B[0], A[1], B[1]))
+    result = p.detect_pseudoknots("{}aaa{}a{}aaa{}".format(A[0], B[0], A[1], B[1]))
     if not combination_has_ug or combination_has_ug and allow_ug:
         assert "0,11,3,1" in result
     if combination_has_ug and not allow_ug:

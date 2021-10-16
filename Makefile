@@ -17,9 +17,9 @@ YAEP_DIR = .yaep
 CFLAGS += -I$(YAEP_DIR)/src
 LIBS += $(YAEP_DIR)/src/libyaep.a
 
-grammars: libpseudoknot.so libhairpin.so
+grammars: libpseudoknot.so libhairpin.so libbruteforce.so
 
-lib%.so: yaep_parsers/%.c $(YAEP_DIR)/src/libyaep.a
+lib%.so: parsers/%.c $(YAEP_DIR)/src/libyaep.a
 	$(CC) $< $(CFLAGS) $(LIBS) -fPIC -shared -o $@
 
 $(YAEP_DIR)/src/libyaep.a:

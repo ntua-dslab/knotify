@@ -3,18 +3,19 @@ import os
 import pytest
 
 from knotify.main import get_results
+from tests.utils import for_each_parser
 
-PSEUDOKNOT = os.getenv("PSEUDOKNOT_SO", "./libpseudoknot.so")
 HAIRPIN = os.getenv("HAIRPIN_SO", "./libhairpin.so")
 
 
 @pytest.mark.parametrize(
-    "name, sequence, result, test_params",
+    "name, sequence, result, parser_params, test_params",
     [
         (
             "baseline",
             "GGGAAAUGGACUGAGCGGCGCCGACCGCCAAACAACCGGCA",
             "..............((((.[[[[.))))........]]]].",
+            {},
             {},
         ),
         (
@@ -22,11 +23,13 @@ HAIRPIN = os.getenv("HAIRPIN_SO", "./libhairpin.so")
             "ACGUGAAGGCUACGAUAGUGCCAG",
             ".((((..[[[)))).....]]]..",
             {"allow_ug": True},
+            {},
         ),
         (
             "baseline",
             "GGGAAACGGAGUGCGCGGCACCGUCCGCGGAACAAACGGAGAAGGCAGCU",
             ".............(((((..[[[[)))))......]]]]...........",
+            {},
             {},
         ),
         (
@@ -34,11 +37,13 @@ HAIRPIN = os.getenv("HAIRPIN_SO", "./libhairpin.so")
             "AUCCUUUUCAGUUGGGCCUUCUGGUGAUGUUUCUGGCCACCCAGGAGGUCCUGAGGAAGAGGUGGACGGCCAGAUUGACU",
             ".............(((((((((((.......[[[[[[[..)))))))))))................]]]]]]]......",
             {},
+            {},
         ),
         (
             "pick smaller dd for same energy, stems",
             "AAAAAACUAAUAGAGGGGGGACUUAGCGCCCCCCAAACCGUAACCCC",
             "..............((((((.....[[[))))))....]]]......",
+            {},
             {},
         ),
         (
@@ -46,17 +51,20 @@ HAIRPIN = os.getenv("HAIRPIN_SO", "./libhairpin.so")
             "gggaaacaacaggagggggccacguguggugccguccgcgcccccuauguuguaacagaagcaccacc",
             ".............(((((((.....[[[[[[[.......)))))))..............]]]]]]].",
             {"max_dd_size": 7},
+            {},
         ),
         (
             "hairpin (disabled)",
             "CGCUCAACUCAUGGAGCGCACGACGGAUCACCAUCGAUUCGACAUGAG",
             "(((((..[[[[[[)))))........................]]]]]]",
             {},
+            {},
         ),
         (
             "hairpin (enabled)",
             "CGCUCAACUCAUGGAGCGCACGACGGAUCACCAUCGAUUCGACAUGAG",
             "(((((..[[[[[[))))).....((((((......)))))).]]]]]]",
+            {"allow_ug": True},
             {"hairpin_grammar": HAIRPIN, "allow_ug": True},
         ),
         (
@@ -64,17 +72,20 @@ HAIRPIN = os.getenv("HAIRPIN_SO", "./libhairpin.so")
             "CGCUCAACCUCAGAGCGCAAGAGUCGAACGAAUACAGUUCGACAUGAGG",
             "......................(((((((.....[[))))))).]]...",
             {},
+            {},
         ),
         (
             "hairpin fixes pseudoknot (enabled)",
             "CGCUCAACCUCAGAGCGCAAGAGUCGAACGAAUACAGUUCGACAUGAGG",
             "(((((..[[[[[))))).....(((((((.......))))))).]]]]]",
+            {},
             {"hairpin_grammar": HAIRPIN},
         ),
         (
             "hairpin (big)",
             "AGUUCUCCUUAGAGUGUGUGUUGUUUACCCAACGCACUGUCCCUAUGGGGGGCCAACAUAGGUCCA",
             ".(((((((.......((((((((......))))))))....[[[[[)))))))....]]]]]....",
+            {"allow_ug": True},
             {"hairpin_grammar": HAIRPIN, "allow_ug": True},
         ),
         # TODO(akolaitis): fix this
@@ -86,9 +97,12 @@ HAIRPIN = os.getenv("HAIRPIN_SO", "./libhairpin.so")
         # ),
     ],
 )
-def test_end_to_end(name, sequence, result, test_params):
+@for_each_parser("parser, library_path")
+def test_end_to_end(
+    parser, library_path, name, sequence, result, parser_params, test_params
+):
     config = {
-        "grammar": PSEUDOKNOT,
+        "parser": parser(library_path, **parser_params),
         "prune_early": True,
     }
     config.update(test_params)
@@ -122,9 +136,10 @@ def test_end_to_end(name, sequence, result, test_params):
         ],
     ],
 )
-def test_exploration(name, sequence, candidate, test_params):
+@for_each_parser("parser, library_path")
+def test_exploration(parser, library_path, name, sequence, candidate, test_params):
     config = {
-        "grammar": PSEUDOKNOT,
+        "parser": parser(library_path),
         "prune_early": True,
     }
     config.update(test_params)

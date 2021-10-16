@@ -17,6 +17,10 @@
 static char *input;
 static int ntok;
 static int max_dd_size;
+static int min_dd_size;
+static int max_window_size;
+static int min_window_size;
+static char *definition;
 
 /*************************************************************************
  *                      GRAMMAR DEFINITION                             *
@@ -396,11 +400,8 @@ struct pseudoknot *traverse_parse_tree(struct yaep_tree_node *node) {
   }
 }
 
-char *detect_pseudoknots(char *grammar, char *sequence, int dd_size,
-                         int min_dd_size, int max, int min) {
-
+char *detect_pseudoknots(char *sequence) {
   input = sequence;
-  max_dd_size = dd_size;
 
   char *buffer;
   size_t size;
@@ -411,10 +412,12 @@ char *detect_pseudoknots(char *grammar, char *sequence, int dd_size,
 
   // output format is
   // start,length:leftloopsize,ddsize|leftloopsize2,ddsize2
-  for (int right = strlen(sequence) - 1; right >= min - 1; right--) {
-    for (int left = right - min + 1; left > right - max && left >= 0; left--) {
+  for (int right = strlen(sequence) - 1; right >= min_window_size - 1;
+       right--) {
+    for (int left = right - min_window_size + 1;
+         left > right - max_window_size && left >= 0; left--) {
       ntok = left;
-      struct yaep_tree_node *root = parse(grammar);
+      struct yaep_tree_node *root = parse(definition);
       struct pseudoknot *ps = traverse_parse_tree(root);
 
       for (struct pseudoknot *i = ps; i != NULL; i = i->next) {
@@ -432,4 +435,13 @@ char *detect_pseudoknots(char *grammar, char *sequence, int dd_size,
 
   fclose(fp);
   return buffer;
+}
+
+void initialize(char *_grammar, int _allow_ug, int _min_dd_size,
+                int _max_dd_size, int _min_window_size, int _max_window_size) {
+  definition = strdup(_grammar);
+  min_dd_size = _min_dd_size;
+  max_dd_size = _max_dd_size;
+  min_window_size = _min_window_size;
+  max_window_size = _max_window_size;
 }
