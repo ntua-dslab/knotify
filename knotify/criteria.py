@@ -1,13 +1,13 @@
 import pandas as pd
 
-from knotify.energy.vienna import ViennaEnergy
+from knotify.energy.base import BaseEnergy
 
 
 def apply_free_energy_and_stems_criterion(
     data: pd.DataFrame,
     sequence: str,
-    max_stem_allow_smaller: int = 2,
-    energy_eval: callable = ViennaEnergy().energy_eval,
+    max_stem_allow_smaller: int,
+    energy: BaseEnergy,
 ):
     """
     Returns the best result for a Pandas data frame.
@@ -42,7 +42,7 @@ def apply_free_energy_and_stems_criterion(
     ].reset_index()
 
     # min energy
-    data["energy"] = data["dot_bracket"].apply(lambda r: energy_eval(sequence, r))
+    data["energy"] = data["dot_bracket"].apply(lambda r: energy.eval(sequence, r))
     data.sort_values(
         ["energy", "stems", "dd"], ascending=(True, False, True), inplace=True
     )

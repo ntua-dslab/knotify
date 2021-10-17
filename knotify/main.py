@@ -6,6 +6,7 @@ import pandas as pd
 from knotify import rna_analysis
 from knotify import hairpin
 from knotify.criteria import apply_free_energy_and_stems_criterion
+from knotify.energy.base import BaseEnergy
 from knotify.energy.vienna import ViennaEnergy
 from knotify.energy.pkenergy import PKEnergy
 from knotify.parsers.base import BaseParser
@@ -26,7 +27,7 @@ def get_results(
     min_hairpin_stems: int = hairpin.MIN_HAIRPIN_STEMS,
     max_hairpins_per_loop: int = hairpin.MAX_HAIRPINS_PER_LOOP,
     max_hairpin_bulge: int = hairpin.MAX_HAIRPIN_BULGE,
-    energy_eval: callable = ViennaEnergy().energy_eval,
+    energy: BaseEnergy = ViennaEnergy(),
 ) -> pd.DataFrame:
     """
     Analyze RNA sequence, and predict structure. Return data frame of results
@@ -49,7 +50,7 @@ def get_results(
         data,
         sequence,
         max_stem_allow_smaller=max_stem_allow_smaller,
-        energy_eval=energy_eval,
+        energy=energy,
     )
 
     if hairpin_grammar is None:
@@ -69,7 +70,7 @@ def get_results(
         data,
         sequence,
         max_stem_allow_smaller=max_stem_allow_smaller,
-        energy_eval=energy_eval,
+        energy=energy,
     )
 
     return data
@@ -145,7 +146,7 @@ def config_from_arguments(args: argparse.Namespace) -> dict:
         "min_hairpin_stems": args.min_hairpin_stems,
         "max_hairpin_bulge": args.max_hairpin_bulge,
         "max_hairpins_per_loop": args.max_hairpins_per_loop,
-        "energy_eval": energy.energy_eval,
+        "energy": energy,
     }
 
 

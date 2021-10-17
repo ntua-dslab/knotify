@@ -20,4 +20,4 @@ PKENERGY_PARAMS = os.getenv("PKENERGY_PARAMS", "pkenergy/hotknots/params")
 )
 def test_pkenergy(sequence: str, dot_bracket: str, result: float):
     e = PKEnergy(PKENERGY_SO, PKENERGY_PARAMS)
-    assert e.energy_eval(sequence, dot_bracket) == result
+    assert e.eval(sequence, dot_bracket) == result

@@ -1,11 +1,9 @@
 import ctypes
 
-
-def cstr(s: str) -> str:
-    return ctypes.c_char_p(s.encode())
+from knotify.energy.base import BaseEnergy
 
 
-class PKEnergy:
+class PKEnergy(BaseEnergy):
     """
     Load MFE calculator from a dynamic library. The library should export:
 
@@ -24,7 +22,7 @@ class PKEnergy:
         self._lib.get_energy.restype = ctypes.c_double
         self._lib.initialize(ctypes.c_char_p(config_dir.encode()))
 
-    def energy_eval(self, sequence: str, dot_bracket: str) -> float:
+    def eval(self, sequence: str, dot_bracket: str) -> float:
         return self._lib.get_energy(
             ctypes.c_char_p(sequence.encode()),
             ctypes.c_char_p(dot_bracket.encode()),
