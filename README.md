@@ -48,8 +48,8 @@ $ make       # build the parser and setup the virtual environment at ./.venv
 Run for all cases and save result to `result.yaml`:
 
 ```bash
-$ ./.venv/bin/rna_benchmark --cases cases.yaml --parser bruteforce --library-path ./libbruteforce.so --max-dd-size 2 --max-stem-allow-smaller 1 --allow-ug --prune-early > result.json
-$ ./.venv/bin/rna_benchmark --cases cases.yaml --parser yaep --library-path ./libpseudoknot.so --max-dd-size 2 --max-stem-allow-smaller 1 --allow-ug --prune-early > result.json
+$ ./.venv/bin/rna_benchmark --cases cases.yaml --parser bruteforce --max-dd-size 2 --max-stem-allow-smaller 1 --allow-ug --prune-early > result.json
+$ ./.venv/bin/rna_benchmark --cases cases.yaml --parser yaep --max-dd-size 2 --max-stem-allow-smaller 1 --allow-ug --prune-early > result.json
 ```
 
 ## Execute
@@ -57,13 +57,13 @@ $ ./.venv/bin/rna_benchmark --cases cases.yaml --parser yaep --library-path ./li
 For a single sequence. See `--help` for a complete list of options:
 
 ```bash
-$ ./.venv/bin/rna_analysis --parser yaep --library-path ./libpseudoknot.so AAAAAACUAAUAGAGGGGGGACUUAGCGCCCCCCAAACCGUAACCCC
+$ ./.venv/bin/rna_analysis --parser yaep AAAAAACUAAUAGAGGGGGGACUUAGCGCCCCCCAAACCGUAACCCC
 ```
 
 Run benchmark for a number of cases, print output in YAML file. See [`cases.yaml`](./cases.yaml) for an example YAML file:
 
 ```bash
-$ ./.venv/bin/rna_benchmark --parser yaep --library-path ./libpseudoknot.so [OPTIONS] --cases cases.yaml > results.yaml
+$ ./.venv/bin/rna_benchmark --parser yaep [OPTIONS] --cases cases.yaml > results.yaml
 ```
 
 ## Unit Tests

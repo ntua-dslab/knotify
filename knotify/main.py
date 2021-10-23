@@ -86,7 +86,8 @@ def argument_parser() -> argparse.ArgumentParser:
 
     # pseudoknot arguments
     parser.add_argument("--parser", choices=["bruteforce", "yaep"])
-    parser.add_argument("--library-path")
+    parser.add_argument("--yaep-library-path", default="./libpseudoknot.so")
+    parser.add_argument("--bruteforce-library-path", default="./libbruteforce.so")
     parser.add_argument("--allow-ug", default=False, action="store_true")
     parser.add_argument("--allow-skip-final-au", default=False, action="store_true")
     parser.add_argument("--max-dd-size", default=2, type=int)
@@ -130,9 +131,9 @@ def config_from_arguments(args: argparse.Namespace) -> dict:
         "allow_ug": args.allow_ug,
     }
     if args.parser == "yaep":
-        parser = YaepParser(library_path=args.library_path, **rna_parser_args)
+        parser = YaepParser(args.yaep_library_path, **rna_parser_args)
     elif args.parser == "bruteforce":
-        parser = BruteForceParser(library_path=args.library_path, **rna_parser_args)
+        parser = BruteForceParser(args.bruteforce_library_path, **rna_parser_args)
 
     if args.energy == "vienna":
         energy = ViennaEnergy()
