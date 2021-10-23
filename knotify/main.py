@@ -23,6 +23,7 @@ def get_results(
     max_stem_allow_smaller: int = 1,
     prune_early: bool = False,
     hairpin_grammar: str = None,
+    hairpin_allow_ug: bool = False,
     min_hairpin_size: int = hairpin.MIN_HAIRPIN_SIZE,
     min_hairpin_stems: int = hairpin.MIN_HAIRPIN_STEMS,
     max_hairpins_per_loop: int = hairpin.MAX_HAIRPINS_PER_LOOP,
@@ -60,7 +61,7 @@ def get_results(
         sequence,
         data,
         hairpin_grammar,
-        allow_ug=allow_ug,
+        allow_ug=hairpin_allow_ug,
         min_size=min_hairpin_size,
         min_stems=min_hairpin_stems,
         max_bulge=max_hairpin_bulge,
@@ -97,6 +98,7 @@ def argument_parser() -> argparse.ArgumentParser:
 
     # hairpin arguments
     parser.add_argument("--hairpin-grammar")
+    parser.add_argument("--hairpin-allow-ug", default=None, action="store_true")
     parser.add_argument(
         "--min-hairpin-size", type=int, default=hairpin.MIN_HAIRPIN_SIZE
     )
@@ -117,6 +119,9 @@ def argument_parser() -> argparse.ArgumentParser:
 
 
 def config_from_arguments(args: argparse.Namespace) -> dict:
+    if args.hairpin_allow_ug is None:
+        args.hairpin_allow_ug = args.allow_ug
+
     rna_parser_args = {
         "max_dd_size": args.max_dd_size,
         "min_dd_size": args.min_dd_size,
@@ -142,6 +147,7 @@ def config_from_arguments(args: argparse.Namespace) -> dict:
         "max_stem_allow_smaller": args.max_stem_allow_smaller,
         "prune_early": args.prune_early,
         "hairpin_grammar": args.hairpin_grammar,
+        "hairpin_allow_ug": args.hairpin_allow_ug,
         "min_hairpin_size": args.min_hairpin_size,
         "min_hairpin_stems": args.min_hairpin_stems,
         "max_hairpin_bulge": args.max_hairpin_bulge,
