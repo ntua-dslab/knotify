@@ -21,7 +21,6 @@ class StringAnalyser(object):
         :param BaseParser parser: RNA parser instance
         """
         self.sequence = input_string
-        # TODO(akolaitis): do not ignore max and min window size
         self.parser = parser
 
     def get_pseudoknots_without_au(self, sequence: str, knot: Pknot):
@@ -83,10 +82,7 @@ class StringAnalyser(object):
         return l
 
     def get_pseudoknots(
-        self,
-        max_stem_allow_smaller=2,
-        prune_early=False,
-        allow_skip_final_au=False,
+        self, max_stem_allow_smaller=2, prune_early=False, allow_skip_final_au=False
     ):
         pseudoknots = []
         max_size = 0
