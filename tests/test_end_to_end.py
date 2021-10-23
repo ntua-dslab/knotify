@@ -65,7 +65,7 @@ HAIRPIN = os.getenv("HAIRPIN_SO", "./libhairpin.so")
             "CGCUCAACUCAUGGAGCGCACGACGGAUCACCAUCGAUUCGACAUGAG",
             "(((((..[[[[[[))))).....((((((......)))))).]]]]]]",
             {"allow_ug": True},
-            {"hairpin_grammar": HAIRPIN, "allow_ug": True},
+            {"hairpin_grammar": HAIRPIN, "hairpin_allow_ug": True},
         ),
         (
             "hairpin fixes pseudoknot (disabled)",
@@ -86,7 +86,7 @@ HAIRPIN = os.getenv("HAIRPIN_SO", "./libhairpin.so")
             "AGUUCUCCUUAGAGUGUGUGUUGUUUACCCAACGCACUGUCCCUAUGGGGGGCCAACAUAGGUCCA",
             ".(((((((.......((((((((......))))))))....[[[[[)))))))....]]]]]....",
             {"allow_ug": True},
-            {"hairpin_grammar": HAIRPIN, "allow_ug": True},
+            {"hairpin_grammar": HAIRPIN, "hairpin_allow_ug": True},
         ),
         # TODO(akolaitis): fix this
         # (
