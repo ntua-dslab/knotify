@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 import sys
 import logging
@@ -45,7 +46,9 @@ def main():
 
     for loop, idx in enumerate(only):
         case = cases[idx]
+        start = datetime.now()
         results = get_results(case["case"].lower(), **config)
+        duration = datetime.now() - start
         predictions = results[["dot_bracket", "energy", "stems"]].to_dict(
             orient="records"
         )
@@ -73,11 +76,12 @@ def main():
         out["totals"]["truth_in_candidates"] += truth_in_candidates
 
         LOG.info(
-            "%d %s%s: %s -- %s",
+            "%d %s%s: %s -- %.2f seconds -- %s",
             loop,
             "PASS" if new_correct else "FAIL",
             " (FOUND)" if truth_in_candidates else "",
             case["case"],
+            duration.total_seconds(),
             confusion_matrix,
         )
         LOG.debug("Results so far: %s", out["totals"])
@@ -105,6 +109,7 @@ def main():
                 # scores
                 "correct_core_stems": correct_core_stems,
                 "confusion_matrix": ", ".join(str(x) for x in confusion_matrix),
+                "duration": duration.total_seconds(),
             }
         )
 
