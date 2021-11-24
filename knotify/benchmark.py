@@ -18,6 +18,7 @@ def main():
     parser.add_argument("--only", type=int, nargs="*")
     parser.add_argument("--correct-stems-slack", type=int, default=0)
     parser.add_argument("--verbose", action="store_true", default=False)
+    parser.add_argument("--include-candidates", action="store_true", default=False)
     args = parser.parse_args()
 
     config = config_from_arguments(args)
@@ -49,10 +50,10 @@ def main():
         start = datetime.now()
         results = get_results(case["case"].lower(), **config)
         duration = datetime.now() - start
-        predictions = results[["dot_bracket", "energy", "stems"]].to_dict(
+        candidates = results[["dot_bracket", "energy", "stems"]].to_dict(
             orient="records"
         )
-        dot_bracket = predictions[0]["dot_bracket"]
+        dot_bracket = candidates[0]["dot_bracket"]
 
         new_correct = case["truth"] == dot_bracket
         if "pred" in case:
@@ -67,7 +68,7 @@ def main():
         confusion_matrix = scoring.get_confusion_matrix(
             case["truth"], dot_bracket, slack=0
         )
-        truth_in_candidates = case["truth"] in [p["dot_bracket"] for p in predictions]
+        truth_in_candidates = case["truth"] in [p["dot_bracket"] for p in candidates]
 
         out["totals"]["new_correct"] += new_correct
         out["totals"]["correct"] += correct
@@ -94,23 +95,24 @@ def main():
                 case["truth"],
             )
 
-        out["results"].append(
-            {
-                # case data
-                **case,
-                "new_pred": dot_bracket,
-                # checks
-                "new_correct": new_correct,
-                "correct": correct,
-                "same_prediction": same_prediction,
-                "truth_in_candidates": truth_in_candidates,
-                # results
-                "results": predictions,
-                # scores
-                "correct_core_stems": correct_core_stems,
-                "confusion_matrix": ", ".join(str(x) for x in confusion_matrix),
-                "duration": duration.total_seconds(),
-            }
-        )
+        item = {
+            # case data
+            **case,
+            "new_pred": dot_bracket,
+            # checks
+            "new_correct": new_correct,
+            "correct": correct,
+            "same_prediction": same_prediction,
+            "truth_in_candidates": truth_in_candidates,
+            # scores
+            "correct_core_stems": correct_core_stems,
+            "confusion_matrix": ", ".join(str(x) for x in confusion_matrix),
+            "duration": duration.total_seconds(),
+        }
+
+        if args.include_candidates:
+            item["candidates"] = candidates
+
+        out["results"].append(item)
 
     print(json.dumps(out, indent=2))
