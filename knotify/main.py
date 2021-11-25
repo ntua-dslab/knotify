@@ -13,6 +13,8 @@ from knotify.parsers.base import BaseParser
 from knotify.parsers.yaep import YaepParser
 from knotify.parsers.bruteforce import BruteForceParser
 
+from knotify.foreign import ipknot
+
 
 def get_results(
     sequence: str,
@@ -28,6 +30,8 @@ def get_results(
     max_hairpins_per_loop: int = hairpin.MAX_HAIRPINS_PER_LOOP,
     max_hairpin_bulge: int = hairpin.MAX_HAIRPIN_BULGE,
     energy: BaseEnergy = ViennaEnergy(),
+    *args,
+    **kwargs,
 ) -> pd.DataFrame:
     """
     Analyze RNA sequence, and predict structure. Return data frame of results
@@ -112,9 +116,15 @@ def argument_parser() -> argparse.ArgumentParser:
         "--max-hairpin-bulge", type=int, default=hairpin.MAX_HAIRPIN_BULGE
     )
 
+    # energy arguments
     parser.add_argument("--energy", choices=["vienna", "pkenergy"], default="vienna")
     parser.add_argument("--pkenergy", default="./libpkenergy.so")
     parser.add_argument("--pkenergy-config-dir", default="pkenergy/hotknots/params")
+
+    # overrides for other algorithms
+    parser.add_argument("--algorithm", choices=["knotify", "ipknot"], default="knotify")
+    parser.add_argument("--ipknot-executable", default="ipknot")
+
     return parser
 
 
@@ -139,7 +149,13 @@ def config_from_arguments(args: argparse.Namespace) -> dict:
     elif args.energy == "pkenergy":
         energy = PKEnergy(args.pkenergy, args.pkenergy_config_dir)
 
+    if args.algorithm == "knotify":
+        algorithm = get_results
+    elif args.algorithm == "ipknot":
+        algorithm = ipknot.get_results
+
     return {
+        "algorithm": algorithm,
         "parser": parser,
         "csv": args.csv,
         "allow_ug": args.allow_ug,
@@ -153,6 +169,7 @@ def config_from_arguments(args: argparse.Namespace) -> dict:
         "max_hairpin_bulge": args.max_hairpin_bulge,
         "max_hairpins_per_loop": args.max_hairpins_per_loop,
         "energy": energy,
+        "ipknot_executable": args.ipknot_executable,
     }
 
 
@@ -164,8 +181,11 @@ def main():
 
     args = parser.parse_args()
 
+    config = config_from_arguments(args)
+    algorithm = config["algorithm"]
+
     start = datetime.now()
-    results = get_results(sequence=args.sequence.lower(), **config_from_arguments(args))
+    results = algorithm(sequence=args.sequence.lower(), **config)
     duration = datetime.now() - start
 
     if args.results_csv:

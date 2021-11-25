@@ -22,6 +22,7 @@ def main():
     args = parser.parse_args()
 
     config = config_from_arguments(args)
+    algorithm = config["algorithm"]
     if args.verbose:
         logging.basicConfig(level=logging.DEBUG)
 
@@ -48,7 +49,7 @@ def main():
     for loop, idx in enumerate(only):
         case = cases[idx]
         start = datetime.now()
-        results = get_results(case["case"].lower(), **config)
+        results = algorithm(case["case"].lower(), **config)
         duration = datetime.now() - start
         candidates = results[["dot_bracket", "energy", "stems"]].to_dict(
             orient="records"

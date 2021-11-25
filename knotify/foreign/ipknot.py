@@ -58,15 +58,18 @@ def get_results(sequence: str, ipknot_executable: str, *args, **kwargs):
     ..............((((((........)))))).............
     ```
     """
-    with tempfile.TemporaryNamedFile() as f:
-        f.write(b"> case\n{}".format(sequence))
-
-    cmd = [ipknot_executable, "-E", f.name]
-    p = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    with tempfile.NamedTemporaryFile() as f:
+        f.write("> case\n{}".format(sequence.upper()).encode())
+        f.flush()
+        cmd = [ipknot_executable, "-E", f.name]
+        p = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     if p.returncode != 0:
         LOG.warning(
-            "ipknot invocation %s failed with return code %d", cmd, p.returncode
+            "ipknot invocation %s for %s failed with return code %d",
+            cmd,
+            sequence,
+            p.returncode,
         )
 
     return pd.DataFrame([parse_ipknot_output(p.stdout.decode())])
