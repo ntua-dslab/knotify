@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from knotify.main import get_results
+from knotify.algorithm.knotify import Knotify
 from tests.utils import for_each_parser
 
 HAIRPIN = os.getenv("HAIRPIN_SO", "./libhairpin.so")
@@ -107,7 +107,7 @@ def test_end_to_end(
     }
     config.update(test_params)
 
-    results = get_results(sequence, **config)
+    results = Knotify().get_results(sequence, **config)
     assert results.loc[0].dot_bracket == result
 
 
@@ -144,4 +144,4 @@ def test_exploration(parser, library_path, name, sequence, candidate, test_param
     }
     config.update(test_params)
 
-    assert candidate in get_results(sequence, **config).dot_bracket.unique()
+    assert candidate in Knotify().get_results(sequence, **config).dot_bracket.unique()
