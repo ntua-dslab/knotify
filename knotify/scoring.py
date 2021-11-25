@@ -160,13 +160,16 @@ def get_core_stem_indices(dot_bracket: str):
     return left_core[0], right_core[0], left_core[1], right_core[1]
 
 
-def get_correct_core_stems(truth: str, pred: str, slack: int = 0):
+def get_correct_core_stems(truth: str, pred: str, slack: int = 0) -> int:
     """
     Returns number of correct core stems for the prediction. If there is
     pseudoknot in the predicted dot bracket, a ValueError is raised.
     """
-    tstems = get_core_stem_indices(truth)
-    pstems = get_core_stem_indices(pred)
+    try:
+        tstems = get_core_stem_indices(truth)
+        pstems = get_core_stem_indices(pred)
+    except IndexError:
+        return 0
 
     left_ok = abs(tstems[0] - pstems[0]) + abs(tstems[2] - pstems[2]) <= slack
     right_ok = abs(tstems[1] - pstems[1]) + abs(tstems[3] - pstems[3]) <= slack

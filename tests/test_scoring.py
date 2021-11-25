@@ -253,6 +253,12 @@ def test_confusion_matrix(
             1,
             0,
         ),
+        (
+            "..([.)]..",
+            "..((...))",
+            0,
+            0,
+        ),
     ],
 )
 def test_correct_core_stems(truth: str, pred: str, slack: int, result: int):
