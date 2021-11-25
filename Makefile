@@ -8,7 +8,8 @@ libraries: grammars energies
 # Dependencies
 
 deps:
-	sudo apt-get install virtualenv git gcc make g++ build-essential bison libgsl23
+	sudo apt-get update
+	sudo apt-get install -y virtualenv git gcc make g++ build-essential bison libgsl23
 
 #####################################################
 # YAEP
