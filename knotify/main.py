@@ -17,7 +17,6 @@ from knotify.parsers.bruteforce import BruteForceParser
 def get_results(
     sequence: str,
     parser: BaseParser,
-    allow_ug: bool = False,
     allow_skip_final_au: bool = False,
     csv: str = None,
     max_stem_allow_smaller: int = 1,
