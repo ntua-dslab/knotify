@@ -137,22 +137,3 @@ class StringAnalyser(object):
         pknot.right_loop_stems = right_stem_indices
 
         return pknot
-
-    def _get_no_stems(self, str1, str2):
-        """Given two strings, it returns the number of consequent stems
-        counting from the beggining of the two
-
-        :param str str1: the first string
-        :param str str2: the second string
-
-        :return: the number of stems
-        :rtype: int
-        """
-        count = 0
-        no_iter = min(len(str1), len(str2))
-        for i in range(0, no_iter):
-            if (str1[i] + str2[i]) in ["au", "ua", "gc", "cg", "ug", "gu"]:
-                count += 1
-            else:
-                break
-        return count
