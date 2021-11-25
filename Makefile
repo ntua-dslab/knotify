@@ -79,5 +79,8 @@ clean-pkenergy:
 clean-yaep:
 	rm -rf $(YAEP_DIR)
 
+clean-ipknot:
+	rm -rf $(IPKNOT_DIR)
+
 clean-venv:
 	rm -rf $(VENV_DIR) .pytest_cache **.egg-info .eggs
