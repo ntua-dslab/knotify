@@ -18,5 +18,7 @@ energy_stem*/
 **.so
 .yaep
 .venv
+.ipknot
+**.deb
 
 **.log
