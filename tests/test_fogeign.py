@@ -1,6 +1,6 @@
 import pytest
 
-from knotify.foreign import ipknot
+from knotify.algorithm import ipknot
 
 IPKNOT_ENERGY = "> case (e=-20.432)\n\n.()."
 IPKNOT_E_ENERGY = "> case (e=-1.6e+20)\n\n.().\n"

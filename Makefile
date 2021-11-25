@@ -8,7 +8,8 @@ libraries: grammars energies
 # Dependencies
 
 deps:
-	sudo apt-get install virtualenv git gcc make g++ build-essential bison libgsl23
+	sudo apt-get update
+	sudo apt-get install -y virtualenv git gcc make g++ build-essential bison libgsl23
 
 #####################################################
 # YAEP
@@ -49,9 +50,25 @@ $(VENV_DIR)/bin/rna_analysis: setup.py setup.cfg
 	$(VENV_DIR)/bin/pip install -e . -r wheel-requirements.txt -r dev-requirements.txt
 
 #####################################################
+# IPKnot
+
+IPKNOT_DIR = .ipknot
+
+ipknot: $(IPKNOT_DIR)/ipknot
+
+ipknot-deps:
+	sudo apt-get update
+	wget https://www.tbi.univie.ac.at/RNA/download/ubuntu/ubuntu_20_04/viennarna-dev_2.5.0-1_amd64.deb -O viennarna.deb
+	sudo apt-get install -y ./viennarna.deb cmake build-essential pkg-config libltdl-dev libglpk-dev liblz4-dev
+
+$(IPKNOT_DIR)/ipknot: ipknot-deps
+	git clone https://github.com/satoken/ipknot --depth 1 $(IPKNOT_DIR)
+	cd $(IPKNOT_DIR) && cmake . && make -j
+
+#####################################################
 # Clean
 
-clean: clean-yaep clean-venv clean-libs clean-pkenergy
+clean: clean-yaep clean-venv clean-libs clean-pkenergy clean-ipknot
 
 clean-libs:
 	rm -rf **.so
@@ -61,6 +78,9 @@ clean-pkenergy:
 
 clean-yaep:
 	rm -rf $(YAEP_DIR)
+
+clean-ipknot:
+	rm -rf $(IPKNOT_DIR)
 
 clean-venv:
 	rm -rf $(VENV_DIR) .pytest_cache **.egg-info .eggs
