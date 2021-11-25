@@ -5,7 +5,7 @@ import logging
 
 import yaml
 
-from knotify.main import get_results, argument_parser, config_from_arguments
+from knotify.main import argument_parser, config_from_arguments
 from knotify import scoring
 
 
@@ -49,7 +49,7 @@ def main():
     for loop, idx in enumerate(only):
         case = cases[idx]
         start = datetime.now()
-        results = algorithm(case["case"].lower(), **config)
+        results = algorithm.get_results(case["case"].lower(), **config)
         duration = datetime.now() - start
         candidates = results[["dot_bracket", "energy", "stems"]].to_dict(
             orient="records"
