@@ -53,7 +53,7 @@ def argument_parser() -> argparse.ArgumentParser:
 
     # overrides for other algorithms
     parser.add_argument("--algorithm", choices=["knotify", "ipknot"], default="knotify")
-    parser.add_argument("--ipknot-executable", default="ipknot")
+    parser.add_argument("--ipknot-executable", default="./.ipknot/ipknot")
 
     return parser
 
