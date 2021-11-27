@@ -10,9 +10,9 @@ IPKNOT_NO_ENERGY = "> case\n\n.().\n"
 @pytest.mark.parametrize(
     "stdout, result",
     [
-        (IPKNOT_ENERGY, {"dot_bracket": ".().", "stems": -1, "energy": -20.432}),
-        (IPKNOT_E_ENERGY, {"dot_bracket": ".().", "stems": -1, "energy": -1.6e20}),
-        (IPKNOT_NO_ENERGY, {"dot_bracket": ".().", "stems": -1, "energy": 1000}),
+        (IPKNOT_ENERGY, {"dot_bracket": ".().", "stems": 2, "energy": -20.432}),
+        (IPKNOT_E_ENERGY, {"dot_bracket": ".().", "stems": 2, "energy": -1.6e20}),
+        (IPKNOT_NO_ENERGY, {"dot_bracket": ".().", "stems": 2, "energy": 1000}),
     ],
 )
 def test_ipknot_parse(stdout, result):

@@ -31,8 +31,7 @@ def parse_ipknot_output(stdout: str) -> dict:
         LOG.warning("failed to parse energy from %s", lines)
 
     return {
-        "dot_bracket": lines[-1],
-        "stems": -1,  # TODO: count '([])' occurences
+        "stems": len(dot_bracket) - sum(x == "." for x in dot_bracket),
         "energy": energy,
     }
 
