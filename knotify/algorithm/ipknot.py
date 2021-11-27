@@ -13,6 +13,31 @@ LOG = logging.getLogger(__name__)
 ENERGY_REGEX = re.compile(r"^> case\s*\(e=(.*)\)$")
 
 
+def normalize_dot_bracket(bracket: str) -> str:
+    """
+    Return a normalized version of the dot bracket. First pseudoknot pair
+    always starts with a parenthesis.
+
+    ```
+    normalize_dot_bracket("..((..[[[..)).]]].") == "..((..[[[..)).]]]."
+    normalize_dot_bracket("..[[..(((..]].))).") == "..((..[[[..)).]]]."
+    ```
+    """
+    if "[" not in bracket or "(" not in bracket:
+        return bracket
+    if bracket.index("[") > bracket.index("("):
+        return bracket
+
+    return (
+        bracket.replace("[", "A")
+        .replace("]", "B")
+        .replace("(", "[")
+        .replace(")", "]")
+        .replace("A", "(")
+        .replace("B", ")")
+    )
+
+
 def parse_ipknot_output(stdout: str) -> dict:
     """
     Parse output of ipknot execution, return an object of the following form:
@@ -30,7 +55,9 @@ def parse_ipknot_output(stdout: str) -> dict:
         energy = 1000
         LOG.warning("failed to parse energy from %s", lines)
 
+    dot_bracket = normalize_dot_bracket(lines[-1])
     return {
+        "dot_bracket": dot_bracket,
         "stems": len(dot_bracket) - sum(x == "." for x in dot_bracket),
         "energy": energy,
     }
