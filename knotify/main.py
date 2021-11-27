@@ -4,6 +4,7 @@ from datetime import datetime
 from knotify import hairpin
 from knotify.algorithm.ipknot import IPKnot
 from knotify.algorithm.knotify import Knotify
+from knotify.algorithm.knotty import Knotty
 from knotify.energy.vienna import ViennaEnergy
 from knotify.energy.pkenergy import PKEnergy
 from knotify.parsers.yaep import YaepParser
@@ -52,8 +53,11 @@ def argument_parser() -> argparse.ArgumentParser:
     parser.add_argument("--pkenergy-config-dir", default="pkenergy/hotknots/params")
 
     # overrides for other algorithms
-    parser.add_argument("--algorithm", choices=["knotify", "ipknot"], default="knotify")
+    parser.add_argument(
+        "--algorithm", choices=["knotify", "ipknot", "knotty"], default="knotify"
+    )
     parser.add_argument("--ipknot-executable", default="./.ipknot/ipknot")
+    parser.add_argument("--knotty-executable", default="./.knotty/knotty")
 
     return parser
 
@@ -69,20 +73,25 @@ def config_from_arguments(args: argparse.Namespace) -> dict:
         "min_window_size": 2 * args.min_loop_size + 4,
         "allow_ug": args.allow_ug,
     }
+    parser = None
     if args.parser == "yaep":
         parser = YaepParser(args.yaep_library_path, **rna_parser_args)
     elif args.parser == "bruteforce":
         parser = BruteForceParser(args.bruteforce_library_path, **rna_parser_args)
 
+    energy = None
     if args.energy == "vienna":
         energy = ViennaEnergy()
     elif args.energy == "pkenergy":
         energy = PKEnergy(args.pkenergy, args.pkenergy_config_dir)
 
+    algorithm = None
     if args.algorithm == "knotify":
         algorithm = Knotify()
     elif args.algorithm == "ipknot":
         algorithm = IPKnot()
+    elif args.algorithm == "knotty":
+        algorithm = Knotty()
 
     return {
         "algorithm": algorithm,
@@ -100,6 +109,7 @@ def config_from_arguments(args: argparse.Namespace) -> dict:
         "max_hairpins_per_loop": args.max_hairpins_per_loop,
         "energy": energy,
         "ipknot_executable": args.ipknot_executable,
+        "knotty_executable": args.knotty_executable,
     }
 
 

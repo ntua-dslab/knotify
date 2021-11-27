@@ -66,9 +66,23 @@ $(IPKNOT_DIR)/ipknot: ipknot-deps
 	cd $(IPKNOT_DIR) && cmake . && make -j
 
 #####################################################
+# Knotty
+
+KNOTTY_DIR = .knotty
+
+knotty: $(KNOTTY_DIR)/knotty
+
+knotty-deps:
+	sudo apt-get install -y cmake
+
+$(KNOTTY_DIR)/knotty: knotty-deps
+	git clone https://github.com/HosnaJabbari/Knotty --depth 1 $(KNOTTY_DIR)
+	cd $(KNOTTY_DIR) && cmake . && make -j
+
+#####################################################
 # Clean
 
-clean: clean-yaep clean-venv clean-libs clean-pkenergy clean-ipknot
+clean: clean-yaep clean-venv clean-libs clean-pkenergy clean-ipknot clean-knotty
 
 clean-libs:
 	rm -rf **.so
@@ -79,8 +93,11 @@ clean-pkenergy:
 clean-yaep:
 	rm -rf $(YAEP_DIR)
 
+clean-venv:
+	rm -rf $(VENV_DIR) .pytest_cache **.egg-info .eggs
+
 clean-ipknot:
 	rm -rf $(IPKNOT_DIR)
 
-clean-venv:
-	rm -rf $(VENV_DIR) .pytest_cache **.egg-info .eggs
+clean-knotty:
+	rm -rf $(KNOTTY_DIR)
