@@ -37,3 +37,20 @@ KNOTTY_OUTPUT_ALL = "Seq: AUGAAAAG\nRES: .([{})].  -3.21\n"
 )
 def test_knotty_parse(stdout, result):
     assert knotty.parse_knotty_output(stdout) == result
+
+
+@pytest.mark.parametrize(
+    "algorithm, config",
+    [
+        (knotty.Knotty(), {"knotty_executable": "./.knotty/knotty"}),
+        (ipknot.IPKnot(), {"ipknot_executable": "./.ipknot/ipknot"}),
+    ],
+)
+def test_foreign_smoke(algorithm, config):
+    sequence = "GGCACGAUCGGGCUCGCUGCCUUUUCGUCCGAGAGCUCGAA"
+    results = algorithm.get_results(sequence, **config)
+
+    for _, r in results.iterrows():
+        assert isinstance(r.dot_bracket, str) and len(r.dot_bracket) == len(sequence)
+        assert isinstance(r.energy, float)
+        assert isinstance(r.stems, int)

@@ -15,7 +15,7 @@ jobs:
         with:
           python-version: 3.8
       - name: Build package
-        run: make deps && make -j
+        run: make deps && make -j && make knotty ipknot
       - name: Check formatting
         run: .venv/bin/black . --check
       - name: Test binary
