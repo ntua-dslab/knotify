@@ -37,9 +37,7 @@ def main():
     out = {
         "results": [],
         "totals": {
-            "new_correct": 0,
             "correct": 0,
-            "same_prediction": 0,
             "correct_core_stems": 0,
             "truth_in_candidates": 0,
             "count": len(only),
@@ -56,12 +54,7 @@ def main():
         )
         dot_bracket = candidates[0]["dot_bracket"]
 
-        new_correct = case["truth"] == dot_bracket
-        if "pred" in case:
-            correct = case["pred"] == case["truth"]
-            same_prediction = case["pred"] == dot_bracket
-        else:
-            correct, same_prediction = 0, 0
+        correct = case["truth"] == dot_bracket
 
         correct_core_stems = scoring.get_correct_core_stems(
             case["truth"], dot_bracket, slack=args.correct_stems_slack
@@ -71,16 +64,14 @@ def main():
         )
         truth_in_candidates = case["truth"] in [p["dot_bracket"] for p in candidates]
 
-        out["totals"]["new_correct"] += new_correct
         out["totals"]["correct"] += correct
-        out["totals"]["same_prediction"] += same_prediction
         out["totals"]["correct_core_stems"] += correct_core_stems == 2
         out["totals"]["truth_in_candidates"] += truth_in_candidates
 
         LOG.info(
             "%d %s%s: %s -- %.2f seconds -- %s",
             loop,
-            "PASS" if new_correct else "FAIL",
+            "PASS" if correct else "FAIL",
             " (FOUND)" if truth_in_candidates else "",
             case["case"],
             duration.total_seconds(),
@@ -88,7 +79,7 @@ def main():
         )
         LOG.debug("Results so far: %s", out["totals"])
 
-        if not new_correct:
+        if not correct:
             LOG.debug(
                 "Dot bracket mismatch:\nSEQ: %s\nPRD: %s\nGND: %s",
                 case["case"],
@@ -99,11 +90,9 @@ def main():
         item = {
             # case data
             **case,
-            "new_pred": dot_bracket,
+            "pred": dot_bracket,
             # checks
-            "new_correct": new_correct,
             "correct": correct,
-            "same_prediction": same_prediction,
             "truth_in_candidates": truth_in_candidates,
             # scores
             "correct_core_stems": correct_core_stems,
