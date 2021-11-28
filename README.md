@@ -3,7 +3,7 @@ RNA secondary structure prediction engine
 
 The monorepo provides a grammar based algorithm to  predict the   pseudoknots patters of the secondary structure of any RNA sequence.
 
-Authors: Andrikos Christos, Makris Evaggelos, Pavlatos Christos, Rassias Georgios, Aggelos Kolaitis
+Authors: Andrikos Christos, Makris Evaggelos, Pavlatos Christos, Rassias Georgios, Angelos Kolaitis
 
 Implementation details
 ----------------------
