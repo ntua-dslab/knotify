@@ -27,6 +27,8 @@ from knotify import hairpin
 from knotify.algorithm.ipknot import IPKnot
 from knotify.algorithm.knotify import Knotify
 from knotify.algorithm.knotty import Knotty
+from knotify.algorithm.ihfold import IHFold
+from knotify.algorithm.hotknots import HotKnots
 from knotify.energy.vienna import ViennaEnergy
 from knotify.energy.pkenergy import PKEnergy
 from knotify.parsers.yaep import YaepParser
@@ -76,10 +78,16 @@ def argument_parser() -> argparse.ArgumentParser:
 
     # overrides for other algorithms
     parser.add_argument(
-        "--algorithm", choices=["knotify", "ipknot", "knotty"], default="knotify"
+        "--algorithm",
+        choices=["knotify", "ipknot", "knotty", "hotknots", "ihfold"],
+        default="knotify",
     )
     parser.add_argument("--ipknot-executable", default="./.ipknot/ipknot")
     parser.add_argument("--knotty-executable", default="./.knotty/knotty")
+    parser.add_argument(
+        "--ihfold-executable", default="./.iterative-hfold/HFold_iterative"
+    )
+    parser.add_argument("--hotknots-dir", default="./.hotknots/HotKnots_v2.0")
 
     return parser
 
@@ -114,6 +122,10 @@ def config_from_arguments(args: argparse.Namespace) -> dict:
         algorithm = IPKnot()
     elif args.algorithm == "knotty":
         algorithm = Knotty()
+    elif args.algorithm == "ihfold":
+        algorithm = IHFold()
+    elif args.algorithm == "hotknots":
+        algorithm = HotKnots()
 
     return {
         "algorithm": algorithm,
@@ -132,6 +144,8 @@ def config_from_arguments(args: argparse.Namespace) -> dict:
         "energy": energy,
         "ipknot_executable": args.ipknot_executable,
         "knotty_executable": args.knotty_executable,
+        "ihfold_executable": args.ihfold_executable,
+        "hotknots_dir": args.hotknots_dir,
     }
 
 

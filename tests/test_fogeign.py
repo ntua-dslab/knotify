@@ -24,6 +24,8 @@ import pytest
 
 from knotify.algorithm import ipknot
 from knotify.algorithm import knotty
+from knotify.algorithm import ihfold
+from knotify.algorithm import hotknots
 
 IPKNOT_ENERGY = "> case (e=-20.432)\n\n.()."
 IPKNOT_E_ENERGY = "> case (e=-1.6e+20)\n\n.().\n"
@@ -61,11 +63,78 @@ def test_knotty_parse(stdout, result):
     assert knotty.parse_knotty_output(stdout) == result
 
 
+IHFOLD_OUTPUT = "Seq: AUGAAAG\nRES: .([.)].  -3.2\n"
+IHFOLD_OUTPUT_ALL = "Seq: AUGAAAAG\nRES: .([{})].  -3.21\n"
+
+
+@pytest.mark.parametrize(
+    "stdout, result",
+    [
+        (IHFOLD_OUTPUT, {"dot_bracket": ".([.)].", "stems": 4, "energy": -3.2}),
+        (IHFOLD_OUTPUT_ALL, {"dot_bracket": ".([{})].", "stems": 6, "energy": -3.21}),
+    ],
+)
+def test_ihfold_parse(stdout, result):
+    assert ihfold.parse_ihfold_output(stdout) == result
+
+
+HOTKNOTS_OUTPUT = (
+    "Total number of RNA structures: 1\nSeq: AUGAAAG\nS0:  .([.)].\t-3.2\n"
+)
+HOTKNOTS_OUTPUT_ALL = (
+    "Total number of RNA structures: 1\nSeq: AUGAAAG\nS0:  .([{})].\t-3.21\n"
+)
+HOTKNOTS_HARD = """Total number of RNA structures: 20
+Seq: GGCACGAUCGGGCUCGCUGCCUUUUCGUCCGAGAGCUCGAA
+S0:  ((([[[[{{{{{{{{)))......]]]]....}}}}}}}}.	-10.16
+S1:  ...(((([[[[[[[[.........))))....]]]]]]]].	-8.73
+S2:  .......((((((((...(.(.....).)...)))))))).	-8.44
+S3:  ((((........[[[[.))))........]]]]........	-7.97
+S4:  .......((((((((.................)))))))).	-7.84
+S5:  ((([[[[..[[[[..)))]]]]..]]]].(((....)))..	-7.61
+S6:  ((((...[[[[[[[[..))))...........]]]]]]]].	-7.45
+S7:  ((((....[[[[{{{{.))))..]]]]..}}}}........	-7.33
+S8:  (((....((((((.............))))))..)))....	-6.89
+S9:  .......((((((..[[[........)))))).]]].....	-6.55
+S10:  (((((((......))).))))..((((..........))))	-6.47
+S11:  (((((((..((((.....))))..))))......)))....	-6.31
+S12:  ...((((..((((.....))))..)))).(((....)))..	-6.28
+S13:  ((((........[[[[.))))..((((..]]]]....))))	-6.22
+S14:  ((((....[[[[.....))))..]]]]..(((....)))..	-5.65
+S15:  .......((((((.............)))))).........	-5.58
+S16:  (((......[[[[..)))]]]].((((..........))))	-5.00
+S17:  ...((((..((((..[[[))))..)))).....]]].....	-4.66
+S18:  ((((...[[[[[[....)))).....]]]]]].........	-4.59
+S19:  .........((((..[[[)))).((((......]]].))))	-4.55
+"""
+
+
+@pytest.mark.parametrize(
+    "stdout, result",
+    [
+        (
+            HOTKNOTS_HARD,
+            {
+                "dot_bracket": "((([[[[{{{{{{{{)))......]]]]....}}}}}}}}.",
+                "stems": 30,
+                "energy": -10.16,
+            },
+        ),
+        (HOTKNOTS_OUTPUT, {"dot_bracket": ".([.)].", "stems": 4, "energy": -3.2}),
+        (HOTKNOTS_OUTPUT_ALL, {"dot_bracket": ".([{})].", "stems": 6, "energy": -3.21}),
+    ],
+)
+def test_hotknots_parse(stdout, result):
+    assert hotknots.parse_hotknots_output(stdout) == result
+
+
 @pytest.mark.parametrize(
     "algorithm, config",
     [
         (knotty.Knotty(), {"knotty_executable": "./.knotty/knotty"}),
         (ipknot.IPKnot(), {"ipknot_executable": "./.ipknot/ipknot"}),
+        (hotknots.HotKnots(), {"hotknots_dir": "./.hotknots/HotKnots_v2.0"}),
+        (ihfold.IHFold(), {"ihfold_executable": "./.iterative-hfold/HFold_iterative"}),
     ],
 )
 def test_foreign_smoke(algorithm, config):
