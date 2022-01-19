@@ -78,9 +78,14 @@ def main():
 
         correct = case["truth"] == dot_bracket
 
-        correct_core_stems = scoring.get_correct_core_stems(
-            case["truth"], dot_bracket, slack=args.correct_stems_slack
-        )
+        try:
+            correct_core_stems = scoring.get_correct_core_stems(
+                case["truth"], dot_bracket, slack=args.correct_stems_slack
+            )
+        except ValueError as e:
+            LOG.exception("Failed to retrieve number of correct core stems: %s", e)
+            correct_core_stems = 0
+
         confusion_matrix = scoring.get_confusion_matrix(
             case["truth"], dot_bracket, slack=0
         )
