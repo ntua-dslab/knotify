@@ -21,6 +21,8 @@ energy_stem*/
 .ipknot
 .knotty
 .hotknots
+.iterative-hfold
 **.deb
 
 **.log
+**/logfile.txt

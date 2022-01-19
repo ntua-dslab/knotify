@@ -1,4 +1,4 @@
-.PHONY: venv grammars clean clean-yaep clean-venv deps hotknots
+.PHONY: venv grammars clean clean-yaep clean-venv deps
 
 all: libraries venv
 
@@ -101,9 +101,23 @@ $(HOTKNOTS_DIR)/HotKnots_v2.0/bin/HotKnots: hotknots-deps $(HOTKNOTS_DIR)/HotKno
 	cd $(HOTKNOTS_DIR)/HotKnots_v2.0 && make -j
 
 #####################################################
+# Iterative-HFold
+
+IHFOLD_DIR = .iterative-hfold
+
+ihfold: $(IHFOLD_DIR)/HFold_iterative
+
+ihfold-deps:
+	sudo apt-get install -y cmake
+
+$(IHFOLD_DIR)/HFold_iterative: ihfold-deps
+	git clone https://github.com/HosnaJabbari/Iterative-HFold --depth 1 $(IHFOLD_DIR)
+	cd $(IHFOLD_DIR) && cmake . && make -j
+
+#####################################################
 # Clean
 
-clean: clean-yaep clean-venv clean-libs clean-pkenergy clean-ipknot clean-knotty clean-hotknots
+clean: clean-yaep clean-venv clean-libs clean-pkenergy clean-ipknot clean-knotty clean-hotknots clean-ihfold
 
 clean-libs:
 	rm -rf **.so
@@ -125,3 +139,6 @@ clean-knotty:
 
 clean-hotknots:
 	rm -rf $(HOTKNOTS_DIR)
+
+clean-ihfold:
+	rm -rf $(IHFOLD_DIR)
