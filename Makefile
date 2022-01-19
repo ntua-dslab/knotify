@@ -1,4 +1,4 @@
-.PHONY: venv grammars clean clean-yaep clean-venv deps
+.PHONY: venv grammars clean clean-yaep clean-venv deps hotknots
 
 all: libraries venv
 
@@ -80,9 +80,30 @@ $(KNOTTY_DIR)/knotty: knotty-deps
 	cd $(KNOTTY_DIR) && cmake . && make -j
 
 #####################################################
+# HotKnots
+
+HOTKNOTS_DIR = .hotknots
+
+hotknots: $(HOTKNOTS_DIR)/HotKnots_v2.0/bin/HotKnots
+
+hotknots-deps:
+	mkdir -p $(HOTKNOTS_DIR)
+	sudo apt-get install -y libx11-dev
+
+$(HOTKNOTS_DIR)/HotKnots_v2.0.tar.gz:
+	mkdir -p $(HOTKNOTS_DIR)
+	cd $(HOTKNOTS_DIR) && wget http://www.cs.ubc.ca/labs/beta/Software/HotKnots/HotKnots_v2.0.tar.gz && tar xvzf HotKnots_v2.0.tar.gz
+
+$(HOTKNOTS_DIR)/HotKnots_v2.0/bin/HotKnots: hotknots-deps $(HOTKNOTS_DIR)/HotKnots_v2.0.tar.gz
+	cd $(HOTKNOTS_DIR)/HotKnots_v2.0/graphics && make clean
+	cd $(HOTKNOTS_DIR)/HotKnots_v2.0 && make clean
+	cd $(HOTKNOTS_DIR)/HotKnots_v2.0/graphics && make -j
+	cd $(HOTKNOTS_DIR)/HotKnots_v2.0 && make -j
+
+#####################################################
 # Clean
 
-clean: clean-yaep clean-venv clean-libs clean-pkenergy clean-ipknot clean-knotty
+clean: clean-yaep clean-venv clean-libs clean-pkenergy clean-ipknot clean-knotty clean-hotknots
 
 clean-libs:
 	rm -rf **.so
@@ -101,3 +122,6 @@ clean-ipknot:
 
 clean-knotty:
 	rm -rf $(KNOTTY_DIR)
+
+clean-hotknots:
+	rm -rf $(HOTKNOTS_DIR)
