@@ -93,8 +93,8 @@ def config_from_arguments(args: argparse.Namespace) -> dict:
         "min_dd_size": args.min_dd_size,
         "max_window_size": args.max_window_size,
         "min_window_size": args.min_window_size,
-        "max_window_size_ratio": args.min_window_size_ratio,
-        "min_window_size_ratio": args.max_window_size_ratio,
+        "max_window_size_ratio": args.max_window_size_ratio,
+        "min_window_size_ratio": args.min_window_size_ratio,
         "allow_ug": args.allow_ug,
     }
     parser = None
