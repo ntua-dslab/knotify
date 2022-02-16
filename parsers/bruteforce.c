@@ -67,6 +67,12 @@ char *detect_pseudoknots(char *sequence) {
 
   int n = strlen(sequence);
 
+  // window size is static or ratio of sequence length
+  int min_window_size =
+      s_min_window_size ? s_min_window_size : (n * s_min_window_size_ratio);
+  int max_window_size =
+      s_max_window_size ? s_max_window_size : (n * s_max_window_size_ratio);
+
   stem *all_stems = (stem *)malloc(n * n * sizeof(stem));
   stem *cs_position = all_stems;
   stem *cs_position2 = all_stems;
@@ -160,12 +166,6 @@ char *detect_pseudoknots(char *sequence) {
         ccs_position->cstem[1].left - ccs_position->cstem[0].left - 1;
     int dd_size =
         (ccs_position->cstem[0]).right - ccs_position->cstem[1].left - 1;
-
-    // window size is static or ratio of sequence length
-    int min_window_size =
-        s_min_window_size ? s_min_window_size : (n * s_min_window_size_ratio);
-    int max_window_size =
-        s_max_window_size ? s_max_window_size : (n * s_max_window_size_ratio);
 
     // TODO (akolaitis): improve this
     if (size < min_window_size || size > max_window_size ||
