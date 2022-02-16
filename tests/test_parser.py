@@ -21,7 +21,7 @@
 # SOFTWARE.
 #
 import os
-from typing import List
+from typing import Dict, List
 import itertools
 
 import pytest
@@ -41,9 +41,7 @@ from tests.utils import for_each_parser
         (3, "caaaaagaaagaaaaac", ["0,17,5,3"]),
     ],
 )
-def test_max_dd_size(
-    parser, library_path: str, dd_size: int, sequence: str, result: List[str]
-):
+def test_max_dd_size(parser, library_path: str, dd_size: int, sequence: str, result: List[str]):
     p = parser(library_path=library_path, max_dd_size=dd_size, allow_ug=False)
     assert p.detect_pseudoknots(sequence) == result
 
@@ -66,3 +64,30 @@ def test_pseudoknot_pairs(parser, library_path, A, B, allow_ug):
         assert "0,11,3,1" in result
     if combination_has_ug and not allow_ug:
         assert "0,11,3,1" not in result
+
+
+@for_each_parser("parser, library_path")
+@pytest.mark.parametrize(
+    "sequence, result",
+    [
+        ("caaaaaggaaaaac", ["0,14,5,0"]),
+        ("caaaaagagaaaaac", ["0,15,5,1"]),
+        ("caaaaagaagaaaaac", ["0,16,5,2"]),
+        ("caaaaagaaagaaaaac", ["0,17,5,3"]),
+    ],
+)
+@pytest.mark.parametrize(
+    "args",
+    [
+        {"max_window_size": 100, "min_window_size": 1},
+        {
+            "max_window_size_ratio": 1.0,
+            "min_window_size_ratio": 0,
+            "max_window_size": 0,
+            "min_window_size": 0,
+        },
+    ],
+)
+def test_window_size(parser, library_path: str, sequence: str, result: List[str], args: Dict):
+    p = parser(library_path=library_path, max_dd_size=3, allow_ug=False, **args)
+    assert p.detect_pseudoknots(sequence) == result
