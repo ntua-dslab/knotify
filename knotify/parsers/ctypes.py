@@ -69,6 +69,8 @@ class CTypesParser(BaseParser):
             ctypes.c_int(self.max_dd_size),
             ctypes.c_int(self.min_window_size),
             ctypes.c_int(self.max_window_size),
+            ctypes.c_float(self.min_window_size_ratio),
+            ctypes.c_float(self.max_window_size_ratio),
         )
 
     def detect_pseudoknots(self, sequence: str) -> list:
