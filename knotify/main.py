@@ -60,10 +60,18 @@ def argument_parser() -> argparse.ArgumentParser:
     # hairpin arguments
     parser.add_argument("--hairpin-grammar")
     parser.add_argument("--hairpin-allow-ug", default=None, action="store_true")
-    parser.add_argument("--min-hairpin-size", type=int, default=hairpin.MIN_HAIRPIN_SIZE)
-    parser.add_argument("--min-hairpin-stems", type=int, default=hairpin.MIN_HAIRPIN_STEMS)
-    parser.add_argument("--max-hairpins-per-loop", type=int, default=hairpin.MAX_HAIRPINS_PER_LOOP)
-    parser.add_argument("--max-hairpin-bulge", type=int, default=hairpin.MAX_HAIRPIN_BULGE)
+    parser.add_argument(
+        "--min-hairpin-size", type=int, default=hairpin.MIN_HAIRPIN_SIZE
+    )
+    parser.add_argument(
+        "--min-hairpin-stems", type=int, default=hairpin.MIN_HAIRPIN_STEMS
+    )
+    parser.add_argument(
+        "--max-hairpins-per-loop", type=int, default=hairpin.MAX_HAIRPINS_PER_LOOP
+    )
+    parser.add_argument(
+        "--max-hairpin-bulge", type=int, default=hairpin.MAX_HAIRPIN_BULGE
+    )
 
     # energy arguments
     parser.add_argument("--energy", choices=["vienna", "pkenergy"], default="vienna")
@@ -78,7 +86,9 @@ def argument_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--ipknot-executable", default="./.ipknot/ipknot")
     parser.add_argument("--knotty-executable", default="./.knotty/knotty")
-    parser.add_argument("--ihfold-executable", default="./.iterative-hfold/HFold_iterative")
+    parser.add_argument(
+        "--ihfold-executable", default="./.iterative-hfold/HFold_iterative"
+    )
     parser.add_argument("--hotknots-dir", default="./.hotknots/HotKnots_v2.0")
 
     return parser

@@ -41,7 +41,9 @@ from tests.utils import for_each_parser
         (3, "caaaaagaaagaaaaac", ["0,17,5,3"]),
     ],
 )
-def test_max_dd_size(parser, library_path: str, dd_size: int, sequence: str, result: List[str]):
+def test_max_dd_size(
+    parser, library_path: str, dd_size: int, sequence: str, result: List[str]
+):
     p = parser(library_path=library_path, max_dd_size=dd_size, allow_ug=False)
     assert p.detect_pseudoknots(sequence) == result
 
@@ -88,6 +90,8 @@ def test_pseudoknot_pairs(parser, library_path, A, B, allow_ug):
         },
     ],
 )
-def test_window_size(parser, library_path: str, sequence: str, result: List[str], args: Dict):
+def test_window_size(
+    parser, library_path: str, sequence: str, result: List[str], args: Dict
+):
     p = parser(library_path=library_path, max_dd_size=3, allow_ug=False, **args)
     assert p.detect_pseudoknots(sequence) == result
