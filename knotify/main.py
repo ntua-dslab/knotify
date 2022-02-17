@@ -50,8 +50,10 @@ def argument_parser() -> argparse.ArgumentParser:
     parser.add_argument("--allow-skip-final-au", default=False, action="store_true")
     parser.add_argument("--max-dd-size", default=2, type=int)
     parser.add_argument("--min-dd-size", default=0, type=int)
-    parser.add_argument("--max-loop-size", default=100, type=int)
-    parser.add_argument("--min-loop-size", default=1, type=int)
+    parser.add_argument("--max-window-size", default=204, type=int)
+    parser.add_argument("--min-window-size", default=6, type=int)
+    parser.add_argument("--max-window-size-ratio", default=0, type=float)
+    parser.add_argument("--min-window-size-ratio", default=0, type=float)
     parser.add_argument("--max-stem-allow-smaller", default=2, type=int)
     parser.add_argument("--prune-early", default=False, action="store_true")
 
@@ -99,8 +101,10 @@ def config_from_arguments(args: argparse.Namespace) -> dict:
     rna_parser_args = {
         "max_dd_size": args.max_dd_size,
         "min_dd_size": args.min_dd_size,
-        "max_window_size": 2 * args.max_loop_size + 4,
-        "min_window_size": 2 * args.min_loop_size + 4,
+        "max_window_size": args.max_window_size,
+        "min_window_size": args.min_window_size,
+        "max_window_size_ratio": args.max_window_size_ratio,
+        "min_window_size_ratio": args.min_window_size_ratio,
         "allow_ug": args.allow_ug,
     }
     parser = None

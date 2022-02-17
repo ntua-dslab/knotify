@@ -2,15 +2,15 @@
  * Copyright © 2021 Christos Pavlatos, George Rassias, Christos Andrikos,
  *                  Evangelos Makris, Aggelos Kolaitis
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of
- * this software and associated documentation files (the “Software”), to deal in
- * the Software without restriction, including without limitation the rights to
- * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
- * of the Software, and to permit persons to whom the Software is furnished to do
- * so, subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the “Software”), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -36,19 +36,25 @@ typedef struct core_stem {
   stem cstem[2];
 } core_stem;
 
-static int allow_ug;
-static int min_dd_size;
-static int max_dd_size;
-static int min_window_size;
-static int max_window_size;
+static int s_allow_ug;
+static int s_min_dd_size;
+static int s_max_dd_size;
+static int s_min_window_size;
+static int s_max_window_size;
+static float s_min_window_size_ratio;
+static float s_max_window_size_ratio;
 
 void initialize(char *_grammar_unused, int _allow_ug, int _min_dd_size,
-                int _max_dd_size, int _min_window_size, int _max_window_size) {
-  allow_ug = _allow_ug;
-  min_dd_size = _min_dd_size;
-  max_dd_size = _max_dd_size;
-  min_window_size = _min_window_size;
-  max_window_size = _max_window_size;
+                int _max_dd_size, int _min_window_size, int _max_window_size,
+                float _min_window_size_ratio, float _max_window_size_ratio) {
+  s_allow_ug = _allow_ug;
+  s_min_dd_size = _min_dd_size;
+  s_max_dd_size = _max_dd_size;
+  s_min_window_size = _min_window_size;
+  s_max_window_size = _max_window_size;
+
+  s_min_window_size_ratio = _min_window_size_ratio;
+  s_max_window_size_ratio = _max_window_size_ratio;
 
   // printf("%d/%d/%d/%d/%d\n", allow_ug, min_dd_size, max_dd_size,
   //        min_window_size, max_window_size);
@@ -60,6 +66,12 @@ char *detect_pseudoknots(char *sequence) {
   FILE *fp = open_memstream(&buffer, &size);
 
   int n = strlen(sequence);
+
+  // window size is static or ratio of sequence length
+  int min_window_size =
+      s_min_window_size ? s_min_window_size : (n * s_min_window_size_ratio);
+  int max_window_size =
+      s_max_window_size ? s_max_window_size : (n * s_max_window_size_ratio);
 
   stem *all_stems = (stem *)malloc(n * n * sizeof(stem));
   stem *cs_position = all_stems;
@@ -81,7 +93,7 @@ char *detect_pseudoknots(char *sequence) {
       break;
     case 'u':
       for (int j = i + 1; j < n; j++)
-        if ((sequence[j] == 'a') || ((sequence[j] == 'g') && allow_ug)) {
+        if ((sequence[j] == 'a') || ((sequence[j] == 'g') && s_allow_ug)) {
           cs_position->left = i;
           cs_position->right = j;
           cs_position++;
@@ -99,7 +111,7 @@ char *detect_pseudoknots(char *sequence) {
       break;
     case 'g':
       for (int j = i + 1; j < n; j++)
-        if ((sequence[j] == 'c') || ((sequence[j] == 'u') && allow_ug)) {
+        if ((sequence[j] == 'c') || ((sequence[j] == 'u') && s_allow_ug)) {
           cs_position->left = i;
           cs_position->right = j;
           cs_position++;
@@ -157,7 +169,8 @@ char *detect_pseudoknots(char *sequence) {
 
     // TODO (akolaitis): improve this
     if (size < min_window_size || size > max_window_size ||
-        dd_size < min_dd_size || dd_size > max_dd_size || left_loop_size == 0 ||
+        dd_size < s_min_dd_size || dd_size > s_max_dd_size ||
+        left_loop_size == 0 ||
         (ccs_position->cstem[0].right == ccs_position->cstem[1].right - 1)) {
       // printf("RIP! %d,%d,%d,%d\n", left, size, left_loop_size, dd_size);
 

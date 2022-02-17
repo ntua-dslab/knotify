@@ -2,15 +2,15 @@
  * Copyright © 2021 Christos Pavlatos, George Rassias, Christos Andrikos,
  *                  Evangelos Makris, Aggelos Kolaitis
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of
- * this software and associated documentation files (the “Software”), to deal in
- * the Software without restriction, including without limitation the rights to
- * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
- * of the Software, and to permit persons to whom the Software is furnished to do
- * so, subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the “Software”), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -37,13 +37,15 @@
 #define TRUE 1
 #define FALSE 0
 
-static char *input;
-static int ntok;
-static int max_dd_size;
-static int min_dd_size;
-static int max_window_size;
-static int min_window_size;
-static char *definition;
+static char *s_input;
+static int s_ntok;
+static int s_max_dd_size;
+static int s_min_dd_size;
+static int s_max_window_size;
+static int s_min_window_size;
+static float s_min_window_size_ratio;
+static float s_max_window_size_ratio;
+static char *s_definition;
 
 /*************************************************************************
  *                      GRAMMAR DEFINITION                             *
@@ -206,8 +208,8 @@ void print_node_type(struct yaep_tree_node *node) {
 
 static int read_token_func(void **attr) {
   *attr = NULL;
-  if (input[ntok]) {
-    return input[ntok++];
+  if (s_input[s_ntok]) {
+    return s_input[s_ntok++];
   } else {
     return -1;
   }
@@ -341,11 +343,11 @@ struct size *traverse_parse_tree_for_dd(struct yaep_tree_node *node) {
   switch (node->type) {
   case YAEP_ANODE:
     if ((node->val.anode.name)[0] == 'M') {
-      struct size **childSizes = malloc(max_dd_size * sizeof(struct size *));
-      for (int i = 0; i < max_dd_size; i++) {
+      struct size **childSizes = malloc(s_max_dd_size * sizeof(struct size *));
+      for (int i = 0; i < s_max_dd_size; i++) {
         childSizes[i] = traverse_parse_tree_for_dd(node->val.anode.children[i]);
       }
-      return multiCartesianProduct(childSizes, max_dd_size);
+      return multiCartesianProduct(childSizes, s_max_dd_size);
     } else if ((node->val.anode.name)[0] == 'N') {
       return traverse_parse_tree_for_dd(node->val.anode.children[0]);
     }
@@ -424,27 +426,33 @@ struct pseudoknot *traverse_parse_tree(struct yaep_tree_node *node) {
 }
 
 char *detect_pseudoknots(char *sequence) {
-  input = sequence;
+  s_input = sequence;
 
   char *buffer;
   size_t size;
   FILE *fp = open_memstream(&buffer, &size);
+  int len = strlen(sequence);
 
   // The loop variables ensure that in every outer iteration we can discard the
   // last character of the input string.
 
+  // window size is static or ratio of sequence length
+  int min_window_size =
+      s_min_window_size ? s_min_window_size : (len * s_min_window_size_ratio);
+  int max_window_size =
+      s_max_window_size ? s_max_window_size : (len * s_max_window_size_ratio);
+
   // output format is
   // start,length:leftloopsize,ddsize|leftloopsize2,ddsize2
-  for (int right = strlen(sequence) - 1; right >= min_window_size - 1;
-       right--) {
+  for (int right = len - 1; right >= min_window_size - 1; right--) {
     for (int left = right - min_window_size + 1;
          left > right - max_window_size && left >= 0; left--) {
-      ntok = left;
-      struct yaep_tree_node *root = parse(definition);
+      s_ntok = left;
+      struct yaep_tree_node *root = parse(s_definition);
       struct pseudoknot *ps = traverse_parse_tree(root);
 
       for (struct pseudoknot *i = ps; i != NULL; i = i->next) {
-        if (i->dd_size < min_dd_size) {
+        if (i->dd_size < s_min_dd_size) {
           continue;
         }
         fprintf(fp, "%d,%d,%d,%d\n", left, right - left + 1, i->left_loop_size,
@@ -453,7 +461,7 @@ char *detect_pseudoknots(char *sequence) {
     }
 
     // we finished all windows where the last character is used, now discard
-    input[right] = '\0';
+    s_input[right] = '\0';
   }
 
   fclose(fp);
@@ -461,10 +469,13 @@ char *detect_pseudoknots(char *sequence) {
 }
 
 void initialize(char *_grammar, int _allow_ug, int _min_dd_size,
-                int _max_dd_size, int _min_window_size, int _max_window_size) {
-  definition = strdup(_grammar);
-  min_dd_size = _min_dd_size;
-  max_dd_size = _max_dd_size;
-  min_window_size = _min_window_size;
-  max_window_size = _max_window_size;
+                int _max_dd_size, int _min_window_size, int _max_window_size,
+                float _min_window_size_ratio, float _max_window_size_ratio) {
+  s_definition = strdup(_grammar);
+  s_min_dd_size = _min_dd_size;
+  s_max_dd_size = _max_dd_size;
+  s_min_window_size = _min_window_size;
+  s_max_window_size = _max_window_size;
+  s_min_window_size_ratio = _min_window_size_ratio;
+  s_max_window_size_ratio = _max_window_size_ratio;
 }

@@ -36,12 +36,16 @@ class BaseParser:
         min_dd_size: int = 0,
         max_window_size: int = 100,
         min_window_size: int = 6,
+        max_window_size_ratio: float = 0,
+        min_window_size_ratio: float = 0,
     ):
         self.allow_ug = allow_ug
         self.max_dd_size = max_dd_size
         self.min_dd_size = min_dd_size
         self.max_window_size = max_window_size
         self.min_window_size = min_window_size
+        self.max_window_size_ratio = max_window_size_ratio
+        self.min_window_size_ratio = min_window_size_ratio
 
     def detect_pseudoknots(self, sequence: str) -> list:
         """
