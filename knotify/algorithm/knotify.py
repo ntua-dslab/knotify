@@ -63,6 +63,16 @@ class Knotify(BaseAlgorithm):
             allow_skip_final_au=allow_skip_final_au,
         )
 
+        if not knot_dict_list:
+            knot_dict_list = [
+                {
+                    "dot_bracket": "." * len(sequence),
+                    "left_loop_stems": 0,
+                    "right_loop_stems": 0,
+                    "dd": 0,
+                }
+            ]
+
         data = pd.DataFrame(knot_dict_list)
         if csv is not None:
             data.to_csv(csv)
