@@ -45,19 +45,23 @@ $ make deps  # install package dependencies
 $ make       # build the parser and setup the virtual environment at ./.venv
 ```
 
-Run for all cases and save result to `result.yaml`:
-
-```bash
-$ ./.venv/bin/rna_benchmark --cases cases.yaml --parser bruteforce --max-dd-size 2 --max-stem-allow-smaller 1 --allow-ug --prune-early > result.json
-$ ./.venv/bin/rna_benchmark --cases cases.yaml --parser yaep --max-dd-size 2 --max-stem-allow-smaller 1 --allow-ug --prune-early > result.json
-```
-
 ## Execute
+
+### rna_analysis
 
 For a single sequence. See `--help` for a complete list of options:
 
 ```bash
-$ ./.venv/bin/rna_analysis --parser yaep AAAAAACUAAUAGAGGGGGGACUUAGCGCCCCCCAAACCGUAACCCC
+$ ./.venv/bin/rna_analysis --sequence AAAAAACUAAUAGAGGGGGGACUUAGCGCCCCCCAAACCGUAACCCC
+```
+
+### rna_benchmark
+
+Run a benchmark for a number of cases from a YAML file, saving results in JSON format in `result.json`. See [`cases.yaml`](./cases/cases.yaml) for an example YAML file. See `--help` for a list of available options.
+
+```bash
+$ ./.venv/bin/rna_benchmark --cases cases/cases.yaml --max-dd-size 2 --max-stem-allow-smaller 1 --allow-ug --prune-early --parser bruteforce > result.json
+$ ./.venv/bin/rna_benchmark --cases cases/cases.yaml --max-dd-size 2 --max-stem-allow-smaller 1 --allow-ug --prune-early --parser yaep > result.json
 ```
 
 Run benchmark for a number of cases, print output in YAML file. See [`cases.yaml`](./cases.yaml) for an example YAML file:

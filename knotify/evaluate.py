@@ -20,20 +20,30 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-import json
-import yaml
+import sys
 
-from knotify.main import get_results, argument_parser
+import yaml
+from oslo_config import cfg
+
+from knotify import knotify
 from knotify import scoring
+
+OPTS = [
+    cfg.StrOpt("cases"),
+    cfg.IntOpt("correct-stems-slack", default=0),
+]
 
 
 def main():
-    parser = argument_parser()
-    parser.add_argument("--cases", required=True)
-    parser.add_argument("--correct-stems-slack", type=int, default=0)
-    args = parser.parse_args()
+    options = cfg.ConfigOpts()
+    options.register_cli_opts(OPTS)
+    options()
 
-    with open(args.cases, "r") as fin:
+    if not options.cases:
+        print("Missing required argument --cases")
+        sys.exit(1)
+
+    with open(options.cases, "r") as fin:
         cases = yaml.safe_load(fin.read())
 
     results, correct, no_pseudoknot = [], 0, 0
@@ -42,7 +52,7 @@ def main():
             correct_core_stems = scoring.get_correct_core_stems(
                 case["truth"],
                 case["pred"],
-                slack=args.correct_stems_slack,
+                slack=options.correct_stems_slack,
             )
         except (ValueError, IndexError):
             correct_core_stems = "invalid"
@@ -69,7 +79,7 @@ def main():
         yaml.dump(
             {
                 "config": {
-                    "correct_core_stems_slack": args.correct_stems_slack,
+                    "correct_core_stems_slack": options.correct_stems_slack,
                 },
                 "results": results,
                 "totals": {

@@ -17,6 +17,6 @@ jobs:
       - name: Build package
         run: make deps && make -j
       - name: rna_analysis
-        run: ./.venv/bin/rna_analysis AUCCUUUUCAGUUGGGCCUUCUGGUGAUGUUUCUGGCCACCCAGGAGGUCCUGAGGAAGAGGUGGACGGCCAGAUUGACU --parser yaep
+        run: ./.venv/bin/rna_analysis --sequence AUCCUUUUCAGUUGGGCCUUCUGGUGAUGUUUCUGGCCACCCAGGAGGUCCUGAGGAAGAGGUGGACGGCCAGAUUGACU
       - name: rna_benchmark
-        run: ./.venv/bin/rna_benchmark --parser yaep --cases cases/cases.yaml --verbose
+        run: ./.venv/bin/rna_benchmark --cases cases/cases.yaml --verbose

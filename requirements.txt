@@ -3,3 +3,4 @@ pandas==1.2.2
 levenshtein==0.12.0
 jinja2==3.0.3
 pyyaml==5.4.1
+oslo-config==8.8.0
