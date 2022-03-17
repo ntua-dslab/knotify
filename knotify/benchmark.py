@@ -25,36 +25,44 @@ import json
 import sys
 import logging
 
+from oslo_config import cfg
 import yaml
 
-from knotify.main import argument_parser, config_from_arguments
+from knotify import knotify
 from knotify import scoring
 
 
 LOG = logging.getLogger(__name__)
 
+OPTS = [
+    cfg.StrOpt("cases"),
+    cfg.ListOpt("only", item_type=cfg.types.Integer()),
+    cfg.IntOpt("correct-stems-slack", default=0),
+    cfg.BoolOpt("verbose", default=False),
+    cfg.BoolOpt("include_candidates", default=False),
+]
+
 
 def main():
-    parser = argument_parser()
-    parser.add_argument("--cases", required=True)
-    parser.add_argument("--only", type=int, nargs="*")
-    parser.add_argument("--correct-stems-slack", type=int, default=0)
-    parser.add_argument("--verbose", action="store_true", default=False)
-    parser.add_argument("--include-candidates", action="store_true", default=False)
-    args = parser.parse_args()
+    options = knotify.new_options()
+    options.register_cli_opts(OPTS)
+    options()
 
-    config = config_from_arguments(args)
-    algorithm = config["algorithm"]
-    if args.verbose:
+    if not options.cases:
+        print("Missing required parameter --cases")
+        sys.exit(1)
+
+    algorithm, config = knotify.from_options(options)
+    if options.verbose:
         logging.basicConfig(level=logging.DEBUG)
 
         LOG.debug("Command line: %s", sys.argv)
         LOG.debug("Run configuration: %s", config)
 
-    with open(args.cases, "r") as fin:
+    with open(options.cases, "r") as fin:
         cases = yaml.safe_load(fin.read())
 
-    only = args.only or list(range(0, len(cases)))
+    only = options.only or list(range(0, len(cases)))
 
     out = {
         "results": [],
@@ -80,7 +88,7 @@ def main():
 
         try:
             correct_core_stems = scoring.get_correct_core_stems(
-                case["truth"], dot_bracket, slack=args.correct_stems_slack
+                case["truth"], dot_bracket, slack=options.correct_stems_slack
             )
         except ValueError as e:
             LOG.exception("Failed to retrieve number of correct core stems: %s", e)
@@ -127,7 +135,7 @@ def main():
             "duration": duration.total_seconds(),
         }
 
-        if args.include_candidates:
+        if options.include_candidates:
             item["candidates"] = candidates
 
         out["results"].append(item)

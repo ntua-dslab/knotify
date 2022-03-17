@@ -20,11 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-import argparse
 import itertools
 
 import ctypes
 import pandas as pd
+from oslo_config import cfg
 
 from knotify.grammars.hairpin import generate_grammar
 
@@ -213,27 +213,36 @@ def find_hairpins(
     return pd.concat(parts, ignore_index=True)
 
 
-def main():
-    parser = argparse.ArgumentParser("rna_hairpin")
-    parser.add_argument("sequence")
-    parser.add_argument("--grammar", required=True)
-    parser.add_argument("--allow-ug", default=False, action="store_true")
-    parser.add_argument("--min-stems", default=MIN_HAIRPIN_STEMS, type=int)
-    parser.add_argument("--min-size", default=MIN_HAIRPIN_SIZE, type=int)
-    parser.add_argument("--max-per-loop", default=MAX_HAIRPINS_PER_LOOP, type=int)
-    parser.add_argument("--max-bulge", default=MAX_HAIRPIN_BULGE, type=int)
+OPTS = [
+    cfg.StrOpt("sequence"),
+    cfg.StrOpt("grammar", default="./libhairpin.so"),
+    cfg.BoolOpt("allow-ug", default=False),
+    cfg.IntOpt("min-stems", default=MIN_HAIRPIN_STEMS),
+    cfg.IntOpt("min-size", default=MIN_HAIRPIN_SIZE),
+    cfg.IntOpt("max-per-loop", default=MAX_HAIRPINS_PER_LOOP),
+    cfg.IntOpt("max-bulge", default=MAX_HAIRPIN_BULGE),
+]
 
-    args = parser.parse_args()
+
+def main():
+    options = cfg.ConfigOpts()
+    options.register_cli_opts(OPTS)
+    options()
+
+    if not options.sequence:
+        print("Missing required argument --sequence")
+        sys.exit(1)
+
     hairpin = HairpinDetector(
-        grammar=args.grammar,
-        allow_ug=args.allow_ug,
-        min_stems=args.min_stems,
-        min_size=args.min_size,
-        max_per_loop=args.max_per_loop,
-        max_bulge=args.max_bulge,
+        grammar=options.grammar,
+        allow_ug=options.allow_ug,
+        min_stems=options.min_stems,
+        min_size=options.min_size,
+        max_per_loop=options.max_per_loop,
+        max_bulge=options.max_bulge,
     )
 
-    print("\n".join(hairpin.detect_hairpins(args.sequence)))
+    print("\n".join(hairpin.detect_hairpins(options.sequence)))
 
 
 if __name__ == "__main__":
