@@ -1,5 +1,5 @@
 #
-# Copyright © 2021 Christos Pavlatos, George Rassias, Christos Andrikos,
+# Copyright © 2022 Christos Pavlatos, George Rassias, Christos Andrikos,
 #                  Evangelos Makris, Aggelos Kolaitis
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy of
