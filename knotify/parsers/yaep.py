@@ -20,8 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-import argparse
-
 from knotify.parsers.ctypes import CTypesParser
 from knotify.grammars.pseudoknot import generate_grammar
 

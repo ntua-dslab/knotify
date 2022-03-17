@@ -20,9 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-from knotify.consts import ACCEPTABLE_PAIRS as PAIRS
-
-# score should be proportional to bubble distance and length somehow ....
 
 
 def string_align(str1, str2):
