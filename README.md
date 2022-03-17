@@ -64,11 +64,9 @@ $ ./.venv/bin/rna_benchmark --cases cases/cases.yaml --max-dd-size 2 --max-stem-
 $ ./.venv/bin/rna_benchmark --cases cases/cases.yaml --max-dd-size 2 --max-stem-allow-smaller 1 --allow-ug --prune-early --parser yaep > result.json
 ```
 
-Run benchmark for a number of cases, print output in YAML file. See [`cases.yaml`](./cases.yaml) for an example YAML file:
+### Calling directly from Python code
 
-```bash
-$ ./.venv/bin/rna_benchmark --parser yaep [OPTIONS] --cases cases.yaml > results.yaml
-```
+See `scripts/00-example.py` for using `knotify` directly from Python code.
 
 ## Unit Tests
 
