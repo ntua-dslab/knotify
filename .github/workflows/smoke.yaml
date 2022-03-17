@@ -5,7 +5,7 @@ on: [push]
 
 jobs:
   test:
-    name: Python Code
+    name: Smoke tests
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
@@ -16,6 +16,8 @@ jobs:
           python-version: 3.8
       - name: Build package
         run: make deps && make -j
+      - name: python
+        run: ./.venv/bin/python ./scripts/00-example.py
       - name: rna_analysis
         run: ./.venv/bin/rna_analysis --sequence AUCCUUUUCAGUUGGGCCUUCUGGUGAUGUUUCUGGCCACCCAGGAGGUCCUGAGGAAGAGGUGGACGGCCAGAUUGACU
       - name: rna_benchmark
