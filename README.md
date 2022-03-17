@@ -66,7 +66,7 @@ $ ./.venv/bin/rna_benchmark --cases cases/cases.yaml --max-dd-size 2 --max-stem-
 
 ### Calling directly from Python code
 
-See `scripts/00-example.py` for using `knotify` directly from Python code.
+See [`scripts/00-example.py`](./scripts/00-example.py) for using `knotify` directly from Python code.
 
 ## Unit Tests
 
