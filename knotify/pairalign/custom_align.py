@@ -46,9 +46,7 @@ def bubble_align(str1, str2):
     OPEN end is the first not matching character position
     """
 
-    open_end, str1_aligned_prefix, str2_aligned_prefix = align_consecutive(
-        str1, str2
-    )  # noqa
+    open_end, str1_aligned_prefix, str2_aligned_prefix = align_consecutive(str1, str2)
 
     # if no potential gaps...
     if open_end >= len(str1) or open_end >= len(str2):

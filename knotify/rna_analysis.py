@@ -20,10 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-from time import time
-import multiprocessing
-
-from knotify.models import Pknot, OUTER, INNER
+from knotify.models import Pknot
 from knotify.pairing import (
     get_left_stem_aligned_indices,
     get_right_stem_aligned_indices,
