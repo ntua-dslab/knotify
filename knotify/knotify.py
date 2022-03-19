@@ -89,7 +89,14 @@ ALGORITHM_OPTS = [
 class ConfigOpts(cfg.ConfigOpts):
     """
     A cfg.ConfigOpts with added type-hints for the available configuration options.
+
+    Configuration can also be loaded from environment variables, using KNOTIFY_$OPTION_NAME,
+    e.g. KNOTIFY_YAEP_LIBRARY_PATH.
     """
+
+    def __init__(self, *args, **kwargs):
+        super(ConfigOpts, self).__init__(*args, **kwargs)
+        self._env_driver.get_name = lambda _, opt: "KNOTIFY_{}".format(opt.upper())
 
     # ALGORITHM_OPTS
     parser: str

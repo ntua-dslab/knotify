@@ -47,6 +47,9 @@ def main():
     #
     # options.yaep_library_path = "/opt/knotify/lib/libpseudoknot.so"
 
+    # load configuration from environment variables
+    options(args=[])
+
     # initialize the knotify engine from options
     algorithm, config = knotify.from_options(options)
 
