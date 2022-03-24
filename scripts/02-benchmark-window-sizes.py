@@ -25,7 +25,7 @@
 """
 Script:         02-benchmark-window-sizes.py
 Author:         Angelos Kolaitis <neoaggelos@gmail.com>
-Usage:          ./02-benchmark-window-sizes.py cases/new.yaml > out.csv
+Usage:          ./scripts/02-benchmark-window-sizes.py cases/new.yaml > out.csv
 Description:
     Run rna_benchmark command with variable window size limitations. Write
     results under the `results/out-{parser}-{ratio}.json`. For the current
