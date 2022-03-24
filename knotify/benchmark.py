@@ -71,6 +71,7 @@ def main():
             "correct_core_stems": 0,
             "truth_in_candidates": 0,
             "count": len(only),
+            "duration": 0,
         },
     }
 
@@ -102,6 +103,7 @@ def main():
         out["totals"]["correct"] += correct
         out["totals"]["correct_core_stems"] += correct_core_stems == 2
         out["totals"]["truth_in_candidates"] += truth_in_candidates
+        out["totals"]["duration"] += duration.total_seconds()
 
         LOG.info(
             "%d %s%s: %s -- %.2f seconds -- %s",
