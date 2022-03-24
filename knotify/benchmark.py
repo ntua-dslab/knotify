@@ -39,7 +39,8 @@ OPTS = [
     cfg.ListOpt("only", item_type=cfg.types.Integer()),
     cfg.IntOpt("correct-stems-slack", default=0),
     cfg.BoolOpt("verbose", default=False),
-    cfg.BoolOpt("include_candidates", default=False),
+    cfg.BoolOpt("include-candidates", default=False),
+    cfg.BoolOpt("include-results", default=True),
 ]
 
 
@@ -71,6 +72,7 @@ def main():
             "correct_core_stems": 0,
             "truth_in_candidates": 0,
             "count": len(only),
+            "duration": 0,
         },
     }
 
@@ -102,6 +104,7 @@ def main():
         out["totals"]["correct"] += correct
         out["totals"]["correct_core_stems"] += correct_core_stems == 2
         out["totals"]["truth_in_candidates"] += truth_in_candidates
+        out["totals"]["duration"] += duration.total_seconds()
 
         LOG.info(
             "%d %s%s: %s -- %.2f seconds -- %s",
@@ -138,6 +141,7 @@ def main():
         if options.include_candidates:
             item["candidates"] = candidates
 
-        out["results"].append(item)
+        if options.include_results:
+            out["results"].append(item)
 
     print(json.dumps(out, indent=2))
