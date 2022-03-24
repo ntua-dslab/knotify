@@ -25,7 +25,7 @@ lib%.so: parsers/%.c $(YAEP_DIR)/src/libyaep.a
 
 $(YAEP_DIR)/src/libyaep.a:
 	git clone https://github.com/ntua-dslab/yaep --depth 1 $(YAEP_DIR)
-	cd $(YAEP_DIR) && ./configure CFLAGS=-fPIC && make -j
+	cd $(YAEP_DIR) && ./configure CFLAGS=-fPIC && make
 
 #####################################################
 # PK energy
