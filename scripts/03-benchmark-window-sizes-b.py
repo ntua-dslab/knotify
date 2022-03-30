@@ -43,7 +43,13 @@ def run_benchmarks(cases_yaml: str):
     records = []
 
     for parser in ["bruteforce", "yaep"]:
-        for minw, maxw in [(0.31, 0.82), (0.26, 0.87), (0.21, 0.92), (0.16, 0.97), (0.06, 1)]:
+        for minw, maxw in [
+            (0.31, 0.82),
+            (0.26, 0.87),
+            (0.21, 0.92),
+            (0.16, 0.97),
+            (0.06, 1),
+        ]:
             cmd = [
                 "rna_benchmark",
                 "--cases={}".format(cases_yaml),
