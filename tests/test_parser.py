@@ -67,6 +67,12 @@ def test_pseudoknot_pairs(parser, library_path, A, B, allow_ug):
     if combination_has_ug and not allow_ug:
         assert "0,11,3,1" not in result
 
+    result = p.detect_pseudoknots("a{}aaa{}a{}aaa{}aaa".format(A[0], B[0], A[1], B[1]))
+    if not combination_has_ug or combination_has_ug and allow_ug:
+        assert "1,11,3,1" in result
+    if combination_has_ug and not allow_ug:
+        assert "1,11,3,1" not in result
+
 
 @for_each_parser("parser, library_path")
 @pytest.mark.parametrize(
