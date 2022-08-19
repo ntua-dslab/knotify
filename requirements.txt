@@ -1,5 +1,5 @@
 biopython==1.76
-pandas==1.2.2
+pandas==1.4.3
 levenshtein==0.12.0
 jinja2==3.0.3
 pyyaml==5.4.1
