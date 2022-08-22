@@ -425,12 +425,9 @@ struct pseudoknot *traverse_parse_tree(struct yaep_tree_node *node) {
   }
 }
 
-char *detect_pseudoknots(char *sequence) {
+void detect_pseudoknots(char *sequence, void (*cb)(int, int, int, int)) {
   s_input = sequence;
 
-  char *buffer;
-  size_t size;
-  FILE *fp = open_memstream(&buffer, &size);
   int len = strlen(sequence);
 
   // The loop variables ensure that in every outer iteration we can discard the
@@ -455,17 +452,15 @@ char *detect_pseudoknots(char *sequence) {
         if (i->dd_size < s_min_dd_size) {
           continue;
         }
-        fprintf(fp, "%d,%d,%d,%d\n", left, right - left + 1, i->left_loop_size,
-                i->dd_size);
+        cb(left, right - left + 1, i->left_loop_size, i->dd_size);
+        // fprintf(fp, "%d,%d,%d,%d\n", left, right - left + 1,
+        // i->left_loop_size, i->dd_size);
       }
     }
 
     // we finished all windows where the last character is used, now discard
     s_input[right] = '\0';
   }
-
-  fclose(fp);
-  return buffer;
 }
 
 void initialize(char *_grammar, int _allow_ug, int _min_dd_size,

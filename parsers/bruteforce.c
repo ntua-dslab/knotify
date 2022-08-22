@@ -60,11 +60,7 @@ void initialize(char *_grammar_unused, int _allow_ug, int _min_dd_size,
   //        min_window_size, max_window_size);
 }
 
-char *detect_pseudoknots(char *sequence) {
-  char *buffer;
-  size_t size;
-  FILE *fp = open_memstream(&buffer, &size);
-
+void detect_pseudoknots(char *sequence, void (*cb)(int, int, int, int)) {
   int n = strlen(sequence);
 
   // window size is static or ratio of sequence length
@@ -178,8 +174,7 @@ char *detect_pseudoknots(char *sequence) {
       continue;
     }
 
-    fprintf(fp, "%d,%d,%d,%d\n", left, size, left_loop_size, dd_size);
-
+    cb(left, size, left_loop_size, dd_size);
     // printf("(%d %d) - (%d %d) \t\t (%c, %c) - (%c, %c) \n",
     //        (ccs_position->cstem[0]).left, (ccs_position->cstem[0]).right,
     //        (ccs_position->cstem[1]).left, (ccs_position->cstem[1]).right,
@@ -189,16 +184,4 @@ char *detect_pseudoknots(char *sequence) {
     //        sequence[(ccs_position->cstem[1]).right]);
     ccs_position++;
   }
-
-  fclose(fp);
-  return buffer;
-}
-
-int main(int argc, char *argv[]) {
-  if (argc != 2) {
-    printf("Wrong number of arguments!!!\n");
-    exit(0);
-  }
-  // printf("%ld %ld \n", n_stems, n_cstems);
-  return 0;
 }

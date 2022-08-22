@@ -106,9 +106,7 @@ class StringAnalyser(object):
         pseudoknots = []
         max_size = 0
         for line in self.parser.detect_pseudoknots(self.sequence):
-            if not line:
-                continue
-            i, j, left_loop_size, dd_size = map(int, line.split(","))
+            i, j, left_loop_size, dd_size = line
             knot = self._get_pseudoknots_for_tree(i, j, left_loop_size, dd_size)
             size = len(knot.right_loop_stems[0]) + len(knot.left_loop_stems[0])
             if knot and (not prune_early or size >= max_size - max_stem_allow_smaller):

@@ -43,14 +43,9 @@ class CTypesParser(BaseParser):
     );
 
     // Parse RNA sequence and return positions of possible core stems pseudoknots.
-    // Returned as a char *buffer with the following format:
-    //
-    // ```
-    // <left1>,<size1>,<leftloopsize1>,<ddsize1>
-    // <left2>,<size2>,<leftloopsize2>,<ddsize2>
-    // ...
-    // ```
-    char *detect_pseudoknots(char *sequence);
+    // For each core stem position, the callback function will be executed and the
+    // following arguments are passed: <left1>,<size1>,<leftloopsize1>,<ddsize1>
+    char *detect_pseudoknots(char *sequence, void (*cb)(int, int, int, int));
     ```
     """
 
@@ -61,7 +56,6 @@ class CTypesParser(BaseParser):
         super(CTypesParser, self).__init__(*args, **kwargs)
 
         self.lib = ctypes.CDLL(library_path)
-        self.lib.detect_pseudoknots.restype = ctypes.c_char_p
         self.lib.initialize(
             ctypes.c_char_p(self.get_options().encode()),
             ctypes.c_int(self.allow_ug),
@@ -74,9 +68,17 @@ class CTypesParser(BaseParser):
         )
 
     def detect_pseudoknots(self, sequence: str) -> list:
-        return (
-            self.lib.detect_pseudoknots(ctypes.c_char_p(sequence.lower().encode()))
-            .decode()
-            .rstrip("\n")
-            .split("\n")
+        results = []
+
+        def add_result(i, j, left_loop_size, dd_size):
+            results.append((i, j, left_loop_size, dd_size))
+
+        FUNCTYPE = ctypes.CFUNCTYPE(
+            None, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int
         )
+
+        self.lib.detect_pseudoknots(
+            ctypes.c_char_p(sequence.lower().encode()), FUNCTYPE(add_result)
+        )
+
+        return results
