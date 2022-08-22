@@ -70,7 +70,9 @@ def run_benchmarks(cases_yaml: str):
             stdout = subprocess.check_output(cmd)
             j = json.loads(stdout)
 
-            records.append({"minw": minw, "maxw": maxw, "parser": parser, **j["totals"]})
+            records.append(
+                {"minw": minw, "maxw": maxw, "parser": parser, **j["totals"]}
+            )
 
     pd.DataFrame(records).to_csv(sys.stdout)
 
