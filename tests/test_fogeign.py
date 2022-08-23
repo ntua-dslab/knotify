@@ -130,7 +130,7 @@ def test_hotknots_parse(stdout, result):
 
 
 @pytest.mark.parametrize(
-    "algorithm, config, executable",
+    "algorithm, executable, path",
     [
         (knotty.Knotty(), "knotty_executable", "./.knotty/knotty"),
         (ipknot.IPKnot(), "ipknot_executable", "./.ipknot/ipknot"),
@@ -138,12 +138,12 @@ def test_hotknots_parse(stdout, result):
         (ihfold.IHFold(), "ihfold_executable", "./.iterative-hfold/HFold_iterative"),
     ],
 )
-def test_foreign_smoke(algorithm, config, executable):
-    if not pathlib.Path(executable).exists():
-        pytest.skip(f"Missing binary {executable}")
+def test_foreign_smoke(algorithm, executable, path):
+    if not pathlib.Path(path).exists():
+        pytest.skip(f"Missing binary {path}")
 
     sequence = "GGCACGAUCGGGCUCGCUGCCUUUUCGUCCGAGAGCUCGAA"
-    results = algorithm.get_results(sequence, **config)
+    results = algorithm.get_results(sequence, **{executable: path})
 
     for _, r in results.iterrows():
         assert isinstance(r.dot_bracket, str) and len(r.dot_bracket) == len(sequence)
