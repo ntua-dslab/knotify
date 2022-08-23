@@ -23,7 +23,7 @@
 import ctypes
 
 
-class CPairAlign():
+class CPairAlign:
     """
     Consecutive RNA pairalign class. Match as many consecutive loop stems as possible.
 

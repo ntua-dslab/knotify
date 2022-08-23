@@ -151,7 +151,10 @@ def test_end_to_end(
                 "without final au (both sides)",
                 "GGGAAACGAGCCAAGUGGCUCCGACCACUUAAAAACACCGGAA",
                 candidate,
-                {"skip_final_au": SkipFinalAU(SKIPFINALAU_SO).pairalign, "max_stem_allow_smaller": 3},
+                {
+                    "skip_final_au": SkipFinalAU(SKIPFINALAU_SO).pairalign,
+                    "max_stem_allow_smaller": 3,
+                },
             )
             for candidate in [
                 ".............(((((..[[[.))))).........]]]..",  # drop both
