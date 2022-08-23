@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
+import pathlib
 import pytest
 
 from knotify.algorithm import ipknot
@@ -129,15 +130,18 @@ def test_hotknots_parse(stdout, result):
 
 
 @pytest.mark.parametrize(
-    "algorithm, config",
+    "algorithm, config, executable",
     [
-        (knotty.Knotty(), {"knotty_executable": "./.knotty/knotty"}),
-        (ipknot.IPKnot(), {"ipknot_executable": "./.ipknot/ipknot"}),
-        (hotknots.HotKnots(), {"hotknots_dir": "./.hotknots/HotKnots_v2.0"}),
-        (ihfold.IHFold(), {"ihfold_executable": "./.iterative-hfold/HFold_iterative"}),
+        (knotty.Knotty(), "knotty_executable", "./.knotty/knotty"),
+        (ipknot.IPKnot(), "ipknot_executable", "./.ipknot/ipknot"),
+        (hotknots.HotKnots(), "hotknots_dir", "./.hotknots/HotKnots_v2.0"),
+        (ihfold.IHFold(), "ihfold_executable", "./.iterative-hfold/HFold_iterative"),
     ],
 )
-def test_foreign_smoke(algorithm, config):
+def test_foreign_smoke(algorithm, config, executable):
+    if not pathlib.Path(executable).exists():
+        pytest.skip(f"Missing binary {executable}")
+
     sequence = "GGCACGAUCGGGCUCGCUGCCUUUUCGUCCGAGAGCUCGAA"
     results = algorithm.get_results(sequence, **config)
 
