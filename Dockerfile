@@ -6,7 +6,7 @@ ADD . /build
 
 WORKDIR /build
 RUN make deps -j
-RUN make grammars energies -j
+RUN make grammars energies pairaligns -j
 
 RUN virtualenv /knotify
 RUN /knotify/bin/pip install -r /build/requirements.txt -r /build/wheel-requirements.txt
@@ -28,6 +28,8 @@ USER 879:879
 ENV \
     KNOTIFY_YAEP_LIBRARY_PATH=/knotify/lib/libpseudoknot.so \
     KNOTIFY_BRUTEFORCE_LIBRARY_PATH=/knotify/lib/libbruteforce.so \
+    KNOTIFY_SKIP_FINAL_AU_LIBRARY_PATH=/knotify/lib/libskipfinalau.so \
+    KNOTIFY_CONSECUTIVE_PAIRALIGN_LIBRARY_PATH=/knotify/lib/libcpairalign.so \
     KNOTIFY_PKENERGY=/knotify/lib/libpkenergy.so \
     KNOTIFY_PKENERGY_CONFIG_DIR=/knotify/pkenergy-params
 

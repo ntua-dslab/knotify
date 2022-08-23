@@ -25,6 +25,9 @@ import os
 import pytest
 
 from knotify.algorithm.knotify import Knotify
+from knotify.pairalign.cpairalign import CPairAlign
+from knotify.pairalign.skip_final_au import SkipFinalAU
+from tests.test_pairalign import CPAIRALIGN_SO, SKIPFINALAU_SO
 from tests.utils import for_each_parser
 
 HAIRPIN = os.getenv("HAIRPIN_SO", "./libhairpin.so")
@@ -125,6 +128,7 @@ def test_end_to_end(
 ):
     config = {
         "parser": parser(library_path, **parser_params),
+        "pairalign": CPairAlign(CPAIRALIGN_SO).pairalign,
         "prune_early": True,
     }
     config.update(test_params)
@@ -140,14 +144,14 @@ def test_end_to_end(
             "without final au",
             "GGGAAACGAGCCAAGUGGCGCCGACCACUUAAAAACACCGGAA",
             ".............(((((..[[[.))))).........]]]..",
-            {"allow_skip_final_au": True},
+            {"skip_final_au": SkipFinalAU(SKIPFINALAU_SO).pairalign},
         ),
         *[
             (
                 "without final au (both sides)",
                 "GGGAAACGAGCCAAGUGGCUCCGACCACUUAAAAACACCGGAA",
                 candidate,
-                {"allow_skip_final_au": True, "max_stem_allow_smaller": 3},
+                {"skip_final_au": SkipFinalAU(SKIPFINALAU_SO).pairalign, "max_stem_allow_smaller": 3},
             )
             for candidate in [
                 ".............(((((..[[[.))))).........]]]..",  # drop both
@@ -162,6 +166,7 @@ def test_end_to_end(
 def test_exploration(parser, library_path, name, sequence, candidate, test_params):
     config = {
         "parser": parser(library_path),
+        "pairalign": CPairAlign(CPAIRALIGN_SO).pairalign,
         "prune_early": True,
     }
     config.update(test_params)

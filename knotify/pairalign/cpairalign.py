@@ -20,42 +20,39 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-import pytest
-
-from knotify.rna_analysis import StringAnalyser
-from tests.utils import for_each_parser
+import ctypes
 
 
-@pytest.mark.parametrize(
-    "sequence, brackets",
-    [
-        (
-            "AUCCUUUUCA",
-            [
-                "(.....[).]",
-                "(...[..).]",
-                "(....[)..]",
-                "(...[)...]",
-                "(....[.).]",
-                "(...[.)..]",
-            ],
-        ),
-        (
-            "AGAUUGACU",
-            [
-                "(..[).]..",
-                "(.[.)...]",
-                "(.[)....]",
-            ],
-        ),
-    ],
-)
-@for_each_parser("parser, library_path")
-def test_get_pseudoknots(parser, library_path, sequence, brackets):
-    s = StringAnalyser(
-        sequence, parser=parser(library_path=library_path)
-    ).get_pseudoknots()
+class CPairAlign():
+    """
+    Consecutive RNA pairalign class. Match as many consecutive loop stems as possible.
 
-    assert len(s) == len(brackets)
-    for a in s:
-        assert a["dot_bracket"] in brackets
+    The implementation is done in C code in pairalign/cpairalign.c
+
+    For usage, refer to the unit tests in test/test_pairalign.py
+    """
+
+    def __init__(self, library_path: str, *args, **kwargs):
+        super(CPairAlign, self).__init__(*args, **kwargs)
+
+        self.lib = ctypes.CDLL(library_path)
+
+    def pairalign(
+        self, sequence: str, i: int, j: int, left_loop_size: int, dd_size: int
+    ) -> str:
+        bracket = ctypes.create_string_buffer(b"." * len(sequence))
+        right_loop_stems = ctypes.c_int(0)
+        left_loop_stems = ctypes.c_int(0)
+
+        self.lib.pairalign(
+            ctypes.c_char_p(sequence.lower().encode()),
+            ctypes.c_int(i),
+            ctypes.c_int(j),
+            ctypes.c_int(left_loop_size),
+            ctypes.c_int(dd_size),
+            bracket,
+            ctypes.byref(left_loop_stems),
+            ctypes.byref(right_loop_stems),
+        )
+
+        return (bracket.value.decode(), left_loop_stems.value, right_loop_stems.value)

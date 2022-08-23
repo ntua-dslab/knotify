@@ -22,7 +22,6 @@
 #
 import pandas as pd
 
-from knotify import rna_analysis
 from knotify.algorithm.base import BaseAlgorithm
 from knotify.criteria import apply_free_energy_and_stems_criterion
 from knotify.energy.base import BaseEnergy
@@ -36,7 +35,9 @@ class Knotify(BaseAlgorithm):
         self,
         sequence: str,
         parser: BaseParser,
-        allow_skip_final_au: bool = False,
+        allow_skip_final_au: bool = None,
+        skip_final_au=None,  # TODO(neoaggelos): typing/base class
+        pairalign=None,  # TODO(neoaggelos): typing/base class
         csv: str = None,
         max_stem_allow_smaller: int = 1,
         prune_early: bool = False,
@@ -54,17 +55,45 @@ class Knotify(BaseAlgorithm):
         Analyze RNA sequence, and predict structure. Return data frame of results
         """
         sequence = sequence.lower()
-        knot_dict_list = rna_analysis.StringAnalyser(
-            input_string=sequence,
-            parser=parser,
-        ).get_pseudoknots(
-            max_stem_allow_smaller=max_stem_allow_smaller,
-            prune_early=prune_early,
-            allow_skip_final_au=allow_skip_final_au,
-        )
 
-        if not knot_dict_list:
-            knot_dict_list = [
+        pseudoknots = []
+        max_size = 0
+        for (i, j, left_loop_size, dd_size) in parser.detect_pseudoknots(sequence):
+            dot_bracket, left_loop_stems, right_loop_stems = pairalign(
+                sequence, i, j, left_loop_size, dd_size
+            )
+            size = left_loop_stems + right_loop_stems
+
+            if not prune_early or size >= max_size - max_stem_allow_smaller:
+                max_size = max(max_size, size)
+                pseudoknots.append(
+                    {
+                        "dot_bracket": dot_bracket,
+                        "left_loop_stems": left_loop_stems,
+                        "right_loop_stems": right_loop_stems,
+                        "dd": dd_size,
+                    }
+                )
+
+                if not allow_skip_final_au:
+                    continue
+
+                knots_without_au = skip_final_au(
+                    sequence, dot_bracket, right_loop_stems, left_loop_stems
+                )
+                if knots_without_au:
+                    pseudoknots.extend(
+                        {
+                            "dot_bracket": d,
+                            "right_loop_stems": r,
+                            "left_loop_stems": l,
+                            "dd": dd_size,
+                        }
+                        for (d, r, l) in knots_without_au
+                    )
+
+        if not pseudoknots:
+            pseudoknots = [
                 {
                     "dot_bracket": "." * len(sequence),
                     "left_loop_stems": 0,
@@ -73,7 +102,7 @@ class Knotify(BaseAlgorithm):
                 }
             ]
 
-        data = pd.DataFrame(knot_dict_list)
+        data = pd.DataFrame(pseudoknots)
         if csv is not None:
             data.to_csv(csv)
 

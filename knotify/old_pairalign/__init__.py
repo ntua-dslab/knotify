@@ -20,3 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
+from .custom_align import custom_pairalign as cpairalign
+from .biopairalign import biopairalign as biopairalign
+from .consecutive import consecutive_pairalign as consecutive_pairalign
