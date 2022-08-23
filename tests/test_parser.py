@@ -33,12 +33,12 @@ from tests.utils import for_each_parser
 @pytest.mark.parametrize(
     "dd_size, sequence, result",
     [
-        (1, "caaaaaggaaaaac", ["0,14,5,0"]),
-        (1, "caaaaagagaaaaac", ["0,15,5,1"]),
-        (1, "caaaaagaagaaaaac", [""]),
-        (2, "caaaaagaagaaaaac", ["0,16,5,2"]),
-        (2, "caaaaagaaagaaaaac", [""]),
-        (3, "caaaaagaaagaaaaac", ["0,17,5,3"]),
+        (1, "caaaaaggaaaaac", [(0, 14, 5, 0)]),
+        (1, "caaaaagagaaaaac", [(0, 15, 5, 1)]),
+        (1, "caaaaagaagaaaaac", []),
+        (2, "caaaaagaagaaaaac", [(0, 16, 5, 2)]),
+        (2, "caaaaagaaagaaaaac", []),
+        (3, "caaaaagaaagaaaaac", [(0, 17, 5, 3)]),
     ],
 )
 def test_max_dd_size(
@@ -63,25 +63,25 @@ def test_pseudoknot_pairs(parser, library_path, A, B, allow_ug):
 
     result = p.detect_pseudoknots("{}aaa{}a{}aaa{}".format(A[0], B[0], A[1], B[1]))
     if not combination_has_ug or combination_has_ug and allow_ug:
-        assert "0,11,3,1" in result
+        assert (0, 11, 3, 1) in result
     if combination_has_ug and not allow_ug:
-        assert "0,11,3,1" not in result
+        assert (0, 11, 3, 1) not in result
 
     result = p.detect_pseudoknots("a{}aaa{}a{}aaa{}aaa".format(A[0], B[0], A[1], B[1]))
     if not combination_has_ug or combination_has_ug and allow_ug:
-        assert "1,11,3,1" in result
+        assert (1, 11, 3, 1) in result
     if combination_has_ug and not allow_ug:
-        assert "1,11,3,1" not in result
+        assert (1, 11, 3, 1) not in result
 
 
 @for_each_parser("parser, library_path")
 @pytest.mark.parametrize(
     "sequence, result",
     [
-        ("caaaaaggaaaaac", ["0,14,5,0"]),
-        ("caaaaagagaaaaac", ["0,15,5,1"]),
-        ("caaaaagaagaaaaac", ["0,16,5,2"]),
-        ("caaaaagaaagaaaaac", ["0,17,5,3"]),
+        ("caaaaaggaaaaac", [(0, 14, 5, 0)]),
+        ("caaaaagagaaaaac", [(0, 15, 5, 1)]),
+        ("caaaaagaagaaaaac", [(0, 16, 5, 2)]),
+        ("caaaaagaaagaaaaac", [(0, 17, 5, 3)]),
     ],
 )
 @pytest.mark.parametrize(
