@@ -144,7 +144,7 @@ def test_end_to_end(
             "without final au",
             "GGGAAACGAGCCAAGUGGCGCCGACCACUUAAAAACACCGGAA",
             ".............(((((..[[[.))))).........]]]..",
-            {"skip_final_au": SkipFinalAU(SKIPFINALAU_SO).pairalign},
+            {"allow_skip_final_au": True},
         ),
         *[
             (
@@ -152,7 +152,7 @@ def test_end_to_end(
                 "GGGAAACGAGCCAAGUGGCUCCGACCACUUAAAAACACCGGAA",
                 candidate,
                 {
-                    "skip_final_au": SkipFinalAU(SKIPFINALAU_SO).pairalign,
+                    "allow_skip_final_au": True,
                     "max_stem_allow_smaller": 3,
                 },
             )
@@ -170,6 +170,7 @@ def test_exploration(parser, library_path, name, sequence, candidate, test_param
     config = {
         "parser": parser(library_path),
         "pairalign": CPairAlign(CPAIRALIGN_SO).pairalign,
+        "skip_final_au": SkipFinalAU(SKIPFINALAU_SO).pairalign,
         "prune_early": True,
     }
     config.update(test_params)
