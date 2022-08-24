@@ -1,7 +1,7 @@
 import pytest
 from knotify.pairalign.cpairalign import CPairAlign
 
-from knotify.pairalign.skip_final_au import SkipFinalAU
+from knotify.extensions.skip_final_au import SkipFinalAU
 
 SKIPFINALAU_SO = "./libskipfinalau.so"
 
@@ -29,7 +29,7 @@ SKIPFINALAU_SO = "./libskipfinalau.so"
 def test_skip_final_au(sequence: str, input: str, expected: list):
     a = SkipFinalAU(SKIPFINALAU_SO)
 
-    assert set(a.pairalign(sequence.lower(), *input)) == set(expected)
+    assert set(a.get_candidates(sequence.lower(), *input)) == set(expected)
 
 
 CPAIRALIGN_SO = "./libcpairalign.so"
@@ -63,10 +63,4 @@ CPAIRALIGN_SO = "./libcpairalign.so"
 )
 def test_cpairalign(sequence, core_stems, expected):
     p = CPairAlign(CPAIRALIGN_SO)
-    i, j, left_loop_size, dd_size = core_stems
-    dot_bracket, left_loop_stems, right_loop_stems = expected
-    assert p.pairalign(sequence, i, j, left_loop_size, dd_size) == (
-        dot_bracket,
-        left_loop_stems,
-        right_loop_stems,
-    )
+    assert p.pairalign(sequence, *core_stems) == [expected]

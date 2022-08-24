@@ -26,11 +26,12 @@ import pytest
 
 from knotify.algorithm.knotify import Knotify
 from knotify.pairalign.cpairalign import CPairAlign
-from knotify.pairalign.skip_final_au import SkipFinalAU
-from tests.test_pairalign import CPAIRALIGN_SO, SKIPFINALAU_SO
+from knotify.extensions.skip_final_au import SkipFinalAU
 from tests.utils import for_each_parser
 
 HAIRPIN = os.getenv("HAIRPIN_SO", "./libhairpin.so")
+CPAIRALIGN_SO = os.getenv("CPAIRALIGN_SO", "./libcpairalign.so")
+SKIPFINALAU_SO = "./libskipfinalau.so"
 
 
 @pytest.mark.parametrize(
@@ -127,7 +128,7 @@ def test_end_to_end(
     parser, library_path, name, sequence, result, parser_params, test_params
 ):
     config = {
-        "parser": parser(library_path, **parser_params),
+        "parser": parser(library_path, **parser_params).detect_pseudoknots,
         "pairalign": CPairAlign(CPAIRALIGN_SO).pairalign,
         "prune_early": True,
     }
@@ -168,9 +169,9 @@ def test_end_to_end(
 @for_each_parser("parser, library_path")
 def test_exploration(parser, library_path, name, sequence, candidate, test_params):
     config = {
-        "parser": parser(library_path),
+        "parser": parser(library_path).detect_pseudoknots,
         "pairalign": CPairAlign(CPAIRALIGN_SO).pairalign,
-        "skip_final_au": SkipFinalAU(SKIPFINALAU_SO).pairalign,
+        "skip_final_au": SkipFinalAU(SKIPFINALAU_SO).get_candidates,
         "prune_early": True,
     }
     config.update(test_params)
