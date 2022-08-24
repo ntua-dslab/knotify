@@ -47,7 +47,7 @@ class SkipFinalAU:
 
         self.lib = ctypes.CDLL(library_path)
 
-    def pairalign(
+    def get_candidates(
         self,
         sequence: str,
         dot_bracket: str,
@@ -81,3 +81,5 @@ class SkipFinalAU:
         )
 
         return results
+
+    __call__ = get_candidates

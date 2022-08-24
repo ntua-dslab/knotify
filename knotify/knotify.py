@@ -35,7 +35,7 @@ from knotify.algorithm.hotknots import HotKnots
 from knotify.energy.vienna import ViennaEnergy
 from knotify.energy.pkenergy import PKEnergy
 from knotify.pairalign.cpairalign import CPairAlign
-from knotify.pairalign.skip_final_au import SkipFinalAU
+from knotify.extensions.skip_final_au import SkipFinalAU
 from knotify.parsers.yaep import YaepParser
 from knotify.parsers.bruteforce import BruteForceParser
 
@@ -213,10 +213,10 @@ def from_options(opts: ConfigOpts) -> Tuple[BaseAlgorithm, dict]:
 
     skip_final_au = None
     if opts.allow_skip_final_au:
-        skip_final_au = SkipFinalAU(opts.skip_final_au_library_path).pairalign
+        skip_final_au = SkipFinalAU(opts.skip_final_au_library_path).get_candidates
 
     return algorithm, {
-        "parser": parser,
+        "parser": parser.detect_pseudoknots,
         "csv": opts.csv,
         "allow_ug": opts.allow_ug,
         "pairalign": pairalign,

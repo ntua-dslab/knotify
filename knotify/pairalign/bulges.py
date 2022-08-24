@@ -20,14 +20,19 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
+import ctypes
+
 from knotify.pairalign.ctypes import CTypesPairAlign
 
 
-class CPairAlign(CTypesPairAlign):
+class BulgesPairAlign(CTypesPairAlign):
     """
-    Consecutive RNA pairalign class. Match as many consecutive loop stems as possible.
+    Consecutive RNA pairalign class with support for bulges on the loop stems.
 
-    The implementation is done in C code in pairalign/cpairalign.c
-
-    For usage, refer to the unit tests in test/test_pairalign.py
+    The implementation is done in C code in pairalign/bulges.c
     """
+
+    def __init__(self, max_bulges: int, min_stems_after_bulge: int, *args, **kwargs):
+        super(BulgesPairAlign, self).__init__(*args, **kwargs)
+
+        self.lib.initialize(max_bulges, min_stems_after_bulge)

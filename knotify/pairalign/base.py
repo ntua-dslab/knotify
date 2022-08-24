@@ -20,14 +20,21 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-from knotify.pairalign.ctypes import CTypesPairAlign
 
 
-class CPairAlign(CTypesPairAlign):
+class BasePairAlign:
     """
-    Consecutive RNA pairalign class. Match as many consecutive loop stems as possible.
-
-    The implementation is done in C code in pairalign/cpairalign.c
-
-    For usage, refer to the unit tests in test/test_pairalign.py
+    Base PairAlign implementation class. Subclasses should extend this and
+    implement the pairalign method.
     """
+
+    def __init__(self, *args, **kwargs):
+        pass
+
+    def pairalign(
+        self, sequence: str, i: int, j: int, left_loop_size: int, dd_size: int
+    ) -> list:
+        """
+        :return: [(dot_bracket, left_loop_stems, right_loop_stems)]
+        """
+        raise NotImplementedError

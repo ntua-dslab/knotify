@@ -27,44 +27,49 @@
 
   Potential left loop stems [0, L) and (l, r)    --- example [0, 2] and [11, 16]
   Potential right loop stems (L, R) and (r, len) --- example [4, 4] and [18, 22]
-
-  Writes results to oDotBracket, oRightLoopStems, oLeftLoopStems
 */
 void pairalign(char *sequence, int i, int j, int left_loop_size, int dd_size,
-               char *oDotBracket, int *oLeftLoopStems, int *oRightLoopStems) {
+               void (*cb)(char *, int, int)) {
 
   int L = i;
   int R = i + left_loop_size + 1;
   int l = i + left_loop_size + dd_size + 2;
   int r = i + j - 1;
 
+  char *dot_bracket = strdup(sequence);
+  int left_loop_stems = 0, right_loop_stems = 0;
+
   // initialize dot bracket
   int len = strlen(sequence);
-  memset(oDotBracket, '.', len);
-  oDotBracket[L] = '(';
-  oDotBracket[l] = ')';
-  oDotBracket[R] = '[';
-  oDotBracket[r] = ']';
+  memset(dot_bracket, '.', len);
+  dot_bracket[L] = '(';
+  dot_bracket[l] = ')';
+  dot_bracket[R] = '[';
+  dot_bracket[r] = ']';
 
   // left loop stems
-  *oLeftLoopStems = 0;
+  left_loop_stems = 0;
   for (int i = 1; i <= MIN(L, r - l - 1); i++) {
     if (!IS_PAIR(sequence[L - i], sequence[l + i])) {
       break;
     }
-    oDotBracket[L - i] = '(';
-    oDotBracket[l + i] = ')';
-    (*oLeftLoopStems)++;
+    dot_bracket[L - i] = '(';
+    dot_bracket[l + i] = ')';
+    left_loop_stems++;
   }
 
   // right loop stems
-  *oRightLoopStems = 0;
+  right_loop_stems = 0;
   for (int i = 1; i <= MIN(R - L - 1, len - r); i++) {
     if (!IS_PAIR(sequence[R - i], sequence[r + i])) {
       break;
     }
-    oDotBracket[R - i] = '[';
-    oDotBracket[r + i] = ']';
-    (*oRightLoopStems)++;
+    dot_bracket[R - i] = '[';
+    dot_bracket[r + i] = ']';
+    right_loop_stems++;
   }
+
+  cb(dot_bracket, left_loop_stems, right_loop_stems);
+
+  free(dot_bracket);
 }

@@ -27,7 +27,10 @@ from knotify.criteria import apply_free_energy_and_stems_criterion
 from knotify.energy.base import BaseEnergy
 from knotify.energy.vienna import ViennaEnergy
 from knotify import hairpin
+from knotify.pairalign.base import BasePairAlign
 from knotify.parsers.base import BaseParser
+from knotify.pairalign.cpairalign import CPairAlign
+from knotify.extensions.skip_final_au import SkipFinalAU
 
 
 class Knotify(BaseAlgorithm):
@@ -35,10 +38,10 @@ class Knotify(BaseAlgorithm):
         self,
         sequence: str,
         parser: BaseParser,
-        allow_skip_final_au: bool = None,
-        skip_final_au=None,  # TODO(neoaggelos): typing/base class
-        pairalign=None,  # TODO(neoaggelos): typing/base class
+        skip_final_au: SkipFinalAU = None,
+        pairalign: BasePairAlign = None,
         csv: str = None,
+        allow_skip_final_au: bool = None,
         max_stem_allow_smaller: int = 1,
         prune_early: bool = False,
         hairpin_grammar: str = None,
@@ -58,22 +61,21 @@ class Knotify(BaseAlgorithm):
 
         pseudoknots = []
         max_size = 0
-        for (i, j, left_loop_size, dd_size) in parser.detect_pseudoknots(sequence):
-            dot_bracket, left_loop_stems, right_loop_stems = pairalign(
-                sequence, i, j, left_loop_size, dd_size
-            )
-            size = left_loop_stems + right_loop_stems
+        for (i, j, left_loop_size, dd_size) in parser(sequence):
+            knots = pairalign(sequence, i, j, left_loop_size, dd_size)
+            for (dot_bracket, left_loop_stems, right_loop_stems) in knots:
+                size = left_loop_stems + right_loop_stems
 
-            if not prune_early or size >= max_size - max_stem_allow_smaller:
-                max_size = max(max_size, size)
-                pseudoknots.append(
-                    {
-                        "dot_bracket": dot_bracket,
-                        "left_loop_stems": left_loop_stems,
-                        "right_loop_stems": right_loop_stems,
-                        "dd": dd_size,
-                    }
-                )
+                if not prune_early or size >= max_size - max_stem_allow_smaller:
+                    max_size = max(max_size, size)
+                    pseudoknots.append(
+                        {
+                            "dot_bracket": dot_bracket,
+                            "left_loop_stems": left_loop_stems,
+                            "right_loop_stems": right_loop_stems,
+                            "dd": dd_size,
+                        }
+                    )
 
                 if not allow_skip_final_au:
                     continue
