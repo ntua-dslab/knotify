@@ -25,8 +25,17 @@
   l -> right index of core stem in left loop
   r -> right index of core stem in right loop
 
-  Potential left loop stems [0, L) and (l, r)    --- example [0, 2] and [11, 16]
-  Potential right loop stems (L, R) and (r, len) --- example [4, 4] and [18, 22]
+  a -> left index of loop stem
+  b -> right index of loop stem
+
+  For potential left loop stems, these conditions hold for a and b:
+    0 <= a <= L-1         -- in example above a in [0, 2]
+    l+1 <= b <= r-1       -- in example above b in [11, 16]
+
+  For potential right loop stems, these conditions hold for a and b:
+    L+1 <= a <= R-1       -- in example above a in [4, 4]
+    r+1 >= b <= LEN-1     -- in example above b in [18, 22]
+
 */
 void pairalign(char *sequence, int i, int j, int left_loop_size, int dd_size,
                void (*cb)(char *, int, int)) {
@@ -49,23 +58,23 @@ void pairalign(char *sequence, int i, int j, int left_loop_size, int dd_size,
 
   // left loop stems
   left_loop_stems = 0;
-  for (int i = 1; i <= MIN(L, r - l - 1); i++) {
-    if (!IS_PAIR(sequence[L - i], sequence[l + i])) {
+  for (int a = L - 1, b = l + 1; a >= 0 && b <= r - 1; a--, b++) {
+    if (!IS_PAIR(sequence[a], sequence[b])) {
       break;
     }
-    dot_bracket[L - i] = '(';
-    dot_bracket[l + i] = ')';
+    dot_bracket[a] = '(';
+    dot_bracket[b] = ')';
     left_loop_stems++;
   }
 
   // right loop stems
   right_loop_stems = 0;
-  for (int i = 1; i <= MIN(R - L - 1, len - r); i++) {
-    if (!IS_PAIR(sequence[R - i], sequence[r + i])) {
+  for (int a = R - 1, b = r + 1; a >= L + 1 && b <= len - 1; a--, b++) {
+    if (!IS_PAIR(sequence[a], sequence[b])) {
       break;
     }
-    dot_bracket[R - i] = '[';
-    dot_bracket[r + i] = ']';
+    dot_bracket[a] = '[';
+    dot_bracket[b] = ']';
     right_loop_stems++;
   }
 
