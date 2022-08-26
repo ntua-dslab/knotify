@@ -35,6 +35,7 @@ from knotify.algorithm.hotknots import HotKnots
 from knotify.energy.vienna import ViennaEnergy
 from knotify.energy.pkenergy import PKEnergy
 from knotify.pairalign.cpairalign import CPairAlign
+from knotify.pairalign.bulges import BulgesPairAlign
 from knotify.extensions.skip_final_au import SkipFinalAU
 from knotify.parsers.yaep import YaepParser
 from knotify.parsers.bruteforce import BruteForceParser
@@ -56,14 +57,18 @@ PSEUDOKNOT_OPTS = [
     cfg.FloatOpt("max-window-size-ratio", default=0),
     cfg.FloatOpt("min-window-size-ratio", default=0),
     cfg.IntOpt("max-stem-allow-smaller", default=2),
-    cfg.BoolOpt("prune-early", default=False),
+    cfg.BoolOpt("prune-early", default=True),
 ]
 
 PAIRALIGN_OPTS = [
-    cfg.StrOpt("pairalign", choices=["consecutive"], default="consecutive"),
+    cfg.StrOpt("pairalign", choices=["consecutive", "bulges"], default="consecutive"),
     cfg.BoolOpt("allow-skip-final-au", default=False),
     cfg.StrOpt("skip-final-au-library-path", default="./libskipfinalau.so"),
     cfg.StrOpt("consecutive-pairalign-library-path", default="./libcpairalign.so"),
+    cfg.StrOpt("bulges-library-path", default="./libbulges.so"),
+    cfg.IntOpt("max-bulge-size", default=1),
+    cfg.IntOpt("min-stems-after-bulge", default=1),
+    cfg.BoolOpt("symmetric-bulges", default=True),
 ]
 
 HAIRPIN_OPTS = [
@@ -125,6 +130,10 @@ class ConfigOpts(cfg.ConfigOpts):
     allow_skip_final_au: bool
     skip_final_au_library_path: str
     consecutive_pairalign_library_path: str
+    bulges_library_path: str
+    max_bulge_size: int
+    min_stems_after_bulge: int
+    symmetric_bulges: bool
 
     # HAIRPIN_OPTS
     hairpin_grammar: str
@@ -210,6 +219,13 @@ def from_options(opts: ConfigOpts) -> Tuple[BaseAlgorithm, dict]:
     pairalign = None
     if opts.pairalign == "consecutive":
         pairalign = CPairAlign(opts.consecutive_pairalign_library_path).pairalign
+    elif opts.pairalign == "bulges":
+        pairalign = BulgesPairAlign(
+            opts.max_bulge_size,
+            opts.min_stems_after_bulge,
+            opts.symmetric_bulges,
+            library_path=opts.bulges_library_path,
+        ).pairalign
 
     skip_final_au = None
     if opts.allow_skip_final_au:

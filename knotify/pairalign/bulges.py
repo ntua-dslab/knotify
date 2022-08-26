@@ -32,7 +32,18 @@ class BulgesPairAlign(CTypesPairAlign):
     The implementation is done in C code in pairalign/bulges.c
     """
 
-    def __init__(self, max_bulges: int, min_stems_after_bulge: int, *args, **kwargs):
+    def __init__(
+        self,
+        max_bulge_size: int,
+        min_stems_after_bulge: int,
+        symmetric_bulges: bool,
+        *args,
+        **kwargs
+    ):
         super(BulgesPairAlign, self).__init__(*args, **kwargs)
 
-        self.lib.initialize(max_bulges, min_stems_after_bulge)
+        self.lib.initialize(
+            ctypes.c_int(max_bulge_size),
+            ctypes.c_int(min_stems_after_bulge),
+            ctypes.c_bool(symmetric_bulges),
+        )

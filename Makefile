@@ -41,12 +41,15 @@ libpkenergy.so:
 #####################################################
 # PairAligns
 
-pairaligns: libskipfinalau.so libcpairalign.so
+pairaligns: libskipfinalau.so libcpairalign.so libbulges.so
 
 libskipfinalau.so: pairalign/skipfinalau.c
 	$(CC) $<  -fPIC -shared -o $@
 
 libcpairalign.so: pairalign/cpairalign.c
+	$(CC) $<  -fPIC -shared -o $@
+
+libbulges.so: pairalign/bulges.c
 	$(CC) $<  -fPIC -shared -o $@
 
 #####################################################

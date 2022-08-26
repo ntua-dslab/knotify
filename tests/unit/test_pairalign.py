@@ -1,40 +1,24 @@
 import pytest
+from knotify.pairalign.bulges import BulgesPairAlign
 from knotify.pairalign.cpairalign import CPairAlign
-
-from knotify.extensions.skip_final_au import SkipFinalAU
-
-SKIPFINALAU_SO = "./libskipfinalau.so"
-
-
-@pytest.mark.parametrize(
-    "sequence,input,expected",
-    [
-        (
-            "AAGCCUUG",
-            ("((([)))]", 2, 0),
-            [(".(([)).]", 1, 0)],
-        ),
-        (
-            "AAGACCUUGU",
-            ("((([[)))]]", 2, 1),
-            [(".(([[)).]]", 1, 1), ("(((.[)))].", 2, 0), (".((.[)).].", 1, 0)],
-        ),
-        (
-            "AAGUCUUA",
-            ("((([)))]", 2, 0),
-            [(".(([)).]", 1, 0)],
-        ),
-    ],
-)
-def test_skip_final_au(sequence: str, input: str, expected: list):
-    a = SkipFinalAU(SKIPFINALAU_SO)
-
-    assert set(a.get_candidates(sequence.lower(), *input)) == set(expected)
 
 
 CPAIRALIGN_SO = "./libcpairalign.so"
+BULGES_SO = "./libbulges.so"
 
 
+@pytest.mark.parametrize(
+    "pairalign",
+    [
+        CPairAlign(CPAIRALIGN_SO),
+        BulgesPairAlign(
+            max_bulge_size=0,
+            min_stems_after_bulge=0,
+            symmetric_bulges=True,
+            library_path=BULGES_SO,
+        ),
+    ],
+)
 @pytest.mark.parametrize(
     "sequence,core_stems,expected",
     [
@@ -61,6 +45,5 @@ CPAIRALIGN_SO = "./libcpairalign.so"
         ),
     ],
 )
-def test_cpairalign(sequence, core_stems, expected):
-    p = CPairAlign(CPAIRALIGN_SO)
-    assert p.pairalign(sequence, *core_stems) == [expected]
+def test_pairalign(pairalign, sequence, core_stems, expected):
+    assert pairalign.pairalign(sequence, *core_stems) == [expected]
