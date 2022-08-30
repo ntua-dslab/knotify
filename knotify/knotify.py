@@ -21,9 +21,9 @@
 # SOFTWARE.
 #
 
-from typing import Tuple
+from typing import Tuple, List
 
-from oslo_config import cfg
+from oslo_config import cfg, types
 
 from knotify import hairpin
 from knotify.algorithm.base import BaseAlgorithm
@@ -61,7 +61,11 @@ PSEUDOKNOT_OPTS = [
 ]
 
 PAIRALIGN_OPTS = [
-    cfg.StrOpt("pairalign", choices=["consecutive", "bulges"], default="consecutive"),
+    cfg.ListOpt(
+        "pairalign",
+        item_type=types.String(choices=["consecutive", "bulges"]),
+        default=["consecutive"],
+    ),
     cfg.BoolOpt("allow-skip-final-au", default=False),
     cfg.StrOpt("skip-final-au-library-path", default="./libskipfinalau.so"),
     cfg.StrOpt("consecutive-pairalign-library-path", default="./libcpairalign.so"),
@@ -126,7 +130,7 @@ class ConfigOpts(cfg.ConfigOpts):
     prune_early: bool
 
     # PAIRALIGN_OPTS
-    pairalign: str
+    pairalign: List[str]
     allow_skip_final_au: bool
     skip_final_au_library_path: str
     consecutive_pairalign_library_path: str
@@ -216,16 +220,18 @@ def from_options(opts: ConfigOpts) -> Tuple[BaseAlgorithm, dict]:
     elif opts.algorithm == "hotknots":
         algorithm = HotKnots()
 
-    pairalign = None
-    if opts.pairalign == "consecutive":
-        pairalign = CPairAlign(opts.consecutive_pairalign_library_path).pairalign
-    elif opts.pairalign == "bulges":
-        pairalign = BulgesPairAlign(
-            opts.max_bulge_size,
-            opts.min_stems_after_bulge,
-            opts.symmetric_bulges,
-            library_path=opts.bulges_library_path,
-        ).pairalign
+    pairalign = []
+    if "consecutive" in opts.pairalign:
+        pairalign.append(CPairAlign(opts.consecutive_pairalign_library_path).pairalign)
+    if "bulges" in opts.pairalign:
+        pairalign.append(
+            BulgesPairAlign(
+                opts.max_bulge_size,
+                opts.min_stems_after_bulge,
+                opts.symmetric_bulges,
+                library_path=opts.bulges_library_path,
+            ).pairalign
+        )
 
     skip_final_au = None
     if opts.allow_skip_final_au:
