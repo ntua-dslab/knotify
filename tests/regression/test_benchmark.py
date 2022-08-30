@@ -68,6 +68,27 @@ from knotify import benchmark
                 "truth_in_candidates": 106,
             },
         ),
+        (
+            "2022-bulges",
+            {
+                "cases": "./cases/cases.yaml",
+                "max_dd_size": 7,
+                "max_stem_allow_smaller": 3,
+                "allow_ug": True,
+                "prune_early": True,
+                "parser": "bruteforce",
+                "energy": "pkenergy",
+                "pairalign": ["bulges"],
+                "max_bulge_size": 3,
+                "min_stems_after_bulge": 2,
+                "allow_skip_final_au": True,
+            },
+            {
+                "correct": 11,
+                "correct_core_stems": 14,
+                "truth_in_candidates": 17,
+            },
+        ),
     ],
 )
 def test_benchmark(name, options, expected):
