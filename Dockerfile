@@ -30,6 +30,7 @@ ENV \
     KNOTIFY_BRUTEFORCE_LIBRARY_PATH=/knotify/lib/libbruteforce.so \
     KNOTIFY_SKIP_FINAL_AU_LIBRARY_PATH=/knotify/lib/libskipfinalau.so \
     KNOTIFY_CONSECUTIVE_PAIRALIGN_LIBRARY_PATH=/knotify/lib/libcpairalign.so \
+    KNOTIFY_BULGES_LIBRARY_PATH=/knotify/lib/libbulges.so \
     KNOTIFY_PKENERGY=/knotify/lib/libpkenergy.so \
     KNOTIFY_PKENERGY_CONFIG_DIR=/knotify/pkenergy-params
 
