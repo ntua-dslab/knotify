@@ -49,6 +49,12 @@ def main():
     options.register_cli_opts(OPTS)
     options()
 
+    result = run_benchmark(options)
+
+    json.dump(result, sys.stdout, indent=2)
+
+
+def run_benchmark(options: knotify.ConfigOpts):
     if not options.cases:
         print("Missing required parameter --cases")
         sys.exit(1)
@@ -144,4 +150,4 @@ def main():
         if options.include_results:
             out["results"].append(item)
 
-    print(json.dumps(out, indent=2))
+    return out

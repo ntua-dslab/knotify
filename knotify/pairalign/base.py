@@ -20,3 +20,21 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
+
+
+class BasePairAlign:
+    """
+    Base PairAlign implementation class. Subclasses should extend this and
+    implement the pairalign method.
+    """
+
+    def __init__(self, *args, **kwargs):
+        pass
+
+    def pairalign(
+        self, sequence: str, i: int, j: int, left_loop_size: int, dd_size: int
+    ) -> list:
+        """
+        :return: [(dot_bracket, left_loop_stems, right_loop_stems)]
+        """
+        raise NotImplementedError

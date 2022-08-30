@@ -20,3 +20,30 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
+import ctypes
+
+from knotify.pairalign.ctypes import CTypesPairAlign
+
+
+class BulgesPairAlign(CTypesPairAlign):
+    """
+    Consecutive RNA pairalign class with support for bulges on the loop stems.
+
+    The implementation is done in C code in pairalign/bulges.c
+    """
+
+    def __init__(
+        self,
+        max_bulge_size: int,
+        min_stems_after_bulge: int,
+        symmetric_bulges: bool,
+        *args,
+        **kwargs
+    ):
+        super(BulgesPairAlign, self).__init__(*args, **kwargs)
+
+        self.lib.initialize(
+            ctypes.c_int(max_bulge_size),
+            ctypes.c_int(min_stems_after_bulge),
+            ctypes.c_bool(symmetric_bulges),
+        )

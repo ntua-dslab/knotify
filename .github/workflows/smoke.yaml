@@ -22,3 +22,8 @@ jobs:
         run: ./.venv/bin/rna_analysis --sequence AUCCUUUUCAGUUGGGCCUUCUGGUGAUGUUUCUGGCCACCCAGGAGGUCCUGAGGAAGAGGUGGACGGCCAGAUUGACU
       - name: rna_benchmark
         run: ./.venv/bin/rna_benchmark --cases cases/cases.yaml --verbose
+      - name: rna_energy
+        run: |
+          ./.venv/bin/rna_energy --sequence ACGUGAAGGCUACGAUAGUGCCAG --dot-bracket '.((((..[[[)))).....]]]..'
+          ./.venv/bin/rna_energy --sequence ACGUGAAGGCUACGAUAGUGCCAG --dot-bracket '.((((..[[[)))).....]]]..' --energy pkenergy
+          ./.venv/bin/rna_energy --sequence ACGUGAAGGCUACGAUAGUGCCAG --dot-bracket '.((((..[[[)))).....]]]..' --energy vienna

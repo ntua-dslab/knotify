@@ -21,9 +21,9 @@
 # SOFTWARE.
 #
 
-from typing import Tuple
+from typing import Tuple, List
 
-from oslo_config import cfg
+from oslo_config import cfg, types
 
 from knotify import hairpin
 from knotify.algorithm.base import BaseAlgorithm
@@ -34,6 +34,9 @@ from knotify.algorithm.ihfold import IHFold
 from knotify.algorithm.hotknots import HotKnots
 from knotify.energy.vienna import ViennaEnergy
 from knotify.energy.pkenergy import PKEnergy
+from knotify.pairalign.cpairalign import CPairAlign
+from knotify.pairalign.bulges import BulgesPairAlign
+from knotify.extensions.skip_final_au import SkipFinalAU
 from knotify.parsers.yaep import YaepParser
 from knotify.parsers.bruteforce import BruteForceParser
 
@@ -47,7 +50,6 @@ PSEUDOKNOT_OPTS = [
     cfg.StrOpt("yaep-library-path", default="./libpseudoknot.so"),
     cfg.StrOpt("bruteforce-library-path", default="./libbruteforce.so"),
     cfg.BoolOpt("allow-ug", default=False),
-    cfg.BoolOpt("allow-skip-final-au", default=False),
     cfg.IntOpt("max-dd-size", default=2),
     cfg.IntOpt("min-dd-size", default=0),
     cfg.IntOpt("max-window-size", default=204),
@@ -55,7 +57,22 @@ PSEUDOKNOT_OPTS = [
     cfg.FloatOpt("max-window-size-ratio", default=0),
     cfg.FloatOpt("min-window-size-ratio", default=0),
     cfg.IntOpt("max-stem-allow-smaller", default=2),
-    cfg.BoolOpt("prune-early", default=False),
+    cfg.BoolOpt("prune-early", default=True),
+]
+
+PAIRALIGN_OPTS = [
+    cfg.ListOpt(
+        "pairalign",
+        item_type=types.String(choices=["consecutive", "bulges"]),
+        default=["consecutive"],
+    ),
+    cfg.BoolOpt("allow-skip-final-au", default=False),
+    cfg.StrOpt("skip-final-au-library-path", default="./libskipfinalau.so"),
+    cfg.StrOpt("consecutive-pairalign-library-path", default="./libcpairalign.so"),
+    cfg.StrOpt("bulges-library-path", default="./libbulges.so"),
+    cfg.IntOpt("max-bulge-size", default=1),
+    cfg.IntOpt("min-stems-after-bulge", default=1),
+    cfg.BoolOpt("symmetric-bulges", default=True),
 ]
 
 HAIRPIN_OPTS = [
@@ -98,12 +115,11 @@ class ConfigOpts(cfg.ConfigOpts):
         super(ConfigOpts, self).__init__(*args, **kwargs)
         self._env_driver.get_name = lambda _, opt: "KNOTIFY_{}".format(opt.upper())
 
-    # ALGORITHM_OPTS
+    # PSEUDOKNOT_OPTS
     parser: str
     yaep_library_path: str
     bruteforce_library_path: str
     allow_ug: bool
-    allow_skip_final_au: bool
     max_dd_size: int
     min_dd_size: int
     max_window_size: int
@@ -112,6 +128,16 @@ class ConfigOpts(cfg.ConfigOpts):
     min_window_size_ratio: float
     max_stem_allow_smaller: int
     prune_early: bool
+
+    # PAIRALIGN_OPTS
+    pairalign: List[str]
+    allow_skip_final_au: bool
+    skip_final_au_library_path: str
+    consecutive_pairalign_library_path: str
+    bulges_library_path: str
+    max_bulge_size: int
+    min_stems_after_bulge: int
+    symmetric_bulges: bool
 
     # HAIRPIN_OPTS
     hairpin_grammar: str
@@ -143,6 +169,7 @@ def new_options() -> ConfigOpts:
     for options in [
         CSV_OPTS,
         PSEUDOKNOT_OPTS,
+        PAIRALIGN_OPTS,
         ALGORITHM_OPTS,
         ENERGY_OPTS,
         HAIRPIN_OPTS,
@@ -193,10 +220,29 @@ def from_options(opts: ConfigOpts) -> Tuple[BaseAlgorithm, dict]:
     elif opts.algorithm == "hotknots":
         algorithm = HotKnots()
 
+    pairalign = []
+    if "consecutive" in opts.pairalign:
+        pairalign.append(CPairAlign(opts.consecutive_pairalign_library_path).pairalign)
+    if "bulges" in opts.pairalign:
+        pairalign.append(
+            BulgesPairAlign(
+                opts.max_bulge_size,
+                opts.min_stems_after_bulge,
+                opts.symmetric_bulges,
+                library_path=opts.bulges_library_path,
+            ).pairalign
+        )
+
+    skip_final_au = None
+    if opts.allow_skip_final_au:
+        skip_final_au = SkipFinalAU(opts.skip_final_au_library_path).get_candidates
+
     return algorithm, {
-        "parser": parser,
+        "parser": parser.detect_pseudoknots,
         "csv": opts.csv,
         "allow_ug": opts.allow_ug,
+        "pairalign": pairalign,
+        "skip_final_au": skip_final_au,
         "allow_skip_final_au": opts.allow_skip_final_au,
         "max_stem_allow_smaller": opts.max_stem_allow_smaller,
         "prune_early": opts.prune_early,

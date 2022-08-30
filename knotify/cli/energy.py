@@ -20,3 +20,31 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
+
+from oslo_config import cfg
+from knotify.energy.pkenergy import PKEnergy
+from knotify.energy.vienna import ViennaEnergy
+from knotify.knotify import ENERGY_OPTS
+
+OPTS = [
+    cfg.StrOpt("sequence", required=True),
+    cfg.StrOpt("dot-bracket", required=True),
+]
+
+
+def main():
+    options = cfg.ConfigOpts()
+    options.register_cli_opts(OPTS)
+    options.register_cli_opts(ENERGY_OPTS)
+    options()
+
+    if options.energy == "vienna":
+        e = ViennaEnergy()
+    elif options.energy == "pkenergy":
+        e = PKEnergy(options.pkenergy, options.pkenergy_config_dir)
+
+    print(e.eval(options.sequence, options.dot_bracket))
+
+
+if __name__ == "__main__":
+    main()

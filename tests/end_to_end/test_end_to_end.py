@@ -24,20 +24,19 @@ import os
 
 import pytest
 
-from knotify.algorithm.knotify import Knotify
-from tests.utils import for_each_parser
+from knotify import knotify
 
 HAIRPIN = os.getenv("HAIRPIN_SO", "./libhairpin.so")
 
 
+@pytest.mark.parametrize("parser", ["bruteforce", "yaep"])
 @pytest.mark.parametrize(
-    "name, sequence, result, parser_params, test_params",
+    "name, sequence, expected, config",
     [
         (
             "baseline",
             "GGGAAAUGGACUGAGCGGCGCCGACCGCCAAACAACCGGCA",
             "..............((((.[[[[.))))........]]]].",
-            {},
             {},
         ),
         (
@@ -45,13 +44,11 @@ HAIRPIN = os.getenv("HAIRPIN_SO", "./libhairpin.so")
             "ACGUGAAGGCUACGAUAGUGCCAG",
             ".((((..[[[)))).....]]]..",
             {"allow_ug": True},
-            {},
         ),
         (
             "baseline",
             "GGGAAACGGAGUGCGCGGCACCGUCCGCGGAACAAACGGAGAAGGCAGCU",
             ".............(((((..[[[[)))))......]]]]...........",
-            {},
             {},
         ),
         (
@@ -59,13 +56,11 @@ HAIRPIN = os.getenv("HAIRPIN_SO", "./libhairpin.so")
             "AUCCUUUUCAGUUGGGCCUUCUGGUGAUGUUUCUGGCCACCCAGGAGGUCCUGAGGAAGAGGUGGACGGCCAGAUUGACU",
             ".............(((((((((((.......[[[[[[[..)))))))))))................]]]]]]]......",
             {},
-            {},
         ),
         (
             "pick smaller dd for same energy, stems",
             "AAAAAACUAAUAGAGGGGGGACUUAGCGCCCCCCAAACCGUAACCCC",
             "..............((((((.....[[[))))))....]]]......",
-            {},
             {},
         ),
         (
@@ -73,6 +68,11 @@ HAIRPIN = os.getenv("HAIRPIN_SO", "./libhairpin.so")
             "gggaaacaacaggagggggccacguguggugccguccgcgcccccuauguuguaacagaagcaccacc",
             ".............(((((((.....[[[[[[[.......)))))))..............]]]]]]].",
             {"max_dd_size": 7},
+        ),
+        (
+            "hairpin (disabled)",
+            "CGCUCAACUCAUGGAGCGCACGACGGAUCACCAUCGAUUCGACAUGAG",
+            "(((((..[[[[[[)))))........................]]]]]]",
             {},
         ),
         (
@@ -80,35 +80,30 @@ HAIRPIN = os.getenv("HAIRPIN_SO", "./libhairpin.so")
             "CGCUCAACUCAUGGAGCGCACGACGGAUCACCAUCGAUUCGACAUGAG",
             "(((((..[[[[[[)))))........................]]]]]]",
             {},
-            {},
         ),
         (
             "hairpin (enabled)",
             "CGCUCAACUCAUGGAGCGCACGACGGAUCACCAUCGAUUCGACAUGAG",
             "(((((..[[[[[[))))).....((((((......)))))).]]]]]]",
-            {"allow_ug": True},
-            {"hairpin_grammar": HAIRPIN, "hairpin_allow_ug": True},
+            {"allow_ug": True, "hairpin_grammar": HAIRPIN, "hairpin_allow_ug": True},
         ),
         (
             "hairpin fixes pseudoknot (disabled)",
             "CGCUCAACCUCAGAGCGCAAGAGUCGAACGAAUACAGUUCGACAUGAGG",
             "......................(((((((.....[[))))))).]]...",
             {},
-            {},
         ),
         (
             "hairpin fixes pseudoknot (enabled)",
             "CGCUCAACCUCAGAGCGCAAGAGUCGAACGAAUACAGUUCGACAUGAGG",
             "(((((..[[[[[))))).....(((((((.......))))))).]]]]]",
-            {},
             {"hairpin_grammar": HAIRPIN},
         ),
         (
             "hairpin (big)",
             "AGUUCUCCUUAGAGUGUGUGUUGUUUACCCAACGCACUGUCCCUAUGGGGGGCCAACAUAGGUCCA",
             ".(((((((.......((((((((......))))))))....[[[[[)))))))....]]]]]....",
-            {"allow_ug": True},
-            {"hairpin_grammar": HAIRPIN, "hairpin_allow_ug": True},
+            {"allow_ug": True, "hairpin_grammar": HAIRPIN, "hairpin_allow_ug": True},
         ),
         # TODO(akolaitis): fix this
         # (
@@ -117,53 +112,36 @@ HAIRPIN = os.getenv("HAIRPIN_SO", "./libhairpin.so")
         #     "...........((((((((((((((...[[[[[)))))))))))))).............................]]]]].",
         #     {"hairpin_grammar": HAIRPIN},
         # ),
-    ],
-)
-@for_each_parser("parser, library_path")
-def test_end_to_end(
-    parser, library_path, name, sequence, result, parser_params, test_params
-):
-    config = {
-        "parser": parser(library_path, **parser_params),
-        "prune_early": True,
-    }
-    config.update(test_params)
-
-    results = Knotify().get_results(sequence, **config)
-    assert results.loc[0].dot_bracket == result
-
-
-@pytest.mark.parametrize(
-    "name, sequence, candidate, test_params",
-    [
         (
-            "without final au",
-            "GGGAAACGAGCCAAGUGGCGCCGACCACUUAAAAACACCGGAA",
-            ".............(((((..[[[.))))).........]]]..",
-            {"allow_skip_final_au": True},
+            "bulges",
+            "GCGUGGAAGCCCUGCCUGGGGUUGAAGCGUUAAAACUUAAUCAGGC",
+            "((((...(((((.[[[[[)))))...))))...........]]]]]",
+            {"pairalign": "bulges", "max_bulge_size": 3},
         ),
-        *[
-            (
-                "without final au (both sides)",
-                "GGGAAACGAGCCAAGUGGCUCCGACCACUUAAAAACACCGGAA",
-                candidate,
-                {"allow_skip_final_au": True, "max_stem_allow_smaller": 3},
-            )
-            for candidate in [
-                ".............(((((..[[[.))))).........]]]..",  # drop both
-                ".............(((((.[[[[.))))).........]]]].",  # drop left
-                "............((((((..[[[.))))))........]]]..",  # drop right
-                "............((((((.[[[[.))))))........]]]].",  # include all
-            ]
-        ],
+        (
+            "bulges fixes pseudoknots (enabled)",
+            "GUUUGUUAGUGGCGUGUCCGUCCGCAGCUGGCAAGCGAAUGUAAAGACUGAC",
+            "((((((((((.(((.[[[.[[[))).)))))))))).........]]].]]]",
+            {"pairalign": "bulges"},
+        ),
+        (
+            "bulges fixes pseudoknots (disabled)",
+            "GUUUGUUAGUGGCGUGUCCGUCCGCAGCUGGCAAGCGAAUGUAAAGACUGAC",
+            "(((((((((...............[[[)))))))))...........]]]..",
+            {},
+        ),
     ],
 )
-@for_each_parser("parser, library_path")
-def test_exploration(parser, library_path, name, sequence, candidate, test_params):
-    config = {
-        "parser": parser(library_path),
-        "prune_early": True,
-    }
-    config.update(test_params)
+def test_knotify(name, parser, sequence, expected, config):
+    opts = knotify.new_options()
 
-    assert candidate in Knotify().get_results(sequence, **config).dot_bracket.unique()
+    opts.parser = parser
+    opts.prune_early = True
+
+    for key, value in config.items():
+        opts.set_override(key, value)
+
+    algorithm, config = knotify.from_options(opts)
+    result = algorithm.get_results(sequence, **config)
+
+    assert result.loc[0].dot_bracket == expected

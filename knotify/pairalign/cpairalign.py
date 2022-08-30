@@ -20,42 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-import pytest
-
-from knotify.rna_analysis import StringAnalyser
-from tests.utils import for_each_parser
+from knotify.pairalign.ctypes import CTypesPairAlign
 
 
-@pytest.mark.parametrize(
-    "sequence, brackets",
-    [
-        (
-            "AUCCUUUUCA",
-            [
-                "(.....[).]",
-                "(...[..).]",
-                "(....[)..]",
-                "(...[)...]",
-                "(....[.).]",
-                "(...[.)..]",
-            ],
-        ),
-        (
-            "AGAUUGACU",
-            [
-                "(..[).]..",
-                "(.[.)...]",
-                "(.[)....]",
-            ],
-        ),
-    ],
-)
-@for_each_parser("parser, library_path")
-def test_get_pseudoknots(parser, library_path, sequence, brackets):
-    s = StringAnalyser(
-        sequence, parser=parser(library_path=library_path)
-    ).get_pseudoknots()
+class CPairAlign(CTypesPairAlign):
+    """
+    Consecutive RNA pairalign class. Match as many consecutive loop stems as possible.
 
-    assert len(s) == len(brackets)
-    for a in s:
-        assert a["dot_bracket"] in brackets
+    The implementation is done in C code in pairalign/cpairalign.c
+
+    For usage, refer to the unit tests in test/test_pairalign.py
+    """
