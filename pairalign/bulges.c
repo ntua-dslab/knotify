@@ -240,9 +240,3 @@ void initialize(int max_bulge_size, int min_stems_after_bulge,
   gMaxBulgeSize = max_bulge_size;
   gMinStemsAfterBulge = min_stems_after_bulge;
 }
-
-void main() {
-  void cb(char *s, int a, int b) { printf("FOUND: %s/%d/%d\n", s, a, b); }
-
-  initialize(3, 4, true);
-}
