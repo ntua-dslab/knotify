@@ -1,0 +1,137 @@
+# In [9]: set(knotty_found) & set(knotify_not_found)
+# Out[9]: {'116', '201', '203', '215', '217', '231', '239', '256', '67'}
+
+##########################################################################################################################
+### KNOTTY RESULTS
+### $ rna_analysis --algorithm knotty --sequence $SEQUENCE
+
+# INFO:knotify.benchmark:116 PASS (FOUND): CAGUAGUCCUGAACUAGUAAAUCAGGACC -- 0.06 seconds -- (20, 9, 0, 0)
+# INFO:knotify.benchmark:201 PASS (FOUND): CGGUAGAAAAGAUGGUUUAAACCACGCCUUCUACCAAGUUAGUAAAUAAAUAGGCGG -- 1.34 seconds -- (30, 27, 0, 0)
+# INFO:knotify.benchmark:203 PASS (FOUND): CGGUAGAAAAGAUGGUUUGAAAACCACGCCUUCUACCAAUAUAGUAAAUAAAUAGGCGG -- 1.57 seconds -- (32, 27, 0, 0)
+# INFO:knotify.benchmark:215 PASS (FOUND): CGAAUCUCAAGCAAUCAAGCAUUCUACUUCUAUUGCA -- 0.16 seconds -- (22, 15, 0, 0)
+# INFO:knotify.benchmark:217 PASS (FOUND): CAAUUUUCUGAAAAUUUUCAC -- 0.02 seconds -- (16, 5, 0, 0)
+# INFO:knotify.benchmark:231 PASS (FOUND): AGGGCGGGUACUGCCGUAAGUGCCA -- 0.04 seconds -- (18, 7, 0, 0)
+# INFO:knotify.benchmark:239 PASS (FOUND): GCCAGUGGUUUGCAAUGCUGGUCCGGUGCGU -- 0.09 seconds -- (22, 9, 0, 0)
+# INFO:knotify.benchmark:256 PASS (FOUND): UGAUGUGCAGCUUCUUAGGUGCAUCUCGUAUAGAAGCG -- 0.21 seconds -- (26, 12, 0, 0)
+# INFO:knotify.benchmark:67 PASS (FOUND): GCUGUGUAUCAUCCUGCCCGUCGGAGGAGCCACAGUUAAAUUCAAAAGACAAGGC -- 1.37 seconds -- (34, 21, 0, 0)
+
+##########################################################################################################################
+### KNOTIFY RESULTS
+### $ rna_analysis --max-dd-size 2 --parser=bruteforce --allow-ug --max-stem-allow-smaller=2 --energy=pkenergy --allow-skip-final-au --pairalign=bulges,consecutive --max-bulge-size=3 --min-stems-after-bulge=2 --sequence $SEQUENCE
+
+# INFO:knotify.benchmark:116 FAIL (FOUND): CAGUAGUCCUGAACUAGUAAAUCAGGACC -- 0.11 seconds -- (14, 8, 2, 5)
+# DEBUG:knotify.benchmark:Results so far: {'correct': 37, 'correct_core_stems': 59, 'truth_in_candidates': 65, 'count': 262, 'duration': 24.969527999999993}
+# DEBUG:knotify.benchmark:Dot bracket mismatch:
+# SEQ: CAGUAGUCCUGAACUAGUAAAUCAGGACC
+# PRD: .....[[[[[[[..[...]..]]]]]]].
+# GND: .(((.[[[[[[[)))......]]]]]]].
+
+# INFO:knotify.benchmark:201 FAIL: CGGUAGAAAAGAUGGUUUAAACCACGCCUUCUACCAAGUUAGUAAAUAAAUAGGCGG -- 0.20 seconds -- (22, 27, 0, 8)
+# DEBUG:knotify.benchmark:Results so far: {'correct': 55, 'correct_core_stems': 104, 'truth_in_candidates': 104, 'count': 262, 'duration': 45.09825900000001}
+# DEBUG:knotify.benchmark:Dot bracket mismatch:
+# SEQ: CGGUAGAAAAGAUGGUUUAAACCACGCCUUCUACCAAGUUAGUAAAUAAAUAGGCGG
+# PRD: .((((((.................[[[[[))))))................]]]]].
+# GND: .((((((.....((((....))))[[[[[))))))................]]]]].
+
+# INFO:knotify.benchmark:203 FAIL: CGGUAGAAAAGAUGGUUUGAAAACCACGCCUUCUACCAAUAUAGUAAAUAAAUAGGCGG -- 0.19 seconds -- (22, 27, 0, 10)
+# DEBUG:knotify.benchmark:Results so far: {'correct': 55, 'correct_core_stems': 106, 'truth_in_candidates': 104, 'count': 262, 'duration': 45.58349600000001}
+# DEBUG:knotify.benchmark:Dot bracket mismatch:
+# SEQ: CGGUAGAAAAGAUGGUUUGAAAACCACGCCUUCUACCAAUAUAGUAAAUAAAUAGGCGG
+# PRD: .((((((...................[[[[[))))))................]]]]].
+# GND: .((((((.....(((((....)))))[[[[[))))))................]]]]].
+
+# INFO:knotify.benchmark:215 FAIL: CGAAUCUCAAGCAAUCAAGCAUUCUACUUCUAUUGCA -- 0.05 seconds -- (18, 13, 4, 2)
+# DEBUG:knotify.benchmark:Results so far: {'correct': 56, 'correct_core_stems': 111, 'truth_in_candidates': 106, 'count': 262, 'duration': 49.103548}
+# DEBUG:knotify.benchmark:Dot bracket mismatch:
+# SEQ: CGAAUCUCAAGCAAUCAAGCAUUCUACUUCUAUUGCA
+# PRD: .((((.....[[[[[..[[.))))...]]..]]]]].
+# GND: .((((((...[[[[[..)).)))).......]]]]].
+
+# INFO:knotify.benchmark:217 FAIL (FOUND): CAAUUUUCUGAAAAUUUUCAC -- 0.18 seconds -- (10, 4, 2, 5)
+# DEBUG:knotify.benchmark:Results so far: {'correct': 56, 'correct_core_stems': 111, 'truth_in_candidates': 108, 'count': 262, 'duration': 49.601688}
+# DEBUG:knotify.benchmark:Dot bracket mismatch:
+# SEQ: CAAUUUUCUGAAAAUUUUCAC
+# PRD: .((((((...)))))).....
+# GND: .(((((..[[[))))).]]].
+
+# INFO:knotify.benchmark:231 FAIL (FOUND): AGGGCGGGUACUGCCGUAAGUGCCA -- 0.14 seconds -- (0, 3, 14, 8)
+# DEBUG:knotify.benchmark:Results so far: {'correct': 64, 'correct_core_stems': 122, 'truth_in_candidates': 118, 'count': 262, 'duration': 51.877921}
+# DEBUG:knotify.benchmark:Dot bracket mismatch:
+# SEQ: AGGGCGGGUACUGCCGUAAGUGCCA
+# PRD: ..[[[[..[[[....]]]..]]]].
+# GND: ..(((.[[[[[[)))...]]]]]].
+
+# INFO:knotify.benchmark:239 FAIL (FOUND): GCCAGUGGUUUGCAAUGCUGGUCCGGUGCGU -- 0.16 seconds -- (20, 9, 0, 2)
+# DEBUG:knotify.benchmark:Results so far: {'correct': 70, 'correct_core_stems': 129, 'truth_in_candidates': 125, 'count': 262, 'duration': 52.996401999999996}
+# DEBUG:knotify.benchmark:Dot bracket mismatch:
+# SEQ: GCCAGUGGUUUGCAAUGCUGGUCCGGUGCGU
+# PRD: ((((((....[[[[..))))))....]]]].
+# GND: (((((((...[[[[.)))))))....]]]].
+
+# INFO:knotify.benchmark:256 FAIL: UGAUGUGCAGCUUCUUAGGUGCAUCUCGUAUAGAAGCG -- 0.06 seconds -- (26, 10, 2, 0)
+# DEBUG:knotify.benchmark:Results so far: {'correct': 74, 'correct_core_stems': 135, 'truth_in_candidates': 130, 'count': 262, 'duration': 64.044961}
+# DEBUG:knotify.benchmark:Dot bracket mismatch:
+# SEQ: UGAUGUGCAGCUUCUUAGGUGCAUCUCGUAUAGAAGCG
+# PRD: .(((((((.[[[[[[..[)))))))...]..]]]]]].
+# GND: .(((((((.[[[[[[...)))))))......]]]]]].
+
+# INFO:knotify.benchmark:67 FAIL: GCUGUGUAUCAUCCUGCCCGUCGGAGGAGCCACAGUUAAAUUCAAAAGACAAGGC -- 0.22 seconds -- (16, 17, 6, 16)
+# DEBUG:knotify.benchmark:Results so far: {'correct': 20, 'correct_core_stems': 25, 'truth_in_candidates': 37, 'count': 262, 'duration': 17.377743}
+# DEBUG:knotify.benchmark:Dot bracket mismatch:
+# SEQ: GCUGUGUAUCAUCCUGCCCGUCGGAGGAGCCACAGUUAAAUUCAAAAGACAAGGC
+# PRD: ((((((..((.............[[[))..))))))....]]]............
+# GND: ((((((..((.(((.[[[.[[[))).))..))))))...........]]]..]]]
+
+
+#########################################################
+### TAKEAWAYS
+
+
+#### [case 231]  Bug when max-stem-allow-smaller is coming into play for some reason, breaking the pattern. For the same case for max-stem-allow-smaller=1 we get the correct result, but energy is worse
+
+# (.venv) ubuntu@wayfarer ~/D/d/knotify-dev (master) $ rna_analysis --max-dd-size 2 --parser=bruteforce --allow-ug --max-stem-allow-smaller=1 --energy=pkenergy --allow-skip-final-au --pairalign=bulges,consecutive --max-bulge-size=3 --min-stems-after-bulge=2 --sequence AGGGCGGGUACUGCCGUAAGUGCCA
+# Sequence:  AGGGCGGGUACUGCCGUAAGUGCCA
+# Structure: ..(((.[[[[[[)))...]]]]]].
+# Energy: -7.77400016784668
+# Duration: 0.130555 s
+# (.venv) ubuntu@wayfarer ~/D/d/knotify-dev (master) $ rna_analysis --max-dd-size 2 --parser=bruteforce --allow-ug --max-stem-allow-smaller=2 --energy=pkenergy --allow-skip-final-au --pairalign=bulges,consecutive --max-bulge-size=3 --min-stems-after-bulge=2 --sequence AGGGCGGGUACUGCCGUAAGUGCCA
+# Sequence:  AGGGCGGGUACUGCCGUAAGUGCCA
+# Structure: ..[[[[..[[[....]]]..]]]].
+# Energy: -8.25
+# Duration: 0.282318 s
+# (.venv) ubuntu@wayfarer ~/D/d/knotify-dev (master) $ rna_analysis --max-dd-size 2 --parser=bruteforce --allow-ug --max-stem-allow-smaller=3 --energy=pkenergy --allow-skip-final-au --pairalign=bulges,consecutive --max-bulge-size=3 --min-stems-after-bulge=2 --sequence AGGGCGGGUACUGCCGUAAGUGCCA
+# Sequence:  AGGGCGGGUACUGCCGUAAGUGCCA
+# Structure: ......((((((......)))))).
+# Energy: -8.800000190734863
+# Duration: 0.529781 s
+# (.venv) ubuntu@wayfarer ~/D/d/knotify-dev (master) $ rna_analysis --max-dd-size 2 --parser=bruteforce --allow-ug --max-stem-allow-smaller=4 --energy=pkenergy --allow-skip-final-au --pairalign=bulges,consecutive --max-bulge-size=3 --min-stems-after-bulge=2 --sequence AGGGCGGGUACUGCCGUAAGUGCCA
+# Sequence:  AGGGCGGGUACUGCCGUAAGUGCCA
+# Structure: ......((((((......)))))).
+# Energy: -8.800000190734863
+# Duration: 0.979807 s
+# (.venv) ubuntu@wayfarer ~/D/d/knotify-dev (master) $ rna_analysis --algorithm knotty --sequence AGGGCGGGUACUGCCGUAAGUGCCA
+# Sequence:  AGGGCGGGUACUGCCGUAAGUGCCA
+# Structure: ..(((.[[[[[[)))...]]]]]].
+# Energy: -6.03
+# Duration: 0.047719 s
+
+
+#### [case 116] max-stem-allow-smaller again at play here
+
+# (.venv) ubuntu@wayfarer ~/D/d/knotify-dev (master) $ rna_analysis --max-dd-size 2 --parser=bruteforce --allow-ug --max-stem-allow-smaller=1 --energy=pkenergy --allow-skip-final-au --pairalign=bulges,consecutive --max-bulge-size=3 --min-stems-after-bulge=2 --sequence CAGUAGUCCUGAACUAGUAAAUCAGGACC
+# Sequence:  CAGUAGUCCUGAACUAGUAAAUCAGGACC
+# Structure: .(((.[[[[[[[)))......]]]]]]].
+# Energy: -6.004000186920166
+# Duration: 0.112686 s
+# (.venv) ubuntu@wayfarer ~/D/d/knotify-dev (master) $ rna_analysis --max-dd-size 2 --parser=bruteforce --allow-ug --max-stem-allow-smaller=2 --energy=pkenergy --allow-skip-final-au --pairalign=bulges,consecutive --max-bulge-size=3 --min-stems-after-bulge=2 --sequence CAGUAGUCCUGAACUAGUAAAUCAGGACC
+# Sequence:  CAGUAGUCCUGAACUAGUAAAUCAGGACC
+# Structure: .....[[[[[[[..[...]..]]]]]]].
+# Energy: -6.650000095367432
+# Duration: 0.224027 s
+# (.venv) ubuntu@wayfarer ~/D/d/knotify-dev (master) $ rna_analysis --algorithm knotty --sequence CAGUAGUCCUGAACUAGUAAAUCAGGACC
+# Sequence:  CAGUAGUCCUGAACUAGUAAAUCAGGACC
+# Structure: .(((.[[[[[[[)))......]]]]]]].
+# Energy: -6.85
+# Duration: 0.071489 s
+
+#### knotify and knotty energy is now different. not trivial to get the knotty energy calculation in our code
