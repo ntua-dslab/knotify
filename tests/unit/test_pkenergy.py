@@ -28,18 +28,26 @@ from knotify.energy.pkenergy import PKEnergy
 
 PKENERGY_SO = os.getenv("PKENERGY_SO", "./libpkenergy.so")
 PKENERGY_PARAMS = os.getenv("PKENERGY_PARAMS", "pkenergy/hotknots/params")
+PKENERGY_MODEL = os.getenv("PKENERGY_MODEL", "dp")
 
 
 @pytest.mark.parametrize(
-    "sequence, dot_bracket, result",
+    "sequence, dot_bracket, model, result",
     [
         (
             "AAUGCAACUUUUAAAUAGUUUAUCUGUUAAGAUAAACCACCUAGGUUGCAUAUAUAAAAAAUAAAAGGUGCC",
             ".(((((((((...........................[[[[[)))))))))..............]]]]]..",
+            "dp",
             -6.985999584197998,
+        ),
+        (
+            "AAUGCAACUUUUAAAUAGUUUAUCUGUUAAGAUAAACCACCUAGGUUGCAUAUAUAAAAAAUAAAAGGUGCC",
+            ".(((((((((...........................[[[[[)))))))))..............]]]]]..",
+            "cc2006b",
+            -11.74093246459961,
         ),
     ],
 )
-def test_pkenergy(sequence: str, dot_bracket: str, result: float):
-    e = PKEnergy(PKENERGY_SO, PKENERGY_PARAMS)
+def test_pkenergy(sequence: str, dot_bracket: str, model: str, result: float):
+    e = PKEnergy(PKENERGY_SO, PKENERGY_PARAMS, model)
     assert e.eval(sequence, dot_bracket) == result

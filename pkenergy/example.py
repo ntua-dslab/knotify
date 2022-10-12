@@ -33,7 +33,7 @@ def cstr(s: str):
     return ctypes.c_char_p(s.encode())
 
 
-c.initialize(cstr("hotknots/params"))
+c.initialize(cstr("hotknots/params", cstr("dp")))
 
 for x in range(1000):
     print(

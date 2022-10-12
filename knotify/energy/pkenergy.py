@@ -32,17 +32,20 @@ class PKEnergy(BaseEnergy):
     ```
     // will be called once during instantiation of the class. use to load any
     // configuation files (e.g. parameters).
-    void initialize(char *config_dir);
+    void initialize(char *config_dir, char *model);
 
     // will be called for each sequence.
     float get_energy(char *sequence, char *structure);
     ```
     """
 
-    def __init__(self, library: str, config_dir: str):
+    def __init__(self, library: str, config_dir: str, model: str):
         self._lib = ctypes.CDLL(library)
         self._lib.get_energy.restype = ctypes.c_double
-        self._lib.initialize(ctypes.c_char_p(config_dir.encode()))
+        self._lib.initialize(
+            ctypes.c_char_p(config_dir.encode()),
+            ctypes.c_char_p(model.encode()),
+        )
 
     def eval(self, sequence: str, dot_bracket: str) -> float:
         return self._lib.get_energy(

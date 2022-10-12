@@ -88,6 +88,11 @@ ENERGY_OPTS = [
     cfg.StrOpt("energy", default="vienna", choices=["vienna", "pkenergy"]),
     cfg.StrOpt("pkenergy", default="./libpkenergy.so"),
     cfg.StrOpt("pkenergy-config-dir", default="./pkenergy/hotknots/params"),
+    cfg.StrOpt(
+        "pkenergy-model",
+        default="dp",
+        choices=["dp", "re", "cc2006a", "cc2006b", "cc2006c"],
+    ),
 ]
 
 ALGORITHM_OPTS = [
@@ -151,6 +156,7 @@ class ConfigOpts(cfg.ConfigOpts):
     energy: str
     pkenergy: str
     pkenergy_config_dir: str
+    pkenergy_model: str
 
     # ALGORITHM_OPTS
     algorithm: str
@@ -206,7 +212,7 @@ def from_options(opts: ConfigOpts) -> Tuple[BaseAlgorithm, dict]:
     if opts.energy == "vienna":
         energy = ViennaEnergy()
     elif opts.energy == "pkenergy":
-        energy = PKEnergy(opts.pkenergy, opts.pkenergy_config_dir)
+        energy = PKEnergy(opts.pkenergy, opts.pkenergy_config_dir, opts.pkenergy_model)
 
     algorithm = None
     if opts.algorithm == "knotify":

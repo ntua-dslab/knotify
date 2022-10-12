@@ -41,7 +41,9 @@ def main():
     if options.energy == "vienna":
         e = ViennaEnergy()
     elif options.energy == "pkenergy":
-        e = PKEnergy(options.pkenergy, options.pkenergy_config_dir)
+        e = PKEnergy(
+            options.pkenergy, options.pkenergy_config_dir, options.pkenergy_model
+        )
 
     print(e.eval(options.sequence, options.dot_bracket))
 
