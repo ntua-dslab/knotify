@@ -84,7 +84,7 @@ from knotify import benchmark
                 "allow_skip_final_au": True,
             },
             {
-                "correct": 11,
+                "correct": 12,
                 "correct_core_stems": 14,
                 "truth_in_candidates": 17,
             },
