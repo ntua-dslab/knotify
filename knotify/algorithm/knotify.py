@@ -84,7 +84,7 @@ class Knotify(BaseAlgorithm):
                         continue
 
                     knots_without_au = skip_final_au(
-                        sequence, dot_bracket, right_loop_stems, left_loop_stems
+                        sequence, dot_bracket, left_loop_stems, right_loop_stems
                     )
                     if knots_without_au:
                         pseudoknots.extend(
@@ -94,7 +94,7 @@ class Knotify(BaseAlgorithm):
                                 "left_loop_stems": l,
                                 "dd": dd_size,
                             }
-                            for (d, r, l) in knots_without_au
+                            for (d, l, r) in knots_without_au
                         )
 
         if not pseudoknots:
