@@ -43,9 +43,9 @@ class CTypesParser(BaseParser):
     );
 
     // Parse RNA sequence and return positions of possible core stems pseudoknots.
-    // For each core stem position, the callback function will be executed and the
-    // following arguments are passed: <left1>,<size1>,<leftloopsize1>,<ddsize1>
-    char *detect_pseudoknots(char *sequence, void (*cb)(int, int, int, int));
+    // For each core stem position, the callback function will be executed. See the
+    // add_result() definition below for the callback arguments.
+    char *detect_pseudoknots(char *sequence, void (*cb)(int, int, int, int, int, int));
     ```
     """
 
