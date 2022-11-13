@@ -31,7 +31,6 @@ from knotify.energy.vienna import ViennaEnergy
 from knotify import hairpin
 from knotify.pairalign.base import BasePairAlign
 from knotify.parsers.base import BaseParser
-from knotify.pairalign.cpairalign import CPairAlign
 from knotify.extensions.skip_final_au import SkipFinalAU
 
 

@@ -21,7 +21,6 @@
 # SOFTWARE.
 #
 from knotify.parsers.ctypes import CTypesParser
-from knotify.grammars.pseudoknot import generate_grammar
 
 
 class BruteForceParser(CTypesParser):
