@@ -103,9 +103,9 @@ void find_bulge(char *sequence, int I, int J, int i, int j, bool *o_has_bulge,
   For simplicity in the code below, the indices of the _core_ loop stems
   are needed. See how each index maps to which sequence position:
 
-  BRACKET  = ...(.[....)......].....
-  NOTATION = ...L.R....l......r.....
-             01234567890123456789012
+  BRACKET  = ...(......[....)......].....
+  NOTATION = ...L......R....l......r.....
+             0123456789012345678901234567
              0         1         2
 
   L -> left index of core stem in left loop
@@ -118,11 +118,11 @@ void find_bulge(char *sequence, int I, int J, int i, int j, bool *o_has_bulge,
 
   For potential left loop stems, these conditions hold for a and b:
     0 <= a <= L-1         -- in example above a in [0, 2]
-    l+1 <= b <= r-1       -- in example above b in [11, 16]
+    l+1 <= b <= r-1       -- in example above b in [16, 21]
 
   For potential right loop stems, these conditions hold for a and b:
-    L+1 <= a <= R-1       -- in example above a in [4, 4]
-    r+1 >= b <= LEN-1     -- in example above b in [18, 22]
+    L+1 <= a <= R-1       -- in example above a in [4, 9]
+    r+1 >= b <= LEN-1     -- in example above b in [23, 27]
 
 */
 void pairalign(char *sequence, int i, int j, int left_loop_size, int dd_size,
