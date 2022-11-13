@@ -27,9 +27,12 @@ USER 879:879
 
 ENV \
     KNOTIFY_YAEP_LIBRARY_PATH=/knotify/lib/libpseudoknot.so \
+    KNOTIFY_YAEP_LTYPE_LIBRARY_PATH=/knotify/lib/libpseudoknot_ltype.so \
     KNOTIFY_BRUTEFORCE_LIBRARY_PATH=/knotify/lib/libbruteforce.so \
+    KNOTIFY_BRUTEFORCE_LTYPE_LIBRARY_PATH=/knotify/lib/libbruteforce_ltype.so \
     KNOTIFY_SKIP_FINAL_AU_LIBRARY_PATH=/knotify/lib/libskipfinalau.so \
     KNOTIFY_CONSECUTIVE_PAIRALIGN_LIBRARY_PATH=/knotify/lib/libcpairalign.so \
+    KNOTIFY_CONSECUTIVE_LTYPE_PAIRALIGN_LIBRARY_PATH=/knotify/lib/libcpairalign_ltype.so \
     KNOTIFY_BULGES_LIBRARY_PATH=/knotify/lib/libbulges.so \
     KNOTIFY_PKENERGY=/knotify/lib/libpkenergy.so \
     KNOTIFY_PKENERGY_CONFIG_DIR=/knotify/pkenergy-params

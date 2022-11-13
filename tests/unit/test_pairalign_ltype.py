@@ -20,40 +20,23 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-import os
-
 import pytest
-
-from knotify.parsers.bruteforce import BruteForceParser, BruteForceLTypeParser
-from knotify.parsers.yaep import YaepParser, YaepLTypeParser
-
-PSEUDOKNOT = os.getenv("PSEUDOKNOT_SO", "./libpseudoknot.so")
-PSEUDOKNOT_LTYPE = os.getenv("PSEUDOKNOT_LTYPE_SO", "./libpseudoknot_ltype.so")
-BRUTEFORCE = os.getenv("BRUTEFORCE_SO", "./libbruteforce.so")
-BRUTEFORCE_LTYPE = os.getenv("BRUTEFORCE_LTYPE_SO", "./libbruteforce_ltype.so")
+from knotify.pairalign.cpairalign import CLTypePairAlign
 
 
-def for_each_parser(variable_names):
-    def wrapped(f):
-        return pytest.mark.parametrize(
-            variable_names,
-            [
-                (YaepParser, PSEUDOKNOT),
-                (BruteForceParser, BRUTEFORCE),
-            ],
-        )(f)
-
-    return wrapped
+CPAIRALIGN_LTYPE_SO = "./libcpairalign_ltype.so"
 
 
-def for_each_parser_ltype(variable_names):
-    def wrapped(f):
-        return pytest.mark.parametrize(
-            variable_names,
-            [
-                (YaepLTypeParser, PSEUDOKNOT_LTYPE),
-                (BruteForceLTypeParser, BRUTEFORCE_LTYPE),
-            ],
-        )(f)
+@pytest.mark.parametrize(
+    "sequence,core_stems,expected",
+    [
+        ("caaaacaaggaaagaaac", (0, 18, 4, 2, 3, 0), ("(....{..[)...}...]", 0, 0, 0)),
+        ("AUAGUAUGUAUAUAGU", (2, 12, 1, 1, 2, 1), ("((({{.[.)))}}]..", 2, 1, 0)),
+        ("AUAGUCUGUAUAUAGU", (2, 12, 1, 1, 2, 1), ("((({{[[.)))}}]].", 2, 1, 1)),
+        ("AUAGUCUGUAAAUAGU", (2, 12, 1, 1, 2, 1), (".(({{[[.)).}}]].", 1, 1, 1)),
+    ],
+)
+def test_pairalign(sequence, core_stems, expected):
+    pairalign = CLTypePairAlign(library_path=CPAIRALIGN_LTYPE_SO)
 
-    return wrapped
+    assert pairalign.pairalign(sequence, *core_stems) == [expected]

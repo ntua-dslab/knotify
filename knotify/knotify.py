@@ -29,17 +29,18 @@ from knotify import hairpin
 from knotify.algorithm.base import BaseAlgorithm
 from knotify.algorithm.ipknot import IPKnot
 from knotify.algorithm.knotify import Knotify
+from knotify.algorithm.knotify_ltype import KnotifyLType
 from knotify.algorithm.knotty import Knotty
 from knotify.algorithm.ihfold import IHFold
 from knotify.algorithm.hotknots import HotKnots
 from knotify.energy.vienna import ViennaEnergy
 from knotify.energy.external import ExternalEnergy
 from knotify.energy.pkenergy import PKEnergy
-from knotify.pairalign.cpairalign import CPairAlign
+from knotify.pairalign.cpairalign import CPairAlign, CLTypePairAlign
 from knotify.pairalign.bulges import BulgesPairAlign
 from knotify.extensions.skip_final_au import SkipFinalAU
-from knotify.parsers.yaep import YaepParser
-from knotify.parsers.bruteforce import BruteForceParser
+from knotify.parsers.yaep import YaepParser, YaepLTypeParser
+from knotify.parsers.bruteforce import BruteForceParser, BruteForceLTypeParser
 
 CSV_OPTS = [
     cfg.StrOpt("csv"),
@@ -50,6 +51,8 @@ PSEUDOKNOT_OPTS = [
     cfg.StrOpt("parser", choices=["bruteforce", "yaep"], default="yaep"),
     cfg.StrOpt("yaep-library-path", default="./libpseudoknot.so"),
     cfg.StrOpt("bruteforce-library-path", default="./libbruteforce.so"),
+    cfg.StrOpt("yaep-ltype-library-path", default="./libpseudoknot_ltype.so"),
+    cfg.StrOpt("bruteforce-ltype-library-path", default="./libbruteforce_ltype.so"),
     cfg.BoolOpt("allow-ug", default=False),
     cfg.IntOpt("max-dd-size", default=2),
     cfg.IntOpt("min-dd-size", default=0),
@@ -70,6 +73,9 @@ PAIRALIGN_OPTS = [
     cfg.BoolOpt("allow-skip-final-au", default=False),
     cfg.StrOpt("skip-final-au-library-path", default="./libskipfinalau.so"),
     cfg.StrOpt("consecutive-pairalign-library-path", default="./libcpairalign.so"),
+    cfg.StrOpt(
+        "consecutive-ltype-pairalign-library-path", default="./libcpairalign_ltype.so"
+    ),
     cfg.StrOpt("bulges-library-path", default="./libbulges.so"),
     cfg.IntOpt("max-bulge-size", default=1),
     cfg.IntOpt("min-stems-after-bulge", default=1),
@@ -102,7 +108,7 @@ ALGORITHM_OPTS = [
     cfg.StrOpt(
         "algorithm",
         default="knotify",
-        choices=["knotify", "ipknot", "knotty", "hotknots", "ihfold"],
+        choices=["knotify", "ipknot", "knotty", "hotknots", "ihfold", "knotify-ltype"],
     ),
     cfg.StrOpt("ipknot-executable", default="./.ipknot/ipknot"),
     cfg.StrOpt("knotty-executable", default="./.knotty/knotty"),
@@ -127,6 +133,8 @@ class ConfigOpts(cfg.ConfigOpts):
     parser: str
     yaep_library_path: str
     bruteforce_library_path: str
+    yaep_ltype_library_path: str
+    bruteforce_ltype_library_path: str
     allow_ug: bool
     max_dd_size: int
     min_dd_size: int
@@ -142,6 +150,7 @@ class ConfigOpts(cfg.ConfigOpts):
     allow_skip_final_au: bool
     skip_final_au_library_path: str
     consecutive_pairalign_library_path: str
+    consecutive_ltype_pairalign_library_path: str
     bulges_library_path: str
     max_bulge_size: int
     min_stems_after_bulge: int
@@ -209,9 +218,17 @@ def from_options(opts: ConfigOpts) -> Tuple[BaseAlgorithm, dict]:
     }
     parser = None
     if opts.parser == "yaep":
-        parser = YaepParser(opts.yaep_library_path, **rna_parser_args)
+        if opts.algorithm == "knotify":
+            parser = YaepParser(opts.yaep_library_path, **rna_parser_args)
+        elif opts.algorithm == "knotify-ltype":
+            parser = YaepLTypeParser(opts.yaep_ltype_library_path, **rna_parser_args)
     elif opts.parser == "bruteforce":
-        parser = BruteForceParser(opts.bruteforce_library_path, **rna_parser_args)
+        if opts.algorithm == "knotify":
+            parser = BruteForceParser(opts.bruteforce_library_path, **rna_parser_args)
+        elif opts.algorithm == "knotify-ltype":
+            parser = BruteForceLTypeParser(
+                opts.bruteforce_ltype_library_path, **rna_parser_args
+            )
 
     energy = None
     if opts.energy == "vienna":
@@ -224,6 +241,8 @@ def from_options(opts: ConfigOpts) -> Tuple[BaseAlgorithm, dict]:
     algorithm = None
     if opts.algorithm == "knotify":
         algorithm = Knotify()
+    elif opts.algorithm == "knotify-ltype":
+        algorithm = KnotifyLType()
     elif opts.algorithm == "ipknot":
         algorithm = IPKnot()
     elif opts.algorithm == "knotty":
@@ -235,8 +254,18 @@ def from_options(opts: ConfigOpts) -> Tuple[BaseAlgorithm, dict]:
 
     pairalign = []
     if "consecutive" in opts.pairalign:
-        pairalign.append(CPairAlign(opts.consecutive_pairalign_library_path).pairalign)
+        if opts.algorithm == "knotify":
+            pairalign.append(
+                CPairAlign(opts.consecutive_pairalign_library_path).pairalign
+            )
+        elif opts.algorithm == "knotify-ltype":
+            pairalign.append(
+                CLTypePairAlign(opts.consecutive_ltype_pairalign_library_path).pairalign
+            )
     if "bulges" in opts.pairalign:
+        if opts.algorithm == "knotify-ltype":
+            raise Exception("bulges not supported with knotify-ltype yet")
+
         pairalign.append(
             BulgesPairAlign(
                 opts.max_bulge_size,

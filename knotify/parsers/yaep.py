@@ -21,7 +21,9 @@
 # SOFTWARE.
 #
 from knotify.parsers.ctypes import CTypesParser
+from knotify.parsers.ctypes_ltype import CTypesLTypeParser
 from knotify.grammars.pseudoknot import generate_grammar
+from knotify.grammars.pseudoknot_ltype import generate_grammar as generate_grammar_ltype
 
 
 class YaepParser(CTypesParser):
@@ -36,3 +38,17 @@ class YaepParser(CTypesParser):
 
     def get_options(self) -> str:
         return generate_grammar(self.allow_ug, self.max_dd_size)
+
+
+class YaepLTypeParser(CTypesLTypeParser):
+    """
+    Parser that uses a YAEP grammar to detect pseudoknots in a string.
+
+    Reference C library implementation is in parsers/pseudoknot_ltype.c
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(YaepLTypeParser, self).__init__(*args, **kwargs)
+
+    def get_options(self) -> str:
+        return generate_grammar_ltype(self.allow_ug, self.max_dd_size)

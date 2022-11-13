@@ -21,6 +21,7 @@
 # SOFTWARE.
 #
 from knotify.pairalign.ctypes import CTypesPairAlign
+from knotify.pairalign.ctypes_ltype import CTypesLTypePairAlign
 
 
 class CPairAlign(CTypesPairAlign):
@@ -28,6 +29,16 @@ class CPairAlign(CTypesPairAlign):
     Consecutive RNA pairalign class. Match as many consecutive loop stems as possible.
 
     The implementation is done in C code in pairalign/cpairalign.c
+
+    For usage, refer to the unit tests in test/test_pairalign.py
+    """
+
+
+class CLTypePairAlign(CTypesLTypePairAlign):
+    """
+    Consecutive RNA pairalign class. Match as many consecutive loop stems as possible.
+
+    The implementation is done in C code in pairalign/cpairalign_ltype.c
 
     For usage, refer to the unit tests in test/test_pairalign.py
     """

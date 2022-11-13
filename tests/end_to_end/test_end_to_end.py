@@ -130,6 +130,12 @@ HAIRPIN = os.getenv("HAIRPIN_SO", "./libhairpin.so")
             "(((((((((...............[[[)))))))))...........]]]..",
             {},
         ),
+        (
+            "ltype dummy test case",
+            "AUAGUAUGUAUAUAGU",
+            "((({{.[.)))}}]..",
+            {"algorithm": "knotify-ltype"},
+        ),
     ],
 )
 def test_knotify(name, parser, sequence, expected, config):

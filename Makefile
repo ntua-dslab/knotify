@@ -18,7 +18,7 @@ YAEP_DIR = .yaep
 CFLAGS += -I$(YAEP_DIR)/src
 LIBS += $(YAEP_DIR)/src/libyaep.a
 
-grammars: libpseudoknot.so libhairpin.so libbruteforce.so
+grammars: libpseudoknot.so libhairpin.so libbruteforce.so libpseudoknot_ltype.so libbruteforce_ltype.so
 
 lib%.so: parsers/%.c $(YAEP_DIR)/src/libyaep.a
 	$(CC) $< $(CFLAGS) $(LIBS) -fPIC -shared -o $@
@@ -41,7 +41,7 @@ libpkenergy.so:
 #####################################################
 # PairAligns
 
-pairaligns: libskipfinalau.so libcpairalign.so libbulges.so
+pairaligns: libskipfinalau.so libcpairalign.so libbulges.so libcpairalign_ltype.so
 
 libskipfinalau.so: pairalign/skipfinalau.c
 	$(CC) $<  -fPIC -shared -o $@
@@ -50,6 +50,9 @@ libcpairalign.so: pairalign/cpairalign.c
 	$(CC) $<  -fPIC -shared -o $@
 
 libbulges.so: pairalign/bulges.c
+	$(CC) $<  -fPIC -shared -o $@
+
+libcpairalign_ltype.so: pairalign/cpairalign_ltype.c
 	$(CC) $<  -fPIC -shared -o $@
 
 #####################################################

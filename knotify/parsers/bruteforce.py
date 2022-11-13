@@ -21,6 +21,7 @@
 # SOFTWARE.
 #
 from knotify.parsers.ctypes import CTypesParser
+from knotify.parsers.ctypes_ltype import CTypesLTypeParser
 
 
 class BruteForceParser(CTypesParser):
@@ -32,6 +33,20 @@ class BruteForceParser(CTypesParser):
 
     def __init__(self, *args, **kwargs):
         super(BruteForceParser, self).__init__(*args, **kwargs)
+
+    def get_options(self) -> str:
+        return ""
+
+
+class BruteForceLTypeParser(CTypesLTypeParser):
+    """
+    Parser that uses brute force to detect all possible pseudoknot core stems.
+
+    Reference C library implementation is in parsers/bruteforce_ltype.c
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(BruteForceLTypeParser, self).__init__(*args, **kwargs)
 
     def get_options(self) -> str:
         return ""
