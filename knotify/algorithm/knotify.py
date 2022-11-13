@@ -90,8 +90,8 @@ class Knotify(BaseAlgorithm):
                         pseudoknots.extend(
                             {
                                 "dot_bracket": d,
-                                "right_loop_stems": r,
                                 "left_loop_stems": l,
+                                "right_loop_stems": r,
                                 "dd": dd_size,
                             }
                             for (d, l, r) in knots_without_au
