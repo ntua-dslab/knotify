@@ -33,6 +33,7 @@ from knotify.algorithm.knotty import Knotty
 from knotify.algorithm.ihfold import IHFold
 from knotify.algorithm.hotknots import HotKnots
 from knotify.energy.vienna import ViennaEnergy
+from knotify.energy.external import ExternalEnergy
 from knotify.energy.pkenergy import PKEnergy
 from knotify.pairalign.cpairalign import CPairAlign
 from knotify.pairalign.bulges import BulgesPairAlign
@@ -85,7 +86,7 @@ HAIRPIN_OPTS = [
 ]
 
 ENERGY_OPTS = [
-    cfg.StrOpt("energy", default="vienna", choices=["vienna", "pkenergy"]),
+    cfg.StrOpt("energy", default="vienna", choices=["vienna", "pkenergy", "external"]),
     cfg.StrOpt("pkenergy", default="./libpkenergy.so"),
     cfg.StrOpt("pkenergy-config-dir", default="./pkenergy/hotknots/params"),
     cfg.StrOpt(
@@ -93,6 +94,7 @@ ENERGY_OPTS = [
         default="dp",
         choices=["dp", "re", "cc2006a", "cc2006b", "cc2006c"],
     ),
+    cfg.StrOpt("external-energy-executable"),
 ]
 
 ALGORITHM_OPTS = [
@@ -157,6 +159,7 @@ class ConfigOpts(cfg.ConfigOpts):
     pkenergy: str
     pkenergy_config_dir: str
     pkenergy_model: str
+    external_energy_executable: str
 
     # ALGORITHM_OPTS
     algorithm: str
@@ -213,6 +216,8 @@ def from_options(opts: ConfigOpts) -> Tuple[BaseAlgorithm, dict]:
         energy = ViennaEnergy()
     elif opts.energy == "pkenergy":
         energy = PKEnergy(opts.pkenergy, opts.pkenergy_config_dir, opts.pkenergy_model)
+    elif opts.energy == "external":
+        energy = ExternalEnergy(opts.external_energy_executable)
 
     algorithm = None
     if opts.algorithm == "knotify":

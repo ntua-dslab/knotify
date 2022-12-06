@@ -21,35 +21,24 @@
 # SOFTWARE.
 #
 
-from oslo_config import cfg
-from knotify.energy.pkenergy import PKEnergy
-from knotify.energy.vienna import ViennaEnergy
-from knotify.energy.external import ExternalEnergy
-from knotify.knotify import ENERGY_OPTS
+import subprocess
 
-OPTS = [
-    cfg.StrOpt("sequence", required=True),
-    cfg.StrOpt("dot-bracket", required=True),
-]
+from knotify.energy.base import BaseEnergy
 
 
-def main():
-    options = cfg.ConfigOpts()
-    options.register_cli_opts(OPTS)
-    options.register_cli_opts(ENERGY_OPTS)
-    options()
+class ExternalEnergy(BaseEnergy):
+    """
+    Base class for psuedoknot MFE calculation.
 
-    if options.energy == "vienna":
-        e = ViennaEnergy()
-    elif options.energy == "pkenergy":
-        e = PKEnergy(
-            options.pkenergy, options.pkenergy_config_dir, options.pkenergy_model
-        )
-    elif options.energy == "external":
-        e = ExternalEnergy(options.external_energy_executable)
+    Calculates MFE by calling an external executable. The executable will be called as
+    `<binary> <sequence> <dot_bracket>` and is expected to print the MFE to stdout. The
+    output will be parsed as a floating point number.
+    """
 
-    print(e.eval(options.sequence, options.dot_bracket))
+    def __init__(self, executable_path: str):
+        self.executable = executable_path
 
+    def eval(self, sequence: str, dot_bracket: str) -> float:
+        out = subprocess.check_output([self.executable, sequence, dot_bracket]).decode()
 
-if __name__ == "__main__":
-    main()
+        return float(out)
