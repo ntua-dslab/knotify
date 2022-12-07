@@ -79,6 +79,7 @@ def run_benchmark(options: knotify.ConfigOpts):
             "truth_in_candidates": 0,
             "count": len(only),
             "duration": 0,
+            "confusion_matrix": [0, 0, 0, 0],
         },
     }
 
@@ -87,10 +88,9 @@ def run_benchmark(options: knotify.ConfigOpts):
         start = datetime.now()
         results = algorithm.get_results(case["case"].lower(), **config)
         duration = datetime.now() - start
-        candidates = results[["dot_bracket", "energy", "stems"]].to_dict(
-            orient="records"
-        )
+        candidates = results[["dot_bracket", "energy", "stems"]].to_dict(orient="records")
         dot_bracket = candidates[0]["dot_bracket"]
+        energy = candidates[0]["energy"]
 
         correct = case["truth"] == dot_bracket
 
@@ -102,15 +102,18 @@ def run_benchmark(options: knotify.ConfigOpts):
             LOG.exception("Failed to retrieve number of correct core stems: %s", e)
             correct_core_stems = 0
 
-        confusion_matrix = scoring.get_confusion_matrix(
-            case["truth"], dot_bracket, slack=0
-        )
+        confusion_matrix = scoring.get_confusion_matrix(case["truth"], dot_bracket, slack=0)
         truth_in_candidates = case["truth"] in [p["dot_bracket"] for p in candidates]
 
         out["totals"]["correct"] += correct
         out["totals"]["correct_core_stems"] += correct_core_stems == 2
         out["totals"]["truth_in_candidates"] += truth_in_candidates
         out["totals"]["duration"] += duration.total_seconds()
+
+        out["totals"]["confusion_matrix"][0] += confusion_matrix[0]
+        out["totals"]["confusion_matrix"][1] += confusion_matrix[1]
+        out["totals"]["confusion_matrix"][2] += confusion_matrix[2]
+        out["totals"]["confusion_matrix"][3] += confusion_matrix[3]
 
         LOG.info(
             "%d %s%s: %s -- %.2f seconds -- %s",
@@ -142,6 +145,7 @@ def run_benchmark(options: knotify.ConfigOpts):
             "correct_core_stems": correct_core_stems,
             "confusion_matrix": ", ".join(str(x) for x in confusion_matrix),
             "duration": duration.total_seconds(),
+            "energy": energy,
         }
 
         if options.include_candidates:
