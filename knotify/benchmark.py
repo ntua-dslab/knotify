@@ -88,7 +88,9 @@ def run_benchmark(options: knotify.ConfigOpts):
         start = datetime.now()
         results = algorithm.get_results(case["case"].lower(), **config)
         duration = datetime.now() - start
-        candidates = results[["dot_bracket", "energy", "stems"]].to_dict(orient="records")
+        candidates = results[["dot_bracket", "energy", "stems"]].to_dict(
+            orient="records"
+        )
         dot_bracket = candidates[0]["dot_bracket"]
         energy = candidates[0]["energy"]
 
@@ -102,7 +104,9 @@ def run_benchmark(options: knotify.ConfigOpts):
             LOG.exception("Failed to retrieve number of correct core stems: %s", e)
             correct_core_stems = 0
 
-        confusion_matrix = scoring.get_confusion_matrix(case["truth"], dot_bracket, slack=0)
+        confusion_matrix = scoring.get_confusion_matrix(
+            case["truth"], dot_bracket, slack=0
+        )
         truth_in_candidates = case["truth"] in [p["dot_bracket"] for p in candidates]
 
         out["totals"]["correct"] += correct

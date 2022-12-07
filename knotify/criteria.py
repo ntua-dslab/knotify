@@ -60,11 +60,15 @@ def apply_free_energy_and_stems_criterion(
     # max stems
     data["stems"] = data["left_loop_stems"] + data["right_loop_stems"]
     data["real_stems"] = data["dot_bracket"].apply(lambda r: sum(x != "." for x in r))
-    data = data[data["stems"] >= data["stems"].max() - max_stem_allow_smaller].reset_index()
+    data = data[
+        data["stems"] >= data["stems"].max() - max_stem_allow_smaller
+    ].reset_index()
 
     # min energy
     data["energy"] = data["dot_bracket"].apply(lambda r: energy.eval(sequence, r))
-    data.sort_values(["energy", "real_stems", "dd"], ascending=(True, False, True), inplace=True)
+    data.sort_values(
+        ["energy", "real_stems", "dd"], ascending=(True, False, True), inplace=True
+    )
 
     data = data.reset_index()
 
