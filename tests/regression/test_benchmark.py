@@ -82,6 +82,7 @@ from knotify import benchmark
                 "max_bulge_size": 3,
                 "min_stems_after_bulge": 2,
                 "allow_skip_final_au": True,
+                "count_stems_from_bulges": False,
             },
             {
                 "correct": 12,
@@ -103,6 +104,7 @@ from knotify import benchmark
                 "max_bulge_size": 3,
                 "min_stems_after_bulge": 2,
                 "allow_skip_final_au": True,
+                "count_stems_from_bulges": True,
             },
             {
                 "correct": 3,

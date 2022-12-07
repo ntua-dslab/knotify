@@ -122,7 +122,7 @@ HAIRPIN = os.getenv("HAIRPIN_SO", "./libhairpin.so")
             "bulges fixes pseudoknots (enabled)",
             "GUUUGUUAGUGGCGUGUCCGUCCGCAGCUGGCAAGCGAAUGUAAAGACUGAC",
             "((((((((((.(((.[[[.[[[))).)))))))))).........]]].]]]",
-            {"pairalign": "bulges"},
+            {"pairalign": "bulges", "count_stems_from_bulges": True},
         ),
         (
             "bulges fixes pseudoknots (disabled)",

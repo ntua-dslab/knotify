@@ -37,6 +37,7 @@ BULGES_SO = "./libbulges.so"
             max_bulge_size=0,
             min_stems_after_bulge=0,
             symmetric_bulges=True,
+            count_stems_from_bulges=False,
             library_path=BULGES_SO,
         ),
     ],

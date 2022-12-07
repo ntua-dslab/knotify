@@ -37,6 +37,7 @@ class BulgesPairAlign(CTypesPairAlign):
         max_bulge_size: int,
         min_stems_after_bulge: int,
         symmetric_bulges: bool,
+        count_stems_from_bulges: bool,
         *args,
         **kwargs
     ):
@@ -46,4 +47,5 @@ class BulgesPairAlign(CTypesPairAlign):
             ctypes.c_int(max_bulge_size),
             ctypes.c_int(min_stems_after_bulge),
             ctypes.c_bool(symmetric_bulges),
+            ctypes.c_bool(count_stems_from_bulges),
         )

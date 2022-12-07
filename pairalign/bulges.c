@@ -27,6 +27,7 @@
 #include <string.h>
 
 bool gSymmetricBulges;
+bool gCountStemsFromBulges;
 int gMinStemsAfterBulge;
 int gMaxBulgeSize;
 
@@ -205,7 +206,8 @@ void pairalign(char *sequence, int i, int j, int left_loop_size, int dd_size,
     memset(&dot_bracket[l + left_loop_stems + 1 + lBulgeSizeRight], ')',
            lStems);
 
-    cb(dot_bracket, left_loop_stems + lStems, right_loop_stems);
+    cb(dot_bracket, left_loop_stems + (gCountStemsFromBulges ? lStems : 0),
+       right_loop_stems);
 
     memset(&dot_bracket[L - left_loop_stems - lBulgeSizeLeft - lStems], '.',
            lStems);
@@ -219,7 +221,8 @@ void pairalign(char *sequence, int i, int j, int left_loop_size, int dd_size,
     memset(&dot_bracket[r + right_loop_stems + 1 + rBulgeSizeRight], ']',
            rStems);
 
-    cb(dot_bracket, left_loop_stems, right_loop_stems + rStems);
+    cb(dot_bracket, left_loop_stems,
+       right_loop_stems + (gCountStemsFromBulges ? rStems : 0));
   }
 
   if (lBulge && rBulge) {
@@ -228,15 +231,17 @@ void pairalign(char *sequence, int i, int j, int left_loop_size, int dd_size,
     memset(&dot_bracket[l + left_loop_stems + 1 + lBulgeSizeRight], ')',
            lStems);
 
-    cb(dot_bracket, left_loop_stems + lStems, right_loop_stems + rStems);
+    cb(dot_bracket, left_loop_stems + (gCountStemsFromBulges ? lStems : 0),
+       right_loop_stems + (gCountStemsFromBulges ? rStems : 0));
   }
 
   free(dot_bracket);
 }
 
 void initialize(int max_bulge_size, int min_stems_after_bulge,
-                bool symmetric_bulges) {
+                bool symmetric_bulges, bool count_stems_from_bulges) {
   gSymmetricBulges = symmetric_bulges;
   gMaxBulgeSize = max_bulge_size;
   gMinStemsAfterBulge = min_stems_after_bulge;
+  gCountStemsFromBulges = count_stems_from_bulges;
 }

@@ -62,11 +62,7 @@ BULGES_SO = "./libbulges.so"
             "assymetric",
             "GCGUGGAAAGCCCUGCCUGGGGUUGAAGCGUUAAAACUUAAUCAGGC",
             (12, 31, 5, 0),
-            {
-                "max_bulge_size": 4,
-                "min_stems_after_bulge": 4,
-                "symmetric_bulges": False,
-            },
+            {"max_bulge_size": 4, "min_stems_after_bulge": 4, "symmetric_bulges": False},
             [
                 ("........(((((.[[[[[)))))..................]]]]]", 4, 4),
                 ("((((....(((((.[[[[[)))))...))))...........]]]]]", 8, 4),
@@ -104,6 +100,18 @@ BULGES_SO = "./libbulges.so"
                 (".((((.([[[[[[.[).))))].]]]]]]", 4, 6),
             ],
         ),
+        (
+            "both-sides-no-count",
+            "CAAAACAGGGGGGGUUCUUUUAAUUUUUU",
+            (6, 16, 7, 0),
+            {"max_bulge_size": 1, "symmetric_bulges": False, "count_stems_from_bulges": False},
+            [
+                ("......(.......[).....].......", 0, 0),
+                (".((((.(.......[).))))].......", 0, 0),
+                ("......([[[[[[.[).....].]]]]]]", 0, 0),
+                (".((((.([[[[[[.[).))))].]]]]]]", 0, 0),
+            ],
+        ),
     ],
 )
 def test_bulges(name, sequence, core_stems, config, results):
@@ -112,6 +120,7 @@ def test_bulges(name, sequence, core_stems, config, results):
         "max_bulge_size": 1,
         "symmetric_bulges": True,
         "min_stems_after_bulge": 1,
+        "count_stems_from_bulges": True,
     }
     cfg.update(config)
 

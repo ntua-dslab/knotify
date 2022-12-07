@@ -74,6 +74,7 @@ PAIRALIGN_OPTS = [
     cfg.IntOpt("max-bulge-size", default=1),
     cfg.IntOpt("min-stems-after-bulge", default=1),
     cfg.BoolOpt("symmetric-bulges", default=True),
+    cfg.BoolOpt("count-stems-from-bulges", default=False),
 ]
 
 HAIRPIN_OPTS = [
@@ -145,6 +146,7 @@ class ConfigOpts(cfg.ConfigOpts):
     max_bulge_size: int
     min_stems_after_bulge: int
     symmetric_bulges: bool
+    count_stems_from_bulges: bool
 
     # HAIRPIN_OPTS
     hairpin_grammar: str
@@ -240,6 +242,7 @@ def from_options(opts: ConfigOpts) -> Tuple[BaseAlgorithm, dict]:
                 opts.max_bulge_size,
                 opts.min_stems_after_bulge,
                 opts.symmetric_bulges,
+                opts.count_stems_from_bulges,
                 library_path=opts.bulges_library_path,
             ).pairalign
         )
