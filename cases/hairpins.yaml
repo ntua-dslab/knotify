@@ -1,0 +1,60 @@
+- name: Black queen cell virus
+  case: AUCACCGUACCUAUUUAGGUUUACGCUCCAAGAUCGGUGGAUAGCAGCCCUAUCAAUAUCUAGGAGA
+  truth: "..((((..((((....)))).....[[[[.[[[[.))))(((((.....)))))...]]]].]]]]."
+- name: Rhopalosiphum padi virus
+  case: UUGGUUAGCUAUUUAGCUUUACUAAUCAAGACGCCGUCGUGCAGCCCACAAAAGUCUAGAUA
+  truth: ".(((..((((....))))......[[[.[[[[.)))..(((.....)))....]]]].]]]."
+- name: NGF-H1
+  case: CGCUCAACUCAUGGAGCGCAAGACGAAUAGCUACAUAUUCGACAUGAG
+  truth: "(((((..[[[[[[))))).....((((((......)))))).]]]]]]"
+- name: NGF-L2
+  case: CGCUCAACCUCAGAGCGCAAGAGUCGAACGAAUACAGUUCGACAUGAGG
+  truth: "(((((..[[[[[))))).....(((((((.......))))))).]]]]]"
+- name: NGF-L6
+  case: CGCUCAACUCAUGGAGCGCACGACGGAUCACCAUCGAUUCGACAUGAG
+  truth: "(((((..[[[[[[))))).....((((((......)))))).]]]]]]"
+- name: Plautia stali intestine virus
+  case: AGGUCUUGUAUAUUUAUACUUACCACACAAGAUGGACCGGAGCAGCCCUCCAAUAUCUAGUGUA
+  truth: ".((((..((((....)))).....[[[[.[[[[[))))((((.....))))..]]]]].]]]]."
+- name: Himetobi P virus
+  case: GACCCUUAGUUAUUUAGCUUUACCGCCCAGGAUGGGGUGCAGCGUUCCUGCAAUAUCCAGGGCA
+  truth: ".((((..((((....)))).....[[[[.[[[[[))))((((.....))))..]]]]].]]]]."
+- name: Drosophila C virus
+  case: UUAGGUUAACUAUUUAGUUUUACUGUUCAGGAUGCCUAUUGGCAGCCCCAUAAUAUCCAGGACA
+  truth: ".((((..((((....)))).....[[[[.[[[[[)))).(((.....)))...]]]]].]]]]."
+- name: Cricket paralysis virus
+  case: UUAGGUUAGCUAUUUAGCUUUACGUUCCAGGAUGCCUAGUGGCAGCCCCACAAUAUCCAGGAAG
+  truth: ".((((..((((....)))).....[[[[.[[[[[))))((((.....))))..]]]]].]]]]."
+- name: potato yellow vein virus - PYVV1
+  case: CGGUAGAAAAGAUGGUUUAAACCACGCCUUCUACCAAGUUAGUAAAUAAAUAGGCGG
+  truth: ".((((((.....((((....))))[[[[[))))))................]]]]]."
+- name: potato yellow vein virus - PYVV2
+  case: AGUAGAAAAGUUGGUGCUUAGACCACGCCCUCUACCGUAAUAAUAGAUAAAUAGGCG
+  truth: ".(((((.....((((......))))[[[[.)))))..................]]]]"
+- name: potato yellow vein virus – PYVV3
+  case: CGGUAGAAAAGAUGGUUUGAAAACCACGCCUUCUACCAAUAUAGUAAAUAAAUAGGCGG
+  truth: ".((((((.....(((((....)))))[[[[[))))))................]]]]]."
+- name: cucumber yellows virus
+  case: CGUUUGGUCGAAUGCUACUAGAGCAGCCUGACCAAACUAGUAUUAGUAAAUAAAGG
+  truth: ".((((((((...((((.....)))).[[[))))))))................]]]"
+- name: cucurbit yellow stunting disorder virus - CYSDV1
+  case: CGACACUCUAAAGAGUUCCGUGAGGAACCACCUUGAGUGUCUAGUUAUAAAUAAACUAGGUC
+  truth: ".(((((((......(((((....))))).[[[[.)))))))................]]]]."
+- name: cucurbit yellow stunting disorder virus – CYSDV2
+  case: CGACACUCUAAAGUGUUCCAAGAGGAACCACCUUGAGUGUCUAGUUAUAAAUAAACUAGGUC
+  truth: ".(((((((......(((((....))))).[[[[.)))))))................]]]]."
+- name: sweet potato chlorotic stunt virus
+  case: CGGUUUUCCUAAAUCGUCGUGAGACGGACCUUGGAAAACCUAGUAUUUAAAUAACUAGGUC
+  truth: ".((((((((.....((((....))))[[[[[.))))))))................]]]]]"
+- name: little cherry virus 1
+  case: AAUGCAACUUUUAAAUAGUUUAUCUGUUAAGAUAAACCACCUAGGUUGCAUAUAUAAAAAAUAAAAGGUGCC
+  truth: ".(((((((((.......((((((((....))))))))[[[[[)))))))))..............]]]]].."
+- name: citrus tristeza virus
+  case: AGUUCUCCUUAGAGUGUGUGUUGUUUACCCAACGCACUGUCCCUAUGGGGGGCCAACAUAGGUCCA
+  truth: ".(((((((.......((((((((......))))))))....[[[[[)))))))....]]]]]...."
+- name: Pineapple mealybug wilt associated virus – 2
+  case: CAAAGUCCUAUAAACCUCAAUAAUCCCUCGUUAGGAGGGACACGCGAGGACUUUGGCGUGCC
+  truth: ".((((((((..............((((((.....))))))[[[[[.)))))))).]]]]].."
+- name: Grapevine leafroll-associated virus - 2
+  case: ACGCCAAAAUCCAAUUAAAGUUUGGGACCUAGGCGGGCCUCUUACGAGGCUAACUUAUCGACAAUAAGUUAGGUC
+  truth: ".((((.....((((.......))))[[[[[[))))((((((....))))))..................]]]]]]"
