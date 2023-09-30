@@ -76,7 +76,28 @@ IHFOLD_OUTPUT_ALL = "Seq: AUGAAAAG\nRES: .([{})].  -3.21\n"
     ],
 )
 def test_ihfold_parse(stdout, result):
-    assert ihfold.parse_ihfold_output(stdout) == result
+    assert ihfold.parse_output(stdout, ihfold.PATTERN_V1) == result
+
+
+IHFOLDV2_OUTPUT = """
+______((((____))))__
+Seq:          CACCGUACCUAUUUAGGUUU
+Restricted_0: ______((((____))))__
+Result_0:     ....[[((((]]..)))).. (-1.61)
+"""
+
+
+@pytest.mark.parametrize(
+    "stdout, result",
+    [
+        (
+            IHFOLDV2_OUTPUT,
+            {"dot_bracket": "....[[((((]]..))))..", "stems": 12, "energy": -1.61},
+        ),
+    ],
+)
+def test_ihfoldv2_parse(stdout, result):
+    assert ihfold.parse_output(stdout, ihfold.PATTERN_V2) == result
 
 
 HOTKNOTS_OUTPUT = (
@@ -135,7 +156,8 @@ def test_hotknots_parse(stdout, result):
         (knotty.Knotty(), "knotty_executable", "./.knotty/knotty"),
         (ipknot.IPKnot(), "ipknot_executable", "./.ipknot/ipknot"),
         (hotknots.HotKnots(), "hotknots_dir", "./.hotknots/HotKnots_v2.0"),
-        (ihfold.IHFold(), "ihfold_executable", "./.iterative-hfold/HFold_iterative"),
+        (ihfold.IHFold(), "ihfold_executable", "./.ihfold/v1/HFold_iterative"),
+        (ihfold.IHFoldV2(), "ihfoldv2_executable", "./.ihfold/v2/Iterative-HFold"),
     ],
 )
 def test_foreign_smoke(algorithm, executable, path):

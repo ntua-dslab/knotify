@@ -30,7 +30,7 @@ from knotify.algorithm.base import BaseAlgorithm
 from knotify.algorithm.ipknot import IPKnot
 from knotify.algorithm.knotify import Knotify
 from knotify.algorithm.knotty import Knotty
-from knotify.algorithm.ihfold import IHFold
+from knotify.algorithm.ihfold import IHFold, IHFoldV2
 from knotify.algorithm.hotknots import HotKnots
 from knotify.energy.vienna import ViennaEnergy
 from knotify.energy.external import ExternalEnergy
@@ -102,11 +102,12 @@ ALGORITHM_OPTS = [
     cfg.StrOpt(
         "algorithm",
         default="knotify",
-        choices=["knotify", "ipknot", "knotty", "hotknots", "ihfold"],
+        choices=["knotify", "ipknot", "knotty", "hotknots", "ihfold", "ihfoldv2"],
     ),
     cfg.StrOpt("ipknot-executable", default="./.ipknot/ipknot"),
     cfg.StrOpt("knotty-executable", default="./.knotty/knotty"),
-    cfg.StrOpt("ihfold-executable", default="./.iterative-hfold/HFold_iterative"),
+    cfg.StrOpt("ihfold-executable", default="./.ihfold/v1/HFold_iterative"),
+    cfg.StrOpt("ihfoldv2-executable", default="./.ihfold/v2/Iterative-HFold"),
     cfg.StrOpt("hotknots-dir", default="./.hotknots/HotKnots_v2.0"),
 ]
 
@@ -168,6 +169,7 @@ class ConfigOpts(cfg.ConfigOpts):
     ipknot_executable: str
     knotty_executable: str
     ihfold_executable: str
+    ihfoldv2_executable: str
     hotknots_dir: str
 
 
@@ -230,6 +232,8 @@ def from_options(opts: ConfigOpts) -> Tuple[BaseAlgorithm, dict]:
         algorithm = Knotty()
     elif opts.algorithm == "ihfold":
         algorithm = IHFold()
+    elif opts.algorithm == "ihfoldv2":
+        algorithm = IHFoldV2()
     elif opts.algorithm == "hotknots":
         algorithm = HotKnots()
 
@@ -270,5 +274,6 @@ def from_options(opts: ConfigOpts) -> Tuple[BaseAlgorithm, dict]:
         "ipknot_executable": opts.ipknot_executable,
         "knotty_executable": opts.knotty_executable,
         "ihfold_executable": opts.ihfold_executable,
+        "ihfoldv2_executable": opts.ihfoldv2_executable,
         "hotknots_dir": opts.hotknots_dir,
     }

@@ -31,10 +31,11 @@ from knotify.algorithm.base import BaseAlgorithm
 
 LOG = logging.getLogger(__name__)
 
-RESULT_REGEX = re.compile(r"RES:\s([\.\{\}\(\)\[\]]*)\s+(.*)\n")
+PATTERN_V1 = re.compile(r"RES:\s([\.\{\}\(\)\[\]]*)\s+(.*)\n")
+PATTERN_V2 = re.compile(r"Result_0:\s*([\.\{\}\(\)\[\]]*)\s+\((.*)\)\n")
 
 
-def parse_ihfold_output(stdout: str) -> dict:
+def parse_output(stdout: str, pattern: re.Pattern) -> dict:
     """
     Parse output of HFold_iterative execution, return an object of the following form:
 
@@ -44,7 +45,7 @@ def parse_ihfold_output(stdout: str) -> dict:
         "stems": 0,
     }
     """
-    dot_bracket, energy = RESULT_REGEX.findall(stdout)[0]
+    dot_bracket, energy = pattern.findall(stdout)[0]
     return {
         "dot_bracket": dot_bracket,
         "stems": len(dot_bracket) - sum(x == "." for x in dot_bracket),
@@ -84,4 +85,43 @@ class IHFold(BaseAlgorithm):
                 "ihfold invocation %s failed with return code %d", cmd, p.returncode
             )
 
-        return pd.DataFrame([parse_ihfold_output(p.stdout.decode())])
+        try:
+            result = parse_output(p.stdout.decode(), PATTERN_V1)
+        except IndexError:
+            LOG.warning("ihfold invocation %s result could not be parsed", cmd)
+            result = {"dot_bracket": "." * len(sequence), "stems": 0, "energy": 0}
+
+        return pd.DataFrame([result])
+
+
+class IHFoldV2(BaseAlgorithm):
+    def get_results(self, sequence: str, ihfoldv2_executable: str, *args, **kwargs):
+        """
+        Run Iterative-HFold (ihfold-v2) algorithm
+
+        Example invocation of Iterative-HFold:
+
+        ```bash
+        # ./Iterative-HFold CACCGUACCUAUUUAGGUUU
+        ______((((____))))__
+        Seq:          CACCGUACCUAUUUAGGUUU
+        Restricted_0: ______((((____))))__
+        Result_0:     ....[[((((]]..)))).. (-1.61)
+        ```
+        """
+
+        cmd = [ihfoldv2_executable, sequence.upper()]
+        p = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+        if p.returncode != 0:
+            LOG.warning(
+                "ihfold invocation %s failed with return code %d", cmd, p.returncode
+            )
+
+        try:
+            result = parse_output(p.stdout.decode(), PATTERN_V2)
+        except IndexError:
+            LOG.warning("ihfold invocation %s result could not be parsed", cmd)
+            result = {"dot_bracket": "." * len(sequence), "stems": 0, "energy": 0}
+
+        return pd.DataFrame([result])

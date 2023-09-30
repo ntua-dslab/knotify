@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright © 2022 Christos Pavlatos, George Rassias, Christos Andrikos,
+# Copyright © 2023 Christos Pavlatos, George Rassias, Christos Andrikos,
 #                  Evangelos Makris, Aggelos Kolaitis
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -23,19 +23,24 @@
 #
 
 """
-Script:         07-benchmark-bulges-initial.py
+Script:         07-benchmark-hairpins.py
 Author:         Angelos Kolaitis <neoaggelos@gmail.com>
-Usage:          ./scripts/04-benchmark-bulges-initial.py cases/hairpins.yaml > out.csv
+Usage:          ./scripts/07-benchmark-hairpins.py cases/hairpins.yaml > out.csv
 Description:
-    Run benchmark for the cases with bulges.
+    Run benchmark for the cases with hairpins.
 
-    The output is printed as a CSV file, like so:
+    All the results (logfiles and JSON results) are stored in the `results` folder.
+    An overview can be seen at `results/out.csv`, which should look like this:
 
     ```
-    ,name,correct,correct_core_stems,truth_in_candidates,count,duration
-    0,knotty,4,15,4,35,36.922723999999995
-    1,knotify-old,0,4,0,35,26.601583
-    2,knotify-new,3,13,4,35,18.831148000000002
+    ,name,correct,correct_core_stems,truth_in_candidates,count,duration,tp,fp,tn,fn
+    0,knotify-base,0,11,0,20,2.498763,292,439,150,338
+    1,knotify-hairpins,11,14,13,20,37.933657999999994,628,461,62,68
+    2,knotty,3,4,3,20,26.367737,518,366,212,123
+    3,ihfold,0,0,0,20,0.683698,484,431,118,186
+    4,ihfoldv2,0,4,0,20,1.754078,364,430,110,315
+    5,hotknots,5,6,5,20,6.015652,534,418,144,123
+    6,ipknot,1,2,1,20,8.782138,540,425,102,152
     ```
 """
 
@@ -73,6 +78,18 @@ def run_benchmarks(cases_yaml: str):
         "knotty": [
             "--algorithm=knotty",
         ],
+        "ihfold": [
+            "--algorithm=ihfold",
+        ],
+        "ihfoldv2": [
+            "--algorithm=ihfoldv2",
+        ],
+        "hotknots": [
+            "--algorithm=hotknots",
+        ],
+        "ipknot": [
+            "--algorithm=ipknot",
+        ],
     }
 
     os.makedirs("results", exist_ok=True)
@@ -81,18 +98,22 @@ def run_benchmarks(cases_yaml: str):
         cmd = ["rna_benchmark", "--cases={}".format(cases_yaml), "--verbose", *args]
 
         print(cmd, file=sys.stderr)
-        with open(f"results/{name}.json", "w") as fout, open(f"results/{name}.log", "w") as ferr:
+        with open(f"results/{name}.json", "w") as fout, open(
+            f"results/{name}.log", "w"
+        ) as ferr:
             p = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=ferr)
             stdout = p.stdout.decode()
             print(stdout, file=fout)
 
         j = json.loads(stdout)
-        j["totals"].update({
-            "tp": j["totals"]["confusion_matrix"][0],
-            "fp": j["totals"]["confusion_matrix"][1],
-            "tn": j["totals"]["confusion_matrix"][2],
-            "fn": j["totals"]["confusion_matrix"][3],
-        })
+        j["totals"].update(
+            {
+                "tp": j["totals"]["confusion_matrix"][0],
+                "fp": j["totals"]["confusion_matrix"][1],
+                "tn": j["totals"]["confusion_matrix"][2],
+                "fn": j["totals"]["confusion_matrix"][3],
+            }
+        )
         del j["totals"]["confusion_matrix"]
 
         records.append({"name": name, **j["totals"]})
