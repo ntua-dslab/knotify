@@ -146,7 +146,9 @@ class IHFoldV3(BaseAlgorithm):
         p = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         if p.returncode != 0:
-            LOG.warning("ihfold invocation %s failed with return code %d", cmd, p.returncode)
+            LOG.warning(
+                "ihfold invocation %s failed with return code %d", cmd, p.returncode
+            )
 
         try:
             result = parse_output(p.stdout.decode(), PATTERN_V3)
