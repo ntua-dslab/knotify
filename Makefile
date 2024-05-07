@@ -119,33 +119,28 @@ $(HOTKNOTS_DIR)/HotKnots_v2.0/bin/HotKnots: hotknots-deps $(HOTKNOTS_DIR)/HotKno
 
 IHFOLD_DIR = .ihfold
 
-ihfold: $(IHFOLD_DIR)/v1/HFold_iterative $(IHFOLD_DIR)/v2/Iterative-HFold
+ihfold: $(IHFOLD_DIR)/v1/HFold_iterative $(IHFOLD_DIR)/v2/Iterative-HFold $(IHFOLD_DIR)/v3/Iterative-HFold
 
-ihfold-deps:
+ihfold-deps: $(IHFOLD_DIR)/dev/Iterative-HFold.cpp
 	sudo apt-get install -y cmake
 
+$(IHFOLD_DIR)/dev/Iterative-HFold.cpp:
+	git clone https://github.com/HosnaJabbari/Iterative-HFold $(IHFOLD_DIR)/dev
+
 $(IHFOLD_DIR)/v1/HFold_iterative: ihfold-deps
-	git clone https://github.com/HosnaJabbari/Iterative-HFold $(IHFOLD_DIR)/v1
+	git clone $(IHFOLD_DIR)/dev $(IHFOLD_DIR)/v1
 	cd $(IHFOLD_DIR)/v1 && git checkout c77dd839943c85f9e0c9db3b3e8feae2909b9df0
 	cd $(IHFOLD_DIR)/v1 && cmake . && make -j
 
 $(IHFOLD_DIR)/v2/Iterative-HFold: ihfold-deps
-	git clone https://github.com/HosnaJabbari/Iterative-HFold $(IHFOLD_DIR)/v2 --depth 1
+	git clone $(IHFOLD_DIR)/dev $(IHFOLD_DIR)/v2
+	cd $(IHFOLD_DIR)/v2 && git checkout 56d736b224027fe2627ebde66ebf2e7557997638
 	cd $(IHFOLD_DIR)/v2 && cmake . && make -j
 
-#####################################################
-# Iterative-HFold
-
-IHFOLDV2_DIR = .ihfoldv2
-
-ihfoldv2: $(IHFOLDV2_DIR)/Iterative-HFold
-
-ihfoldv2-deps:
-	sudo apt-get install -y cmake
-
-$(IHFOLDV2_DIR)/Iterative-HFold: ihfoldv2-deps
-	git clone https://github.com/HosnaJabbari/Iterative-HFold --depth 1 $(IHFOLDV2_DIR)
-	cd $(IHFOLDV2_DIR) && cmake . && make -j
+$(IHFOLD_DIR)/v3/Iterative-HFold: ihfold-deps
+	git clone $(IHFOLD_DIR)/dev $(IHFOLD_DIR)/v3
+	cd $(IHFOLD_DIR)/v3 && git checkout 672b11e4e8050a8e6133c635ebfed4c0c37912e8
+	cd $(IHFOLD_DIR)/v3 && cmake . && make -j
 
 #####################################################
 # Clean
