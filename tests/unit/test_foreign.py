@@ -158,6 +158,7 @@ def test_hotknots_parse(stdout, result):
         (hotknots.HotKnots(), "hotknots_dir", "./.hotknots/HotKnots_v2.0"),
         (ihfold.IHFold(), "ihfold_executable", "./.ihfold/v1/HFold_iterative"),
         (ihfold.IHFoldV2(), "ihfoldv2_executable", "./.ihfold/v2/Iterative-HFold"),
+        (ihfold.IHFoldV3(), "ihfoldv3_executable", "./.ihfold/v3/Iterative-HFold"),
     ],
 )
 def test_foreign_smoke(algorithm, executable, path):
