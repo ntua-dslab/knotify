@@ -8,23 +8,31 @@ Authors: Andrikos Christos, Makris Evaggelos, Pavlatos Christos, Rassias Georgio
 
 ## Run with Docker
 
-```bash
-docker run --rm -it neoaggelos/knotify /knotify/bin/rna_analysis --sequence AAAAAACUAAUAGAGGGGGGACUUAGCGCCCCCCAAACCGUAACCCC
-```
-
-### Build Image
+`knotify` is written in a mix of Python and C code. The easiest way to run it is to build the Docker image and then run as follows. We do not currently provide pre-built Docker images, but that might change in the future.
 
 ```bash
-docker build -t knotify:0.0.1 .
+# build docker image and tag as `knotify:dev`
+docker build -t knotify:dev .
+
+# run an example 'rna_analysis'
+docker run --rm -it knotify:dev /knotify/bin/rna_analysis --sequence AAAAAACUAAUAGAGGGGGGACUUAGCGCCCCCCAAACCGUAACCCC
 ```
 
 ## Development Environment
 
-Building the code consists of 2 parts: Setting up a Python 3 virtual environment and building the C parser library.
+`knotify` has binary depedendencies that require running on a Ubuntu 20.04 system. Building the code consists of 2 parts: Setting up a Python 3 virtual environment and building the C parser libraries.
+
+Note that the instructions below will probably not work on newer Ubuntu systems or different Linux distributions (e.g. CentOS). This is because of the [wheel-requirements.txt](./wheel-requirements.txt) pinning the ViennaRNA C library to the ubuntu2004 version, which requires a specific glibc version. In the future, we will build ViennaRNA from source to avoid this restriction.
 
 ```bash
 $ make deps  # install package dependencies
 $ make       # build the parser and setup the virtual environment at ./.venv
+```
+
+After installation, make sure to activate the virtual environment before running any of the commands below:
+
+```bash
+$ . ./.venv/bin/activate
 ```
 
 ## Execute
@@ -34,7 +42,7 @@ $ make       # build the parser and setup the virtual environment at ./.venv
 For a single sequence. See `--help` for a complete list of options:
 
 ```bash
-$ ./.venv/bin/rna_analysis --sequence AAAAAACUAAUAGAGGGGGGACUUAGCGCCCCCCAAACCGUAACCCC
+$ rna_analysis --sequence AAAAAACUAAUAGAGGGGGGACUUAGCGCCCCCCAAACCGUAACCCC
 ```
 
 ### rna_benchmark
@@ -42,8 +50,8 @@ $ ./.venv/bin/rna_analysis --sequence AAAAAACUAAUAGAGGGGGGACUUAGCGCCCCCCAAACCGUA
 Run a benchmark for a number of cases from a YAML file, saving results in JSON format in `result.json`. See [`cases.yaml`](./cases/cases.yaml) for an example YAML file. See `--help` for a list of available options.
 
 ```bash
-$ ./.venv/bin/rna_benchmark --cases cases/cases.yaml --max-dd-size 2 --max-stem-allow-smaller 1 --allow-ug --prune-early --parser bruteforce > result.json
-$ ./.venv/bin/rna_benchmark --cases cases/cases.yaml --max-dd-size 2 --max-stem-allow-smaller 1 --allow-ug --prune-early --parser yaep > result.json
+$ rna_benchmark --cases cases/cases.yaml --max-dd-size 2 --max-stem-allow-smaller 1 --allow-ug --prune-early --parser bruteforce > result.json
+$ rna_benchmark --cases cases/cases.yaml --max-dd-size 2 --max-stem-allow-smaller 1 --allow-ug --prune-early --parser yaep > result.json
 ```
 
 ### Calling directly from Python code
@@ -52,10 +60,10 @@ See [`scripts/00-example.py`](./scripts/00-example.py) for using `knotify` direc
 
 ## Unit Tests
 
-Activate virtual environment and run with Pytest:
+We use `pytest` for all unit tests. After enabling the virtual environment, you can run them with:
 
 ```bash
-$ ./.venv/bin/pytest
+$ pytest
 ```
 
 ## Implementation details
