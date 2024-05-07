@@ -100,6 +100,29 @@ def test_ihfoldv2_parse(stdout, result):
     assert ihfold.parse_output(stdout, ihfold.PATTERN_V2) == result
 
 
+IHFOLDV3_OUTPUT = """
+GGCACGAUCGGGCUCGCUGCCUUUUCGUCCGAGAGCUCGAA
+[[[[...((((((((..]]]]...........)))))))). (-10.15)
+"""
+
+
+@pytest.mark.parametrize(
+    "stdout, result",
+    [
+        (
+            IHFOLDV3_OUTPUT,
+            {
+                "dot_bracket": "[[[[...((((((((..]]]]...........)))))))).",
+                "stems": 24,
+                "energy": -10.15,
+            },
+        ),
+    ],
+)
+def test_ihfoldv3_parse(stdout, result):
+    assert ihfold.parse_output(stdout, ihfold.PATTERN_V3) == result
+
+
 HOTKNOTS_OUTPUT = (
     "Total number of RNA structures: 1\nSeq: AUGAAAG\nS0:  .([.)].\t-3.2\n"
 )
