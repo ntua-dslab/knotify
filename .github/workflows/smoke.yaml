@@ -15,7 +15,7 @@ jobs:
         with:
           python-version: 3.8
       - name: Build package
-        run: make deps && make -j
+        run: make deps && make
       - name: python
         run: ./.venv/bin/python ./scripts/00-example.py
       - name: rna_analysis
