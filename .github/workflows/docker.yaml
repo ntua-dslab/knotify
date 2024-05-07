@@ -1,0 +1,18 @@
+---
+name: Docker Image
+
+on: [push]
+
+jobs:
+  test:
+    name: Docker Image
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Build Docker Image
+        run: |
+          docker build -t knotify:dev .
+      - name: Test Docker Image
+        run: |
+          docker run knotify:dev /knotify/bin/rna_analysis --sequence AAAAAACUAAUAGAGGGGGGACUUAGCGCCCCCCAAACCGUAACCCC
